@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>제품 기준정보 관리</title>
+<style>
+  body { font-family:Arial, sans-serif; margin:20px; }
+  table { border-collapse:collapse; width:100%; margin-top:20px; }
+  th,td { border:1px solid #ccc; padding:8px; text-align:center; }
+  
+  /* 버튼 스타일 */
+  .btn-container {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-back {
+    background-color: #3498db;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-back:hover {
+    background-color: #2980b9;
+  }
+</style>
+</head>
+<body>
+<h1>기준정보 관리</h1>
+
+<!-- 돌아가기 버튼 추가 -->
+<div class="btn-container">
+  <a href="/" class="btn-back">← 생산계획으로 돌아가기</a>
+</div>
+
+<div>
+  <input type="text" id="product_name" placeholder="제품명">
+  <input type="text" id="bom" placeholder="BOM">
+  <button onclick="addProduct()">추가</button>
+</div>
+
+<table id="productTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>제품명</th>
+      <th>BOM</th>
+      <th>작업</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+let products = [];
+
+function getProducts(){
+  fetch('/get_products')
+  .then(res=>res.json())
+  .then(data=>{
+    products = data.products;
+    renderTable();
+  })
+}
+
+function renderTable(){
+  const tbody = document.querySelector('#productTable tbody');
+  tbody.innerHTML='';
+  products.forEach(p=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML=`
+      <td>${p.id}</td>
+      <td>${p.product_name}</td>
+      <td>${p.bom||''}</td>
+      <td>
+        <button onclick="editProduct(${p.id})">수정</button>
+        <button onclick="deleteProduct(${p.id})">삭제</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  })
+}
+
+function addProduct(){
+  const product_name = document.getElementById('product_name').value;
+  const bom = document.getElementById('bom').value;
+  fetch('/add_product',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({product_name,bom})
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    if(data.error) {alert(data.error); return;}
+    products = data.products;
+    renderTable();
+    clearForm();
+  })
+}
+
+function clearForm(){
+  document.getElementById('product_name').value='';
+  document.getElementById('bom').value='';
+}
+
+function editProduct(id){
+  const prod = products.find(x=>x.id===id);
+  if(!prod) return;
+  const product_name = prompt('제품명', prod.product_name);
+  if(!product_name)return;
+  const bom = prompt('BOM', prod.bom);
+  fetch(`/update_product/${id}`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({product_name,bom})
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    if(data.error){alert(data.error);return;}
+    products = data.products;
+    renderTable();
+  })
+}
+
+function deleteProduct(id){
+  if(!confirm('삭제?'))return;
+  fetch(`/delete_product/${id}`,{method:'DELETE'})
+  .then(res=>res.json())
+  .then(data=>{
+    if(data.error){alert(data.error);return;}
+    products = data.products;
+    renderTable();
+  })
+}
+
+getProducts();
+</script>
+</body>
+</html>

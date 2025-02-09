@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제조 프로세스 관리</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/diagram-js.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bpmn.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'fb-blue': '#1877F2',
+                        'fb-bg': '#F0F2F5',
+                        'fb-text': '#050505',
+                        'fb-hover': '#E4E6E9',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* bpmn.io 로고 숨기기 */
+        .bjs-powered-by {
+            display: none !important;
+        }
+        
+        /* 도구 모음 스타일 */
+        .tools-container {
+            position: fixed;
+            right: 4rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            background-color: white;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+        
+        /* 확대/축소 컨트롤 스타일 */
+        .zoom-controls {
+            position: fixed;
+            right: 1rem;
+            bottom: 5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            background-color: white;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+    </style>
+</head>
+<body class="bg-fb-bg text-fb-text h-full flex flex-col">
+    <div class="bg-white shadow-md flex-none">
+        <header class="max-w-full mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-8">
+                <h1 class="text-2xl font-bold text-fb-blue">제조 프로세스 Drawing</h1>
+                <!-- 도구 모음을 네비게이션 바로 통합 -->
+                <div class="flex items-center gap-2 border-l border-gray-300 pl-8">
+                    <button onclick="showKeyboardShortcuts()" 
+                            class="flex items-center gap-2 px-3 py-2 hover:bg-fb-hover rounded-lg transition-colors text-gray-700"
+                            title="단축키 도움말 (F1)">
+                        <i class="fas fa-keyboard"></i>
+                        <span class="text-sm">단축키</span>
+                    </button>
+                    <button onclick="exportSVG()" 
+                            class="flex items-center gap-2 px-3 py-2 hover:bg-fb-hover rounded-lg transition-colors text-gray-700"
+                            title="SVG로 내보내기">
+                        <i class="fas fa-download"></i>
+                        <span class="text-sm">내보내기</span>
+                    </button>
+                    <button onclick="bpmnModeler.get('handTool').activateHand(true)" 
+                            class="flex items-center gap-2 px-3 py-2 hover:bg-fb-hover rounded-lg transition-colors text-gray-700"
+                            title="손 도구 (H)">
+                        <i class="fas fa-hand"></i>
+                        <span class="text-sm">이동</span>
+                    </button>
+                    <button onclick="bpmnModeler.get('lassoTool').activateSelection()" 
+                            class="flex items-center gap-2 px-3 py-2 hover:bg-fb-hover rounded-lg transition-colors text-gray-700"
+                            title="선택 도구 (L)">
+                        <i class="fas fa-mouse-pointer"></i>
+                        <span class="text-sm">선택</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <input type="text" id="processName" placeholder="프로세스 이름" 
+                       class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-fb-blue">
+                <input type="text" id="authorName" placeholder="작성자 이름"
+                       class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-fb-blue">
+                <button onclick="showSaveModal()" 
+                        class="bg-fb-blue hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">저장</button>
+                <button onclick="toggleProcessList()"
+                        class="bg-fb-blue hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                    <i class="fas fa-folder"></i>
+                </button>
+            </div>
+        </header>
+    </div>
+
+    <div class="flex-1 flex min-h-0 relative">
+        <!-- 왼쪽 프로세스 목록 패널 (슬라이딩) -->
+        <div id="processList" class="absolute left-0 top-0 h-full w-80 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 z-10 overflow-y-auto"></div>
+
+        <!-- 메인 BPMN 캔버스 영역 -->
+        <div class="flex-1 flex flex-col min-w-0 p-4">
+            <div id="canvas" class="flex-1 bg-white rounded-lg shadow-md"></div>
+        </div>
+    </div>
+
+    <!-- 저장 모달 -->
+    <div id="saveModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 max-w-md w-full mx-4 transform translate-y-4">
+            <h2 class="text-xl font-bold mb-4">버전 선택</h2>
+            <div class="space-y-4">
+                <label class="flex items-center space-x-2">
+                    <input type="radio" name="versionType" value="minor" checked
+                           class="text-fb-blue focus:ring-fb-blue">
+                    <span>마이너 버전 업데이트</span>
+                </label>
+                <label class="flex items-center space-x-2">
+                    <input type="radio" name="versionType" value="major"
+                           class="text-fb-blue focus:ring-fb-blue">
+                    <span>메이저 버전 업데이트</span>
+                </label>
+            </div>
+            <div class="flex justify-end gap-2 mt-6">
+                <button onclick="saveProcess()"
+                        class="bg-fb-blue hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">저장</button>
+                <button onclick="closeModal('saveModal')"
+                        class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 삭제 모달 -->
+    <div id="deleteModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 max-w-md w-full mx-4 transform translate-y-4">
+            <h2 class="text-xl font-bold mb-4">프로세스 삭제</h2>
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">관리자 비밀번호</label>
+                <input type="password" id="adminPassword"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-fb-blue">
+            </div>
+            <div class="flex justify-end gap-2">
+                <button onclick="confirmDelete()"
+                        class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">삭제</button>
+                <button onclick="closeModal('deleteModal')"
+                        class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 확대/축소 컨트롤 (위치 조정) -->
+    <div class="zoom-controls">
+        <button onclick="zoomIn()" title="확대 (Ctrl +)" 
+                class="p-2 hover:bg-fb-hover rounded-lg transition-colors">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button onclick="resetZoom()" title="화면에 맞추기" 
+                class="p-2 hover:bg-fb-hover rounded-lg transition-colors">
+            <i class="fas fa-expand"></i>
+        </button>
+        <button onclick="zoomOut()" title="축소 (Ctrl -)" 
+                class="p-2 hover:bg-fb-hover rounded-lg transition-colors">
+            <i class="fas fa-minus"></i>
+        </button>
+    </div>
+
+    <!-- 단축키 도움말 모달 -->
+    <div id="keyboardShortcutsModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="modal-content bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h2 class="text-xl font-bold mb-4">키보드 단축키</h2>
+            <div class="space-y-2">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="font-medium">Ctrl + S</div>
+                    <div>프로세스 저장</div>
+                    <div class="font-medium">Ctrl + O</div>
+                    <div>프로세스 목록</div>
+                    <div class="font-medium">E</div>
+                    <div>직접 편집</div>
+                    <div class="font-medium">H</div>
+                    <div>손 도구</div>
+                    <div class="font-medium">L</div>
+                    <div>선택 도구</div>
+                    <div class="font-medium">Ctrl + +/-</div>
+                    <div>확대/축소</div>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeModal('keyboardShortcutsModal')"
+                        class="bg-fb-blue hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+                    닫기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white shadow-md flex-none">
+        <div class="max-w-full mx-auto px-4 py-3 text-center text-gray-600">
+            Produced By BDK &copy;
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/bpmn-navigated-viewer.development.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bpmn-modeler.development.js') }}"></script>
+    <script>
+        let bpmnModeler;
+        let currentProcessId = null;
+        let isProcessListOpen = false;
+        let processToDelete = null;
+        let isLoading = false;
+
+        function toggleProcessList() {
+            const processList = document.getElementById('processList');
+            isProcessListOpen = !isProcessListOpen;
+            
+            if (isProcessListOpen) {
+                processList.classList.remove('-translate-x-full');
+            } else {
+                processList.classList.add('-translate-x-full');
+            }
+        }
+
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => modal.classList.add('show'), 10);
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function showSaveModal() {
+            const processName = document.getElementById('processName').value;
+            const authorName = document.getElementById('authorName').value;
+            
+            if (!processName || !authorName) {
+                alert('프로세스 이름과 작성자 이름을 모두 입력해주세요.');
+                return;
+            }
+            
+            showModal('saveModal');
+        }
+
+        function showDeleteConfirm(processId) {
+            processToDelete = processId;
+            showModal('deleteModal');
+        }
+
+        async function confirmDelete() {
+            const adminPassword = document.getElementById('adminPassword').value;
+            
+            try {
+                const response = await fetch(`/api/process/${processToDelete}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Admin-Password': adminPassword
+                    }
+                });
+
+                if (response.ok) {
+                    alert('프로세스가 성공적으로 삭제되었습니다.');
+                    closeModal('deleteModal');
+                    document.getElementById('adminPassword').value = '';
+                    await fetchProcesses();
+                    
+                    if (currentProcessId === processToDelete) {
+                        currentProcessId = null;
+                        document.getElementById('processName').value = '';
+                        document.getElementById('authorName').value = '';
+                        await initBpmnModeler();
+                    }
+                } else {
+                    const error = await response.json();
+                    alert(error.error || '프로세스 삭제에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('프로세스 삭제 중 오류 발생:', error);
+                alert('프로세스 삭제 중 오류가 발생했습니다.');
+            }
+        }
+
+        async function initBpmnModeler() {
+            try {
+                if (bpmnModeler) {
+                    try {
+                        bpmnModeler.destroy();
+                    } catch (err) {
+                        console.warn('기존 모델러 제거 중 오류:', err);
+                    }
+                }
+
+                bpmnModeler = new BpmnJS({
+                    container: '#canvas',
+                    keyboard: {
+                        bindTo: document
+                    }
+                });
+
+                const result = await bpmnModeler.createDiagram();
+                console.log('새 BPMN 다이어그램이 생성되었습니다.');
+                
+                const canvas = bpmnModeler.get('canvas');
+                canvas.zoom('fit-viewport');
+                
+                return result;
+            } catch (err) {
+                console.error('BPMN 모델러 초기화 중 오류:', err);
+                throw err;
+            }
+        }
+
+        async function saveProcess() {
+            const processName = document.getElementById('processName').value;
+            const authorName = document.getElementById('authorName').value;
+            const isMajorUpdate = document.querySelector('input[name="versionType"]:checked').value === 'major';
+
+            try {
+                const { xml } = await bpmnModeler.saveXML({ format: true });
+                console.log('XML Data:', xml);
+                
+                const requestData = {
+                    name: processName,
+                    xml: xml,
+                    author: authorName,
+                    is_major_update: isMajorUpdate
+                };
+                console.log('Request Data:', requestData);
+
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert(`프로세스가 버전 ${data.major_version}.${data.minor_version}으로 저장되었습니다.`);
+                    fetchProcesses();
+                } else {
+                    const errorData = await response.json();
+                    console.error('Server Error:', errorData);
+                    throw new Error(errorData.error || '저장 실패');
+                }
+            } catch (err) {
+                console.error('저장 중 오류가 발생했습니다:', err);
+                alert('저장 중 오류가 발생했습니다: ' + err.message);
+            }
+            closeModal('saveModal');
+        }
+
+        async function fetchProcesses() {
+            try {
+                const response = await fetch('/api/processes');
+                const processes = await response.json();
+                
+                const groupedProcesses = processes.reduce((groups, process) => {
+                    if (!groups[process.name]) {
+                        groups[process.name] = [];
+                    }
+                    groups[process.name].push(process);
+                    return groups;
+                }, {});
+                
+                const processList = document.getElementById('processList');
+                processList.innerHTML = `
+                    <div class="p-3 md:p-4 max-w-full overflow-x-hidden">
+                        <h2 class="text-xl md:text-2xl font-bold text-fb-blue mb-4 flex items-center gap-2">
+                            <i class="fas fa-sitemap text-lg md:text-xl"></i>
+                            <span class="truncate">저장된 프로세스 목록</span>
+                        </h2>
+                        <div class="space-y-3">
+                            ${Object.entries(groupedProcesses).map(([name, versions], index) => `
+                                <div class="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
+                                    <button onclick="toggleAccordion(${index})"
+                                            class="w-full flex items-center justify-between p-3 md:p-4 bg-gradient-to-r from-fb-blue/5 to-transparent hover:from-fb-blue/10 transition-all">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-chevron-right transform transition-transform duration-300 text-gray-500" id="arrow-${index}"></i>
+                                            <div>
+                                                <span class="font-bold text-base md:text-lg text-gray-800">${name}</span>
+                                                <span class="ml-2 text-xs md:text-sm text-fb-blue font-medium">
+                                                    v${Math.max(...versions.map(v => v.major_version))}.${Math.max(...versions.map(v => v.minor_version))}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs md:text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                            ${versions.length}개 버전
+                                        </span>
+                                    </button>
+                                    <div id="content-${index}" class="hidden">
+                                        <div class="divide-y divide-gray-100">
+                                            ${versions.map(process => `
+                                                <div class="p-4 hover:bg-gray-50 transition-colors">
+                                                    <!-- 1행: 버전 정보 -->
+                                                    <div class="flex items-center gap-2 mb-2">
+                                                        <span class="font-bold text-lg text-fb-blue">v${process.major_version}.${process.minor_version}</span>
+                                                    </div>
+                                                    
+                                                    <!-- 2행: 로그 정보 -->
+                                                    <div class="flex items-center gap-3 text-sm text-gray-600 mb-3">
+                                                        <div class="flex items-center gap-1">
+                                                            <i class="fas fa-user"></i>
+                                                            <span>${process.author}</span>
+                                                        </div>
+                                                        <div class="flex items-center gap-1">
+                                                            <i class="fas fa-clock"></i>
+                                                            <span>${new Date(process.created_at).toLocaleDateString()}</span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- 3행: 작업 버튼 -->
+                                                    <div class="flex gap-2">
+                                                        <button onclick="loadProcess(${process.id})"
+                                                                class="flex-1 bg-fb-blue hover:bg-blue-600 text-white py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                                                            <i class="fas fa-edit"></i>
+                                                            <span>수정</span>
+                                                        </button>
+                                                        <button onclick="showDeleteConfirm(${process.id})"
+                                                                class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm font-medium">
+                                                            <i class="fas fa-trash"></i>
+                                                            <span>삭제</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('프로세스 목록을 가져오는 중 오류 발생:', error);
+                alert('프로세스 목록을 가져오는데 실패했습니다.');
+            }
+        }
+
+        // 아코디언 토글 함수
+        function toggleAccordion(index) {
+            const content = document.getElementById(`content-${index}`);
+            const arrow = document.getElementById(`arrow-${index}`);
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                arrow.style.transform = 'rotate(90deg)';
+            } else {
+                content.classList.add('hidden');
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        async function loadProcess(id) {
+            if (isLoading) {
+                console.log('이미 로딩 중입니다.');
+                return;
+            }
+            
+            isLoading = true;
+            console.log(`프로세스 ID ${id} 로딩 시작`);
+            
+            try {
+                // 1. 프로세스 데이터 가져오기
+                const response = await fetch(`/api/process/${id}`);
+                if (!response.ok) {
+                    throw new Error(`프로세스 데이터 로드 실패: ${response.status}`);
+                }
+                
+                const process = await response.json();
+                console.log('서버에서 받은 프로세스 데이터:', process);
+                
+                if (!process.xml) {
+                    throw new Error('XML 데이터가 없습니다.');
+                }
+
+                // 2. 기존 다이어그램 초기화
+                if (!bpmnModeler) {
+                    await initBpmnModeler();
+                } else {
+                    try {
+                        const canvas = bpmnModeler.get('canvas');
+                        canvas.clear();
+                    } catch (err) {
+                        console.warn('캔버스 초기화 중 오류:', err);
+                        await initBpmnModeler();
+                    }
+                }
+                
+                // 3. XML 데이터 임포트
+                try {
+                    console.log('XML 데이터 임포트 시작');
+                    const { warnings } = await bpmnModeler.importXML(process.xml);
+                    if (warnings && warnings.length > 0) {
+                        console.warn('다이어그램 로드 경고:', warnings);
+                    }
+                    console.log('XML 데이터 임포트 완료');
+                } catch (importError) {
+                    console.error('XML 임포트 오류:', importError);
+                    throw new Error(`XML 임포트 실패: ${importError.message}`);
+                }
+                
+                // 4. UI 업데이트
+                document.getElementById('processName').value = process.name;
+                document.getElementById('authorName').value = process.author;
+                currentProcessId = id;
+                
+                // 5. 뷰포트 조정
+                try {
+                    console.log('뷰포트 조정 시작');
+                    const canvas = bpmnModeler.get('canvas');
+                    canvas.zoom('fit-viewport');
+                    console.log('뷰포트 조정 완료');
+                } catch (zoomError) {
+                    console.warn('뷰포트 조정 실패:', zoomError);
+                }
+                
+                console.log('프로세스 로드 완료:', process.name);
+            } catch (err) {
+                console.error('프로세스 로드 중 오류:', err);
+                alert(`프로세스를 불러오는데 실패했습니다: ${err.message}`);
+                
+                // 에러 발생 시 새 다이어그램 생성
+                try {
+                    await initBpmnModeler();
+                } catch (initErr) {
+                    console.error('초기화 실패:', initErr);
+                }
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        // 새 다이어그램 생성 함수
+        async function createNewDiagram() {
+            try {
+                await initBpmnModeler();
+                document.getElementById('processName').value = '';
+                document.getElementById('authorName').value = '';
+                currentProcessId = null;
+            } catch (err) {
+                console.error('새 다이어그램 생성 실패:', err);
+                alert('새 다이어그램을 생성하는데 실패했습니다.');
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initBpmnModeler();
+                await fetchProcesses();
+            } catch (err) {
+                console.error('초기화 중 오류:', err);
+                alert('애플리케이션 초기화에 실패했습니다.');
+            }
+
+            // 외부 클릭 시 프로세스 목록 닫기
+            document.addEventListener('click', (e) => {
+                const processList = document.getElementById('processList');
+                const toggleButton = document.querySelector('button[onclick="toggleProcessList()"]');
+                
+                if (isProcessListOpen && 
+                    !processList.contains(e.target) && 
+                    !toggleButton.contains(e.target)) {
+                    toggleProcessList();
+                }
+            });
+        });
+
+        // 키보드 단축키 설정
+        document.addEventListener('keydown', function(e) {
+            // Ctrl(Cmd) + S: 저장
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                showSaveModal();
+            }
+            // Ctrl(Cmd) + O: 프로세스 목록 열기
+            if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+                e.preventDefault();
+                toggleProcessList();
+            }
+            // E: 직접 편집 모드
+            if (e.key === 'e' && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                bpmnModeler.get('directEditing').activate();
+            }
+            // H: 손 도구
+            if (e.key === 'h' && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                bpmnModeler.get('handTool').activateHand(true);
+            }
+            // L: 선택 도구
+            if (e.key === 'l' && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                bpmnModeler.get('lassoTool').activateSelection();
+            }
+        });
+
+        // 확대/축소 컨트롤
+        function zoomIn() {
+            bpmnModeler.get('canvas').zoom(bpmnModeler.get('canvas').zoom() + 0.1);
+        }
+
+        function zoomOut() {
+            bpmnModeler.get('canvas').zoom(bpmnModeler.get('canvas').zoom() - 0.1);
+        }
+
+        function resetZoom() {
+            bpmnModeler.get('canvas').zoom('fit-viewport');
+        }
+
+        // SVG 내보내기
+        async function exportSVG() {
+            try {
+                const { svg } = await bpmnModeler.saveSVG();
+                const blob = new Blob([svg], { type: 'image/svg+xml' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${document.getElementById('processName').value || 'process'}.svg`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error('SVG 내보내기 중 오류가 발생했습니다:', err);
+                alert('SVG 내보내기 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 단축키 도움말 모달
+        function showKeyboardShortcuts() {
+            showModal('keyboardShortcutsModal');
+        }
+    </script>
+</body>
+</html> 

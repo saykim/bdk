@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}글쓰기{% endblock %}
+
+{% block content %}
+<div class="post-detail card">
+    <div class="card-body">
+        <h2 class="card-title mb-4">글쓰기</h2>
+        
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        
+        <form method="post" action="/write" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label class="form-label" for="title">제목</label>
+                    <input type="text" id="title" name="title" class="form-control" required value="{{ title if title }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label" for="category">카테고리</label>
+                    <select name="category" id="category" class="form-select" required>
+                        <option value="일반">일반</option>
+                        <option value="공정">공정</option>
+                        <option value="검사">검사</option>
+                        <option value="품질">품질</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="product_name">제품명</label>
+                    <input type="text" id="product_name" name="product_name" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="process_step">공정 단계</label>
+                    <input type="text" id="process_step" name="process_step" class="form-control">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label" for="content">내용</label>
+                <textarea id="content" name="content" class="form-control" rows="10" required>{{ content if content }}</textarea>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="author">작성자</label>
+                    <input type="text" id="author" name="author" class="form-control" required value="{{ author if author }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="status">상태</label>
+                    <select name="status" id="status" class="form-select">
+                        {% for status in ProcessStatus %}
+                        <option value="{{ status.value }}">{{ status.value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label" for="attachment">첨부 파일</label>
+                <input type="file" id="attachment" name="attachment" class="form-control">
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> 저장
+                </button>
+                <a href="/" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> 취소
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

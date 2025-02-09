@@ -1,0 +1,71 @@
+{
+  "name": "dmn-js-builder",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "all": "run-s lint build test",
+    "build-distro": "lerna run prepublishOnly --sort --stream",
+    "clean": "del-cli node_modules \"packages/*/node_modules\"",
+    "distro": "run-s clean reinstall build-distro",
+    "dev": "run-s build \"lerna-dev -- {@}\" -- ",
+    "start": "cross-env SINGLE_START=modeler npm run dev -- dmn-js",
+    "start:translate": "cross-env SINGLE_START=translate npm run dev -- dmn-js",
+    "lerna-dev": "lerna run dev --stream --scope",
+    "build": "lerna run build --parallel --stream",
+    "lerna-publish": "lerna publish -m \"chore(project): publish %s\"",
+    "lint": "run-s lint:*",
+    "lint:js": "eslint .",
+    "lint:style": "stylelint \"packages/**/*.css\"",
+    "reinstall": "npm ci",
+    "release": "run-s distro test \"lerna-publish -- {@}\" --",
+    "test": "lerna run test",
+    "ci": "run-s all build-distro"
+  },
+  "contributors": [
+    {
+      "name": "bpmn.io contributors",
+      "url": "https://github.com/bpmn-io"
+    }
+  ],
+  "workspaces": [
+    "packages/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bpmn-io/dmn-js"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "devDependencies": {
+    "@babel/cli": "^7.25.9",
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "babel-loader": "^9.2.1",
+    "babel-plugin-inferno": "~5.0.0",
+    "babel-plugin-istanbul": "^7.0.0",
+    "chai": "^4.5.0",
+    "cross-env": "^7.0.3",
+    "del-cli": "^6.0.0",
+    "eslint": "^9.14.0",
+    "eslint-plugin-bpmn-io": "^2.0.2",
+    "karma": "^6.4.4",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-coverage": "^2.2.1",
+    "karma-debug-launcher": "0.0.5",
+    "karma-env-preprocessor": "^0.1.1",
+    "karma-firefox-launcher": "^2.1.2",
+    "karma-ie-launcher": "^1.0.0",
+    "karma-mocha": "^2.0.1",
+    "karma-sinon-chai": "^2.0.2",
+    "karma-webpack": "^5.0.0",
+    "lerna": "^8.1.9",
+    "mocha": "^10.8.2",
+    "mocha-test-container-support": "^0.2.0",
+    "npm-run-all2": "^7.0.1",
+    "puppeteer": "^23.7.1",
+    "sinon": "^17.0.1",
+    "sinon-chai": "^3.7.0",
+    "stylelint": "^16.10.0",
+    "stylelint-config-standard": "^36.0.1",
+    "webpack": "^5.96.1"
+  }
+}

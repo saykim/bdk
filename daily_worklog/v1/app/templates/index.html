@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-8 animate-fade-in">
+    <!-- 상단 통계 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="dashboard-stat bg-gradient-to-br from-white to-brand-50 border-l-4 border-brand-500">
+            <div class="dashboard-stat-title">
+                <svg class="w-5 h-5 mr-2 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                오늘의 점검 건수
+            </div>
+            <div class="dashboard-stat-value">{{ today_logs|length }}</div>
+            <div class="dashboard-stat-desc">
+                {% if today_logs|length > yesterday_logs|length %}
+                <svg class="w-5 h-5 mr-1 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                </svg>
+                <span class="text-green-600 font-medium">+{{ today_logs|length - yesterday_logs|length }}</span>
+                {% else %}
+                <svg class="w-5 h-5 mr-1 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                </svg>
+                <span class="text-red-600 font-medium">-{{ yesterday_logs|length - today_logs|length }}</span>
+                {% endif %}
+                <span class="ml-1">전일 대비</span>
+            </div>
+        </div>
+        <div class="dashboard-stat bg-gradient-to-br from-white to-yellow-50 border-l-4 border-yellow-500">
+            <div class="dashboard-stat-title">
+                <svg class="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                대기중인 점검
+            </div>
+            <div class="dashboard-stat-value text-yellow-700">{{ pending_logs|length }}</div>
+            <div class="dashboard-stat-desc">
+                <svg class="w-5 h-5 mr-1 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                승인 대기 중인 점검 건수
+            </div>
+        </div>
+        <div class="dashboard-stat bg-gradient-to-br from-white to-red-50 border-l-4 border-red-500">
+            <div class="dashboard-stat-title">
+                <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                이상 항목
+            </div>
+            <div class="dashboard-stat-value text-red-600">{{ critical_logs|length }}</div>
+            <div class="dashboard-stat-desc">
+                <svg class="w-5 h-5 mr-1 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                허용 범위를 벗어난 항목이 있는 점검
+            </div>
+        </div>
+        <div class="dashboard-stat bg-gradient-to-br from-white to-green-50 border-l-4 border-green-500">
+            <div class="dashboard-stat-title">
+                <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                점검 완료율
+            </div>
+            <div class="dashboard-stat-value text-green-700">{{ (completed_logs|length / total_templates|length * 100)|round|int }}%</div>
+            <div class="dashboard-stat-desc">
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" style="width: {{ (completed_logs|length / total_templates|length * 100)|round|int }}%"></div>
+                </div>
+                <span class="ml-2">오늘의 점검 진행률</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 검색 및 필터 -->
+    <div class="card divide-y divide-gray-200">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg font-medium text-gray-900 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    점검 기록 검색
+                </h2>
+                <a href="{{ url_for('main.create_worklog') }}" class="btn-primary flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    새 점검일지
+                </a>
+            </div>
+            <form method="GET">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div>
+                        <label for="template_name" class="form-label">템플릿 이름</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <input type="text" name="template_name" id="template_name" value="{{ template_name }}"
+                                class="form-input pl-10" placeholder="템플릿 검색...">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="start_date" class="form-label">시작일</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <input type="date" name="start_date" id="start_date" value="{{ start_date }}"
+                                class="form-input pl-10">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="end_date" class="form-label">종료일</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <input type="date" name="end_date" id="end_date" value="{{ end_date }}"
+                                class="form-input pl-10">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="status" class="form-label">상태</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <select name="status" id="status" class="form-input pl-10">
+                                <option value="">전체</option>
+                                <option value="대기중" {% if status == '대기중' %}selected{% endif %}>대기중</option>
+                                <option value="승인됨" {% if status == '승인됨' %}selected{% endif %}>승인됨</option>
+                                <option value="거부됨" {% if status == '거부됨' %}selected{% endif %}>거부됨</option>
+                            </select>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mt-6 pt-6 border-t border-gray-200">
+                    <div class="text-sm text-gray-500">
+                        총 <span class="font-medium text-gray-900">{{ work_logs|length }}</span>개의 점검 기록
+                    </div>
+                    <div class="flex space-x-3">
+                        <a href="{{ url_for('main.index') }}" class="btn-secondary flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            초기화
+                        </a>
+                        <button type="submit" class="btn-primary flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            검색
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 점검 목록 -->
+    <div class="card">
+        <div class="overflow-hidden rounded-xl">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                    <tr class="bg-gray-50">
+                        <th scope="col" class="table-header w-16">ID</th>
+                        <th scope="col" class="table-header">점검 항목</th>
+                        <th scope="col" class="table-header">점검자</th>
+                        <th scope="col" class="table-header">상태</th>
+                        <th scope="col" class="table-header">점검일시</th>
+                        <th scope="col" class="table-header w-32">작업</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for log in work_logs %}
+                    <tr class="table-row">
+                        <td class="table-cell text-center font-medium text-gray-900">{{ log.id }}</td>
+                        <td class="table-cell">
+                            <div class="font-medium text-gray-900">{{ log.template.name }}</div>
+                            <div class="text-xs text-gray-500 mt-1">
+                                {{ log.template.factory.name }}
+                                {% if log.template.process %} - {{ log.template.process.name }}{% endif %}
+                                {% if log.template.equipment %} - {{ log.template.equipment.name }}{% endif %}
+                            </div>
+                        </td>
+                        <td class="table-cell">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-8 w-8 bg-brand-100 rounded-full flex items-center justify-center">
+                                    <span class="text-sm font-medium text-brand-700">{{ log.inspector[:1] }}</span>
+                                </div>
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium text-gray-900">{{ log.inspector }}</div>
+                                    <div class="text-xs text-gray-500">{{ log.shift }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="table-cell">
+                            <span class="badge {% if log.status == '승인됨' %}badge-success{% elif log.status == '거부됨' %}badge-danger{% else %}badge-warning{% endif %}">
+                                {{ log.status }}
+                            </span>
+                            {% if log.has_critical_values %}
+                            <span class="badge badge-danger ml-2">
+                                <svg class="w-3 h-3 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                이상 있음
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="table-cell">
+                            <div class="text-sm text-gray-900">{{ log.created_at.strftime('%Y-%m-%d') }}</div>
+                            <div class="text-xs text-gray-500">{{ log.created_at.strftime('%H:%M') }}</div>
+                        </td>
+                        <td class="table-cell">
+                            <div class="flex items-center justify-end space-x-3">
+                                <a href="{{ url_for('main.edit_worklog', id=log.id) }}" 
+                                   class="text-brand-600 hover:text-brand-900 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                    수정
+                                </a>
+                                <form action="{{ url_for('main.delete_worklog', id=log.id) }}" method="POST" class="inline">
+                                    <button type="submit" 
+                                            class="text-red-600 hover:text-red-900 flex items-center" 
+                                            onclick="return confirm('정말 삭제하시겠습니까?')">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        삭제
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if not work_logs %}
+        <div class="text-center py-12 bg-gray-50 rounded-xl">
+            <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <p class="text-gray-500 text-lg">검색 결과가 없습니다.</p>
+            <a href="{{ url_for('main.create_worklog') }}" class="mt-4 inline-flex items-center text-brand-600 hover:text-brand-700">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                새 점검일지 작성하기
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

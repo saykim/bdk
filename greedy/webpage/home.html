@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Production Optimization</title>
+<style>
+  /* Basic Styles */
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+</style>
+</head>
+<body>
+
+<!-- Ingredients Input Interface -->
+<div id="input-interface">
+  Dough (kg): <input type="number" id="dough" value="10"><br>
+  Cheese1 (kg): <input type="number" id="cheese1" value="10"><br>
+  Cheese2 (kg): <input type="number" id="cheese2" value="10"><br>
+  Topping1 (kg): <input type="number" id="topping1" value="10"><br>
+  Topping2 (kg): <input type="number" id="topping2" value="10"><br>
+  <button onclick="calculate()">Calculate</button>
+</div>
+
+<!-- Results Output Interface -->
+<div id="output-interface">
+  <!-- Results will be displayed here -->
+</div>
+
+<script>
+  const ingredientPrices = {
+    dough: 700,
+    cheese1: 1000,
+    cheese2: 1200,
+    topping1: 200,
+    topping2: 600
+  };
+
+  const productRecipes = {
+    product327: { dough: 0.11, cheese1: 0.03, cheese2: 0.03, topping1: 0.02, topping2: 0.02 },
+    product347: { dough: 0.1, cheese1: 0.03, cheese2: 0.05, topping1: 0.04, topping2: 0.02 },
+    product407: { dough: 0.15, cheese1: 0.02, cheese2: 0.04, topping1: 0.03, topping2: 0.05 }
+  };
+
+  function calculate() {
+    const remainingIngredients = {
+      dough: parseFloat(document.getElementById('dough').value),
+      cheese1: parseFloat(document.getElementById('cheese1').value),
+      cheese2: parseFloat(document.getElementById('cheese2').value),
+      topping1: parseFloat(document.getElementById('topping1').value),
+      topping2: parseFloat(document.getElementById('topping2').value)
+    };
+    
+    let maxProfit = 0;
+    let optimalProduct = null;
+    
+    for (const product in productRecipes) {
+      let isPossible = true;
+      for (const ingredient in productRecipes[product]) {
+        if (remainingIngredients[ingredient] < productRecipes[product][ingredient]) {
+          isPossible = false;
+          break;
+        }
+      }
+      if (isPossible) {
+        let profit = 0;
+        for (const ingredient in productRecipes[product]) {
+          profit += productRecipes[product][ingredient] * ingredientPrices[ingredient];
+        }
+        if (profit > maxProfit) {
+          maxProfit = profit;
+          optimalProduct = product;
+        }
+      }
+    }
+    
+    displayResults(optimalProduct, maxProfit);
+  }
+
+  function displayResults(optimalProduct, maxProfit) {
+    const outputInterface = document.getElementById('output-interface');
+    outputInterface.innerHTML = `
+      <table>
+        <tr>
+          <th>Optimal Product</th>
+          <td>${optimalProduct}</td>
+        </tr>
+        <tr>
+          <th>Profit</th>
+          <td>${maxProfit.toLocaleString()}</td> <!-- Convert to currency format -->
+        </tr>
+      </table>
+    `;
+  }
+</script>
+
+</body>
+</html>

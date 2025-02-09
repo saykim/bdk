@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Todo App - 로그인{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">로그인</h5>
+            </div>
+            <div class="card-body">
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">이메일</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">비밀번호</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">로그인</button>
+                    <a href="/register" class="btn btn-link">회원가입</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('loginForm').addEventListener('submit', login);
+});
+
+async function login(e) {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    formData.append('username', document.getElementById('email').value);
+    formData.append('password', document.getElementById('password').value);
+    
+    try {
+        const response = await fetch('/auth/token', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('token', data.access_token);
+            localStorage.setItem('lastLoginTime', Date.now().toString());
+            window.location.href = '/';
+        } else {
+            const error = await response.json();
+            alert('로그인 실패: ' + (error.detail || '알 수 없는 오류'));
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('로그인 중 오류가 발생했습니다.');
+    }
+}
+</script>
+{% endblock %} 

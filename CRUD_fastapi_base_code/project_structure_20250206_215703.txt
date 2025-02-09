@@ -1,0 +1,1220 @@
+프로젝트 구조 및 코드 모음
+==================================================
+생성 시간: 2025-02-06 21:57:03
+==================================================
+
+[ 프로젝트 디렉토리 구조 ]
+📄 .DS_Store
+📁 app
+    📄 __init__.py
+    📄 database.py
+    📄 models.py
+    📁 routers
+        📄 __init__.py
+        📄 posts.py
+    📄 schemas.py
+    📁 static
+        📁 css
+            📄 style.css
+    📁 templates
+        📄 base.html
+        📄 create.html
+        📄 detail.html
+        📄 edit.html
+        📄 index.html
+📄 main.py
+📄 project_structure_20250206_215703.txt
+📄 readme.md
+📄 requirements.txt
+
+==================================================
+[ 파일별 코드 ]
+
+[파일 경로: app/__init__.py]
+```# Initialize FastAPI app package 
+from . import models
+from . import schemas
+from . import database ```
+==================================================
+
+[파일 경로: app/database.py]
+```from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
+
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close() ```
+==================================================
+
+[파일 경로: app/models.py]
+```from sqlalchemy import Column, Integer, String, Text, DateTime, Index, text, Enum
+from sqlalchemy.sql import func
+from .database import Base
+import enum
+from datetime import datetime
+
+class ProcessStatus(str, enum.Enum):
+    PENDING = "대기"
+    IN_PROGRESS = "진행중"
+    COMPLETED = "완료"
+    ISSUE = "문제발생"
+
+class Post(Base):
+    __tablename__ = "posts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(200), nullable=False)
+    content = Column(Text, nullable=False)
+    author = Column(String(100), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, onupdate=datetime.utcnow)
+    
+    # 추가 필드
+    category = Column(String(50), nullable=False, server_default="일반")
+    product_name = Column(String(100), nullable=True)
+    process_step = Column(String(100), nullable=True)
+    status = Column(String(20), nullable=False, server_default=ProcessStatus.PENDING.value)
+    attachment_path = Column(String(500), nullable=True)
+
+    # 검색을 위한 인덱스 추가
+    __table_args__ = (
+        Index('idx_title_content', 'title', 'content'),
+        Index('idx_author', 'author'),
+    ) ```
+==================================================
+
+[파일 경로: app/routers/__init__.py]
+```# Initialize routers package ```
+==================================================
+
+[파일 경로: app/routers/posts.py]
+```from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlalchemy.orm import Session
+from sqlalchemy import or_
+from typing import List, Optional
+from app import models, schemas
+from app.database import get_db
+
+router = APIRouter(
+    prefix="/api/posts",
+    tags=["posts"]
+)
+
+@router.post("/", response_model=schemas.Post, status_code=status.HTTP_201_CREATED)
+def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
+    db_post = models.Post(**post.model_dump())
+    db.add(db_post)
+    db.commit()
+    db.refresh(db_post)
+    return db_post
+
+@router.get("/", response_model=List[schemas.Post])
+def read_posts(
+    skip: int = 0,
+    limit: int = 100,
+    search: Optional[str] = Query(None, description="검색어 (제목, 내용)"),
+    author: Optional[str] = Query(None, description="작성자 검색"),
+    db: Session = Depends(get_db)
+):
+    query = db.query(models.Post)
+    
+    if search:
+        query = query.filter(
+            or_(
+                models.Post.title.contains(search),
+                models.Post.content.contains(search)
+            )
+        )
+    
+    if author:
+        query = query.filter(models.Post.author.contains(author))
+    
+    posts = query.offset(skip).limit(limit).all()
+    return posts
+
+@router.get("/{post_id}", response_model=schemas.Post)
+def read_post(post_id: int, db: Session = Depends(get_db)):
+    post = db.query(models.Post).filter(models.Post.id == post_id).first()
+    if post is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return post
+
+@router.put("/{post_id}", response_model=schemas.Post)
+def update_post(post_id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
+    db_post = db.query(models.Post).filter(models.Post.id == post_id).first()
+    if db_post is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    for key, value in post.model_dump().items():
+        setattr(db_post, key, value)
+    
+    db.commit()
+    db.refresh(db_post)
+    return db_post
+
+@router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(post_id: int, db: Session = Depends(get_db)):
+    post = db.query(models.Post).filter(models.Post.id == post_id).first()
+    if post is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    db.delete(post)
+    db.commit()
+    return None ```
+==================================================
+
+[파일 경로: app/schemas.py]
+```from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
+
+class PostBase(BaseModel):
+    title: str
+    content: str
+    author: str
+
+class PostCreate(PostBase):
+    pass
+
+class Post(PostBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True ```
+==================================================
+
+[파일 경로: app/static/css/style.css]
+```:root {
+    --primary-color: #2563eb;    /* 더 밝은 블루 */
+    --secondary-color: #1e40af;  /* 더 진한 블루 */
+    --success-color: #16a34a;    /* 그린 */
+    --warning-color: #f59e0b;    /* 오렌지 */
+    --danger-color: #dc2626;     /* 레드 */
+    --light-bg: #f8fafc;         /* 연한 그레이 */
+    --text-color: #1e293b;       /* 진한 그레이 */
+    --border-color: #e2e8f0;    /* 연한 그레이 */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+/* 기본 스타일 리셋 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--light-bg);
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* 헤더 스타일 */
+.header {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border-color);
+}
+
+.header h1 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+/* 버튼 스타일 */
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.button-primary {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.button-success {
+    background: linear-gradient(45deg, var(--success-color), #15803d);
+    color: white;
+}
+
+.button-danger {
+    background: linear-gradient(45deg, var(--danger-color), #b91c1c);
+    color: white;
+}
+
+/* 게시글 목록 스타일 */
+.post-list {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.post-item {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.post-item:hover {
+    background-color: var(--light-bg);
+    transform: translateX(4px);
+}
+
+.post-title {
+    font-size: 1.125rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.post-title:hover {
+    color: var(--secondary-color);
+}
+
+.post-meta {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-top: 5px;
+}
+
+/* 폼 스타일 */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+textarea.form-control {
+    min-height: 200px;
+    resize: vertical;
+}
+
+/* 페이지네이션 스타일 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    gap: 0.5rem;
+}
+
+.page-link {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.page-link:hover {
+    background-color: var(--light-bg);
+}
+
+.page-link.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* 검색 폼 스타일 */
+.search-form {
+    margin-bottom: 30px;
+    display: flex;
+    gap: 10px;
+}
+
+.search-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.post-item {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .post-title {
+        font-size: 1rem;
+    }
+    
+    .button {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+}
+
+/* 에러 메시지 스타일 */
+.error-message {
+    background-color: #ffeaea;
+    color: #e74c3c;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    border: 1px solid #ffd0d0;
+}
+
+/* 상세 보기 페이지 스타일 */
+.post-detail {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.post-content {
+    margin: 20px 0;
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
+.post-actions {
+    margin-top: 30px;
+    display: flex;
+    gap: 10px;
+}
+
+@media (max-width: 480px) {
+    .post-actions {
+        flex-direction: column;
+    }
+} ```
+==================================================
+
+[파일 경로: app/templates/base.html]
+```<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}게시판{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cssLink = document.querySelector('link[href*="style.css"]');
+            console.log('CSS 파일 경로:', cssLink.href);
+            
+            // CSS 파일 로드 상태 확인
+            const styleSheets = document.styleSheets;
+            for (let i = 0; i < styleSheets.length; i++) {
+                try {
+                    const href = styleSheets[i].href;
+                    console.log('로드된 스타일시트:', href);
+                } catch (e) {
+                    console.log('스타일시트 접근 오류:', e);
+                }
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>게시판</h1>
+            <nav class="nav-buttons">
+                <a href="/" class="btn btn-primary me-2">
+                    <i class="fas fa-home"></i> 홈
+                </a>
+                <a href="/write" class="btn btn-success">
+                    <i class="fas fa-pen"></i> 글쓰기
+                </a>
+            </nav>
+        </header>
+        
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html> ```
+==================================================
+
+[파일 경로: app/templates/create.html]
+```{% extends "base.html" %}
+
+{% block title %}글쓰기{% endblock %}
+
+{% block content %}
+<div class="post-detail card">
+    <div class="card-body">
+        <h2 class="card-title mb-4">글쓰기</h2>
+        
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        
+        <form method="post" action="/write" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label class="form-label" for="title">제목</label>
+                    <input type="text" id="title" name="title" class="form-control" required value="{{ title if title }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label" for="category">카테고리</label>
+                    <select name="category" id="category" class="form-select" required>
+                        <option value="일반">일반</option>
+                        <option value="공정">공정</option>
+                        <option value="검사">검사</option>
+                        <option value="품질">품질</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="product_name">제품명</label>
+                    <input type="text" id="product_name" name="product_name" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="process_step">공정 단계</label>
+                    <input type="text" id="process_step" name="process_step" class="form-control">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label" for="content">내용</label>
+                <textarea id="content" name="content" class="form-control" rows="10" required>{{ content if content }}</textarea>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="author">작성자</label>
+                    <input type="text" id="author" name="author" class="form-control" required value="{{ author if author }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="status">상태</label>
+                    <select name="status" id="status" class="form-select">
+                        {% for status in ProcessStatus %}
+                        <option value="{{ status.value }}">{{ status.value }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label" for="attachment">첨부 파일</label>
+                <input type="file" id="attachment" name="attachment" class="form-control">
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> 저장
+                </button>
+                <a href="/" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> 취소
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} ```
+==================================================
+
+[파일 경로: app/templates/detail.html]
+```{% extends "base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="post-detail card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <h2 class="card-title">{{ post.title }}</h2>
+            <span class="badge bg-{{ post.status.value | status_color }}">{{ post.status.value }}</span>
+        </div>
+        
+        <div class="post-meta text-muted mb-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><i class="fas fa-user"></i> 작성자: {{ post.author }}</p>
+                    <p><i class="far fa-clock"></i> 작성일: {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    {% if post.updated_at %}
+                    <p><i class="fas fa-edit"></i> 수정일: {{ post.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    {% if post.category %}
+                    <p><i class="fas fa-tag"></i> 카테고리: {{ post.category }}</p>
+                    {% endif %}
+                    {% if post.product_name %}
+                    <p><i class="fas fa-box"></i> 제품명: {{ post.product_name }}</p>
+                    {% endif %}
+                    {% if post.process_step %}
+                    <p><i class="fas fa-tasks"></i> 공정 단계: {{ post.process_step }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="post-content card mb-4">
+            <div class="card-body">
+                {{ post.content | replace('\n', '<br>') | safe }}
+            </div>
+        </div>
+
+        {% if post.attachment_path %}
+        <div class="mb-4">
+            <h5><i class="fas fa-paperclip"></i> 첨부 파일</h5>
+            <a href="/download/{{ post.id }}" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-download"></i> 다운로드
+            </a>
+        </div>
+        {% endif %}
+        
+        <div class="post-actions">
+            <a href="/edit/{{ post.id }}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> 수정
+            </a>
+            <form action="/delete/{{ post.id }}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?')">
+                    <i class="fas fa-trash"></i> 삭제
+                </button>
+            </form>
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-list"></i> 목록
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} ```
+==================================================
+
+[파일 경로: app/templates/edit.html]
+```{% extends "base.html" %}
+
+{% block title %}게시글 수정{% endblock %}
+
+{% block content %}
+<div class="post-detail card">
+    <div class="card-body">
+        <h2 class="card-title mb-4">게시글 수정</h2>
+        
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        
+        <form method="post" action="/edit/{{ post.id }}" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label class="form-label" for="title">제목</label>
+                    <input type="text" id="title" name="title" class="form-control" required value="{{ post.title }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label" for="category">카테고리</label>
+                    <select name="category" id="category" class="form-select" required>
+                        {% for cat in ["일반", "공정", "검사", "품질"] %}
+                        <option value="{{ cat }}" {% if post.category == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="product_name">제품명</label>
+                    <input type="text" id="product_name" name="product_name" class="form-control" value="{{ post.product_name }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="process_step">공정 단계</label>
+                    <input type="text" id="process_step" name="process_step" class="form-control" value="{{ post.process_step }}">
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label" for="content">내용</label>
+                <textarea id="content" name="content" class="form-control" rows="10" required>{{ post.content }}</textarea>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="author">작성자</label>
+                    <input type="text" id="author" name="author" class="form-control" required value="{{ post.author }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label" for="status">상태</label>
+                    <select name="status" id="status" class="form-select">
+                        {% for status in ProcessStatus %}
+                        <option value="{{ status.value }}" {% if post.status.value == status.value %}selected{% endif %}>
+                            {{ status.value }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label" for="attachment">첨부 파일</label>
+                {% if post.attachment_path %}
+                <div class="mb-2">
+                    <span class="text-muted">현재 파일: {{ post.attachment_path.split('/')[-1] }}</span>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="delete_attachment" name="delete_attachment">
+                        <label class="form-check-label" for="delete_attachment">
+                            파일 삭제
+                        </label>
+                    </div>
+                </div>
+                {% endif %}
+                <input type="file" id="attachment" name="attachment" class="form-control">
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> 저장
+                </button>
+                <a href="/view/{{ post.id }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> 취소
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} ```
+==================================================
+
+[파일 경로: app/templates/index.html]
+```{% extends "base.html" %}
+
+{% block content %}
+<div class="search-form card mb-4">
+    <div class="card-body">
+        <form method="get" action="/" class="row g-3">
+            <div class="col-md-3">
+                <input type="text" name="search" class="form-control" 
+                       placeholder="제목/내용 검색" value="{{ search if search }}">
+            </div>
+            <div class="col-md-2">
+                <select name="category" class="form-select">
+                    <option value="">카테고리 선택</option>
+                    <option value="공정">공정</option>
+                    <option value="검사">검사</option>
+                    <option value="품질">품질</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select name="status" class="form-select">
+                    <option value="">상태 선택</option>
+                    {% for status in ProcessStatus %}
+                    <option value="{{ status.value }}">{{ status.value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> 검색
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="post-list">
+    {% for post in posts %}
+    <div class="post-item card mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <a href="/view/{{ post.id }}" class="post-title h5 mb-2">{{ post.title }}</a>
+                    <div class="post-meta text-muted small">
+                        <span><i class="fas fa-user"></i> {{ post.author }}</span>
+                        <span class="ms-2"><i class="far fa-clock"></i> {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        {% if post.category %}
+                        <span class="ms-2"><i class="fas fa-tag"></i> {{ post.category }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    {% if post.status %}
+                    <span class="badge bg-{{ post.status.value | status_color }}">{{ post.status.value }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">게시글이 없습니다.</div>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="/?page={{ page - 1 }}&search={{ search }}&author={{ author }}" class="page-link">&laquo; 이전</a>
+    {% endif %}
+    
+    {% for p in range(1, total_pages + 1) %}
+    <a href="/?page={{ p }}&search={{ search }}&author={{ author }}" 
+       class="page-link {% if p == page %}active{% endif %}">
+        {{ p }}
+    </a>
+    {% endfor %}
+    
+    {% if page < total_pages %}
+    <a href="/?page={{ page + 1 }}&search={{ search }}&author={{ author }}" class="page-link">다음 &raquo;</a>
+    {% endif %}
+</div>
+{% endblock %} ```
+==================================================
+
+[파일 경로: main.py]
+```from typing import Optional
+from fastapi import FastAPI, Request, Form, HTTPException, Depends, UploadFile, File  # type: ignore
+from fastapi.templating import Jinja2Templates  # type: ignore
+from fastapi.staticfiles import StaticFiles  # type: ignore
+from fastapi.responses import RedirectResponse, FileResponse  # type: ignore
+from fastapi.middleware.cors import CORSMiddleware  # type: ignore
+from fastapi.encoders import jsonable_encoder  # type: ignore
+from sqlalchemy.orm import Session  # type: ignore
+from sqlalchemy import text  # 추가된 부분
+from app.routers import posts
+from app.database import engine, get_db, SessionLocal
+from app import models  # type: ignore
+import math
+from pathlib import Path
+import shutil
+import uuid
+import os
+
+# 데이터베이스 테이블 생성
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
+    title="게시판 API",
+    description="FastAPI를 이용한 게시판 CRUD API",
+    version="1.0.0"
+)
+
+# CORS 미들웨어 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8000"],  # 실제 프로덕션 환경에서는 구체적인 도메인 지정
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
+
+# 정적 파일과 템플릿 설정
+BASE_DIR = Path(__file__).resolve().parent
+static_dir = BASE_DIR / "app" / "static"
+
+# 디버깅을 위한 출력 추가
+print("="*50)
+print(f"Current working directory: {Path.cwd()}")
+print(f"Base directory: {BASE_DIR}")
+print(f"Static directory path: {static_dir}")
+print(f"Static directory exists: {static_dir.exists()}")
+print(f"CSS file exists: {(static_dir / 'css' / 'style.css').exists()}")
+print("="*50)
+
+if not static_dir.exists():
+    raise RuntimeError(f"Static directory not found: {static_dir}")
+
+app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+template_dir = BASE_DIR / "app" / "templates"
+if not template_dir.exists():
+    raise RuntimeError(f"Template directory not found: {template_dir}")
+templates = Jinja2Templates(directory=str(template_dir))
+
+# API 라우터 포함
+app.include_router(posts.router)
+
+# 상태별 색상 매핑을 위한 템플릿 필터
+def status_color(status):
+    color_map = {
+        "대기": "secondary",
+        "진행중": "primary",
+        "완료": "success",
+        "문제발생": "danger"
+    }
+    return color_map.get(status, "secondary")
+
+# Jinja2 템플릿에 필터 추가
+templates.env.filters["status_color"] = status_color
+
+@app.get("/")
+async def home(
+    request: Request,
+    search: str = None,
+    author: str = None,
+    category: str = None,
+    status: str = None,
+    page: int = 1,
+    db: Session = Depends(get_db)
+):
+    per_page = 10
+    query = db.query(models.Post)
+    
+    # 검색 조건 적용
+    if search:
+        query = query.filter(
+            models.Post.title.contains(search) | 
+            models.Post.content.contains(search)
+        )
+    if author:
+        query = query.filter(models.Post.author.contains(author))
+    if category:
+        query = query.filter(models.Post.category == category)
+    if status:
+        query = query.filter(models.Post.status == status)
+    
+    total_posts = query.count()
+    total_pages = math.ceil(total_posts / per_page) if total_posts > 0 else 1
+    
+    posts = query.order_by(models.Post.created_at.desc())\
+                .offset((page - 1) * per_page)\
+                .limit(per_page)\
+                .all()
+    
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "posts": posts,
+            "page": page,
+            "total_pages": total_pages,
+            "search": search or "",
+            "author": author or "",
+            "category": category or "",
+            "status": status or "",
+            "ProcessStatus": models.ProcessStatus
+        }
+    )
+
+@app.get("/write")
+async def create_post_form(request: Request):
+    return templates.TemplateResponse("create.html", {"request": request})
+
+@app.post("/write")
+async def create_post(
+    request: Request,
+    title: str = Form(...),
+    content: str = Form(...),
+    author: str = Form(...),
+    category: str = Form(...),
+    product_name: str = Form(None),
+    process_step: str = Form(None),
+    status: str = Form(...),
+    attachment: UploadFile = File(None),
+    db: Session = Depends(get_db)
+):
+    try:
+        # 파일 업로드 처리
+        attachment_path = None
+        if attachment and attachment.filename:
+            file_extension = attachment.filename.split(".")[-1]
+            unique_filename = f"{uuid.uuid4()}.{file_extension}"
+            file_path = f"uploads/{unique_filename}"
+            
+            # uploads 디렉토리가 없으면 생성
+            os.makedirs("uploads", exist_ok=True)
+            
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(attachment.file, buffer)
+            attachment_path = file_path
+        
+        # 게시글 생성
+        post = models.Post(
+            title=title.strip(),
+            content=content.strip(),
+            author=author.strip(),
+            category=category,
+            product_name=product_name,
+            process_step=process_step,
+            status=status,
+            attachment_path=attachment_path
+        )
+        
+        db.add(post)
+        db.commit()
+        db.refresh(post)
+        
+        return RedirectResponse(url="/", status_code=302)
+        
+    except Exception as e:
+        db.rollback()
+        return templates.TemplateResponse(
+            "create.html",
+            {
+                "request": request,
+                "error": str(e),
+                "title": title,
+                "content": content,
+                "author": author,
+                "ProcessStatus": models.ProcessStatus
+            },
+            status_code=400
+        )
+
+@app.get("/view/{post_id}")
+async def view_post(request: Request, post_id: int, db: Session = Depends(get_db)):
+    post = db.query(models.Post).filter(models.Post.id == post_id).first()
+    if post is None:
+        return RedirectResponse(url="/", status_code=302)
+    return templates.TemplateResponse("detail.html", {"request": request, "post": post})
+
+@app.get("/edit/{post_id}")
+async def edit_post_form(request: Request, post_id: int, db: Session = Depends(get_db)):
+    post = db.query(models.Post).filter(models.Post.id == post_id).first()
+    if post is None:
+        return RedirectResponse(url="/", status_code=302)
+    return templates.TemplateResponse("edit.html", {"request": request, "post": post})
+
+@app.post("/edit/{post_id}")
+async def edit_post(
+    request: Request,
+    post_id: int,
+    title: str = Form(...),
+    content: str = Form(...),
+    author: str = Form(...),
+    category: str = Form(...),
+    product_name: str = Form(None),
+    process_step: str = Form(None),
+    status: str = Form(...),
+    attachment: UploadFile = File(None),
+    delete_attachment: bool = Form(False),
+    db: Session = Depends(get_db)
+):
+    post = db.query(models.Post).filter(models.Post.id == post_id).first()
+    if post is None:
+        raise HTTPException(status_code=404, detail="게시글을 찾을 수 없습니다.")
+    
+    try:
+        # 첨부 파일 처리
+        if delete_attachment and post.attachment_path:
+            if os.path.exists(post.attachment_path):
+                os.remove(post.attachment_path)
+            post.attachment_path = None
+        
+        if attachment and attachment.filename:
+            # 기존 파일 삭제
+            if post.attachment_path and os.path.exists(post.attachment_path):
+                os.remove(post.attachment_path)
+            
+            # 새 파일 업로드
+            file_extension = attachment.filename.split(".")[-1]
+            unique_filename = f"{uuid.uuid4()}.{file_extension}"
+            file_path = f"uploads/{unique_filename}"
+            
+            os.makedirs("uploads", exist_ok=True)
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(attachment.file, buffer)
+            post.attachment_path = file_path
+        
+        # 게시글 정보 업데이트
+        post.title = title.strip()
+        post.content = content.strip()
+        post.author = author.strip()
+        post.category = category
+        post.product_name = product_name
+        post.process_step = process_step
+        post.status = status
+        
+        db.commit()
+        return RedirectResponse(url=f"/view/{post_id}", status_code=302)
+        
+    except Exception as e:
+        db.rollback()
+        return templates.TemplateResponse(
+            "edit.html",
+            {
+                "request": request,
+                "error": str(e),
+                "post": post,
+                "ProcessStatus": models.ProcessStatus
+            },
+            status_code=400
+        )
+
+@app.post("/delete/{post_id}")
+async def delete_post(post_id: int, db: Session = Depends(get_db)):
+    post = db.query(models.Post).filter(models.Post.id == post_id).first()
+    if post:
+        db.delete(post)
+        db.commit()
+    return RedirectResponse(url="/", status_code=302)
+
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    file_extension = file.filename.split(".")[-1]
+    unique_filename = f"{uuid.uuid4()}.{file_extension}"
+    file_path = f"uploads/{unique_filename}"
+    
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    return {"filename": unique_filename, "path": file_path}
+
+@app.get("/download/{post_id}")
+async def download_file(post_id: int, db: Session = Depends(get_db)):
+    post = db.query(models.Post).filter(models.Post.id == post_id).first()
+    if not post or not post.attachment_path:
+        raise HTTPException(status_code=404, detail="파일을 찾을 수 없습니다.")
+    
+    if not os.path.exists(post.attachment_path):
+        raise HTTPException(status_code=404, detail="파일이 서버에 존재하지 않습니다.")
+    
+    return FileResponse(
+        post.attachment_path,
+        filename=os.path.basename(post.attachment_path),
+        media_type='application/octet-stream'
+    )
+
+# 앱 시작 시 데이터베이스 연결 확인
+@app.on_event("startup")
+async def startup_event():
+    db = None
+    try:
+        # 데이터베이스 연결 테스트
+        db = SessionLocal()
+        db.execute(text("SELECT 1"))  # text() 함수 사용
+    except Exception as e:
+        print(f"데이터베이스 연결 실패: {e}")
+        raise e
+    finally:
+        if db:
+            db.close() ```
+==================================================
+
+[파일 경로: readme.md]
+```# FastAPI 게시판 API
+
+FastAPI와 SQLite를 이용한 간단한 게시판 API 서버입니다.
+
+## 기능
+- 게시글 작성
+- 게시글 조회 (목록/상세)
+- 게시글 수정
+- 게시글 삭제
+
+## 설치 및 실행
+
+1. 가상환경 생성 및 활성화
+```bash
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+```
+
+2. 패키지 설치
+```bash
+pip install -r requirements.txt
+```
+
+3. 서버 실행
+```bash
+uvicorn main:app --reload
+```
+
+## API 문서
+- Swagger UI: http://127.0.0.1:8000/docs
+- ReDoc: http://127.0.0.1:8000/redoc
+```
+==================================================
+
+[파일 경로: requirements.txt]
+```fastapi==0.104.1
+uvicorn==0.24.0
+sqlalchemy==2.0.23
+pydantic==2.5.2
+python-multipart==0.0.6
+python-jose==3.3.0
+passlib==1.7.4
+bcrypt==4.0.1
+python-dotenv==1.0.0
+jinja2==3.1.2
+aiofiles==23.2.1 ```
+==================================================

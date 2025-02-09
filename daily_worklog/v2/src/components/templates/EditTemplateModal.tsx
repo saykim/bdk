@@ -1,0 +1,264 @@
+import React, { useState, useEffect } from 'react';
+import { X, Plus, Trash2 } from 'lucide-react';
+import { Template, InspectionItem, ApprovalStep } from '../../types';
+
+interface EditTemplateModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (template: Partial<Template>) => void;
+  template: Template;
+}
+
+export function EditTemplateModal({ isOpen, onClose, onSubmit, template }: EditTemplateModalProps) {
+  const [name, setName] = useState(template.name);
+  const [description, setDescription] = useState(template.description);
+  const [items, setItems] = useState<InspectionItem[]>(template.items);
+  const [approvalSteps, setApprovalSteps] = useState<ApprovalStep[]>(template.approvalSteps);
+  const [newItem, setNewItem] = useState({
+    title: '',
+    type: 'checkbox' as const,
+    required: false,
+    options: '',
+  });
+  const [newApprovalStep, setNewApprovalStep] = useState({
+    level: approvalSteps.length + 1,
+    approverRole: '',
+  });
+
+  useEffect(() => {
+    setName(template.name);
+    setDescription(template.description);
+    setItems(template.items);
+    setApprovalSteps(template.approvalSteps);
+  }, [template]);
+
+  const handleAddItem = () => {
+    const item: InspectionItem = {
+      id: crypto.randomUUID(),
+      title: newItem.title,
+      type: newItem.type,
+      required: newItem.required,
+      options: newItem.type === 'select' ? newItem.options.split(',').map(o => o.trim()) : undefined,
+    };
+    setItems([...items, item]);
+    setNewItem({
+      title: '',
+      type: 'checkbox',
+      required: false,
+      options: '',
+    });
+  };
+
+  const handleAddApprovalStep = () => {
+    const step: ApprovalStep = {
+      id: crypto.randomUUID(),
+      level: newApprovalStep.level,
+      approverRole: newApprovalStep.approverRole,
+      status: 'pending',
+    };
+    setApprovalSteps([...approvalSteps, step]);
+    setNewApprovalStep({
+      level: approvalSteps.length + 2,
+      approverRole: '',
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      name,
+      description,
+      items,
+      approvalSteps,
+    });
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg max-w-4xl w-full p-6 max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">Edit Template</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Template Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <h3 className="text-lg font-medium mb-2">Inspection Items</h3>
+            <div className="space-y-4">
+              {items.map((item, index) => (
+                <div key={item.id} className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
+                  <span className="font-medium">{index + 1}.</span>
+                  <span>{item.title}</span>
+                  <span className="text-sm text-gray-500">({item.type})</span>
+                  <button
+                    type="button"
+                    onClick={() => setItems(items.filter(i => i.id !== item.id))}
+                    className="text-red-500 hover:text-red-700 ml-auto"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Item Title</label>
+                  <input
+                    type="text"
+                    value={newItem.title}
+                    onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Type</label>
+                  <select
+                    value={newItem.type}
+                    onChange={(e) => setNewItem({ ...newItem, type: e.target.value as any })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  >
+                    <option value="checkbox">Checkbox</option>
+                    <option value="text">Text</option>
+                    <option value="number">Number</option>
+                    <option value="select">Select</option>
+                  </select>
+                </div>
+              </div>
+
+              {newItem.type === 'select' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Options (comma-separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={newItem.options}
+                    onChange={(e) => setNewItem({ ...newItem, options: e.target.value })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    placeholder="Option 1, Option 2, Option 3"
+                  />
+                </div>
+              )}
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={newItem.required}
+                  onChange={(e) => setNewItem({ ...newItem, required: e.target.checked })}
+                  className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label className="ml-2 text-sm text-gray-700">Required</label>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleAddItem}
+                disabled={!newItem.title}
+                className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-200 disabled:opacity-50"
+              >
+                Add Item
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-medium mb-2">Approval Steps</h3>
+            <div className="space-y-4">
+              {approvalSteps.map((step, index) => (
+                <div key={step.id} className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
+                  <span className="font-medium">Level {step.level}:</span>
+                  <span>{step.approverRole}</span>
+                  <button
+                    type="button"
+                    onClick={() => setApprovalSteps(approvalSteps.filter(s => s.id !== step.id))}
+                    className="text-red-500 hover:text-red-700 ml-auto"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Level</label>
+                  <input
+                    type="number"
+                    value={newApprovalStep.level}
+                    onChange={(e) => setNewApprovalStep({ ...newApprovalStep, level: parseInt(e.target.value) })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    min="1"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Approver Role</label>
+                  <input
+                    type="text"
+                    value={newApprovalStep.approverRole}
+                    onChange={(e) => setNewApprovalStep({ ...newApprovalStep, approverRole: e.target.value })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    placeholder="e.g. Manager, Supervisor"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleAddApprovalStep}
+                disabled={!newApprovalStep.approverRole}
+                className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-200 disabled:opacity-50"
+              >
+                Add Approval Step
+              </button>
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+} 

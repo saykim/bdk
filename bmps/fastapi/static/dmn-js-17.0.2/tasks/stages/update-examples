@@ -1,0 +1,49 @@
+#!/bin/bash
+
+set -eo pipefail
+shopt -s inherit_errexit nullglob
+
+# update dmn-js version in the <dmn-js-examples> project
+
+PWD="$(pwd)"
+WORKDIR="$(pwd)/tmp"
+EXAMPLES_DIR="$WORKDIR/dmn-js-examples"
+
+# create work dir
+mkdir -p "$WORKDIR"
+
+git clone --depth=1 "https://$BPMN_IO_TOKEN@github.com/bpmn-io/dmn-js-examples.git" "$EXAMPLES_DIR"
+
+cd "$EXAMPLES_DIR"
+
+TOOLKIT_VERSION="${TAG:1}"
+echo "Updating to dmn-js@$TOOLKIT_VERSION"
+
+# update links to static resources
+sed -i -E "s#/dmn-js@[^/]+/#/dmn-js@$TOOLKIT_VERSION/#" **/*.{html,md}
+
+# update via npm if possible
+for dir in $(ls -d */)
+do
+  if [[ -f "$dir/package.json" ]]; then
+    (cd $dir && npm install "dmn-js@$TOOLKIT_VERSION")
+  fi
+done
+
+if [[ "x$SKIP_COMMIT" = "x" ]]; then
+
+  git config user.email "$BPMN_IO_EMAIL"
+  git config user.name "$BPMN_IO_USERNAME"
+  git config push.default simple
+
+  # add all resources
+  git add -A
+  git commit -m "deps: bump to dmn-js@$TAG"
+  git tag "$TAG"
+  git push -q &2>/dev/null
+  git push --tags -q &2>/dev/null
+else
+  echo "Skipping commit (SKIP_COMMIT=$SKIP_COMMIT)"
+fi
+
+cd "$PWD"

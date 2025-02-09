@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>생산 계획 관리</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<h1>생산 계획 관리</h1>
+<div class="form-container">
+  <input type="date" id="date">
+  <input type="time" id="startTime">
+  <input type="number" step="0.5" id="duration" placeholder="생산시간(h)">
+  <input type="number" id="line" placeholder="라인(1~15)">
+  <select id="productSelect">
+    <option value="">제품 선택</option>
+  </select>
+  <select id="bom">
+    <option value="">BOM 선택</option>
+  </select>
+  <input type="number" id="quantity" placeholder="생산수량">
+  <input type="text" id="notes" placeholder="특이사항">
+  <button onclick="addPlan()">계획 추가</button>
+  <a href="/products" class="btn-products">제품 관리</a>
+</div>
+
+<table id="planTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>일자</th>
+      <th>시작 시간</th>
+      <th>생산시간</th>
+      <th>종료 시간</th>
+      <th>라인</th>
+      <th>제품명</th>
+      <th>BOM</th>
+      <th>수량</th>
+      <th>특이사항</th>
+      <th>작업</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<h3>생산 계획 간트 차트</h3>
+<div class="nav-buttons">
+  <button onclick="prevWeek()">이전 주</button>
+  <button onclick="nextWeek()">다음 주</button>
+  <button onclick="currentWeek()">이번 주</button>
+</div>
+
+<div class="gantt-wrapper">
+  <div class="gantt-lines line-numbers">
+    <!-- Y축 라인 라벨들이 여기에 동적으로 추가됨 -->
+  </div>
+  <div class="gantt-container">
+    <div class="gantt-header">
+      <div class="date-scale">
+        <!-- 상단 날짜 눈금이 여기에 동적으로 추가됨 -->
+      </div>
+      <div class="time-scale">
+        <!-- 하단 시간 눈금이 여기에 동적으로 추가됨 -->
+      </div>
+    </div>
+    <div class="gantt-grid">
+      <!-- 격자와 간트 바들이 여기에 동적으로 추가됨 -->
+    </div>
+    <div class="shift-lines">
+      <div class="shift-line" id="shift7"><div class="shift-label">07:00</div></div>
+      <div class="shift-line" id="shift15"><div class="shift-label">15:00</div></div>
+      <div class="shift-line" id="shift23"><div class="shift-label">23:00</div></div>
+    </div>
+  </div>
+</div>
+<div class="tooltip" id="tooltip"></div>
+
+<h3>완료 처리된 생산량 요약</h3>
+<table class="summary-table" id="summaryTable">
+  <thead>
+    <tr>
+      <th>일자</th>
+      <th>제품명</th>
+      <th>BOM</th>
+      <th>총 생산수량</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+## Rules
+
+- flask 폴더에 있는 index.html, app.py, style.css, 의 디자인과 기능을 그대로 사용한다. 
+- instance 폴더에 bpmn.db 파일을 그대로 사용한다. 
+- flask 폴더에 있는 파일을 수정하지 않는다. 
+- flask로 만들어진 웹 기반의 프로젝트를 fastapi로 전환하는 것이 목표
+- 코드 작성 시 주석을 달아주세요. 
+- 모든 모드 작성은 fastapi 폴더에 작성합니다. 
+
+
+
+

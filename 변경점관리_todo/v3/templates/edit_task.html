@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="task-form">
+    <h2>작업 수정</h2>
+    <form method="post">
+        <div class="form-group">
+            <label for="order_number">오더번호</label>
+            <input type="text" id="order_number" name="order_number" value="{{ task['order_number'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="work_order">작업지시</label>
+            <input type="text" id="work_order" name="work_order" value="{{ task['work_order'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="description">작업내용</label>
+            <textarea id="description" name="description" rows="4">{{ task['description'] }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="start_date">시작날짜</label>
+            <input type="date" id="start_date" name="start_date" value="{{ task['start_date'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="end_date">종료날짜</label>
+            <input type="date" id="end_date" name="end_date" value="{{ task['end_date'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="assignee">담당자</label>
+            <input type="text" id="assignee" name="assignee" value="{{ task['assignee'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="status">상태</label>
+            <select id="status" name="status" required>
+                <option value="pending" {% if task['status'] == 'pending' %}selected{% endif %}>대기중</option>
+                <option value="in_progress" {% if task['status'] == 'in_progress' %}selected{% endif %}>진행중</option>
+                <option value="completed" {% if task['status'] == 'completed' %}selected{% endif %}>완료</option>
+            </select>
+        </div>
+        <div class="button-group">
+            <button type="submit">수정 완료</button>
+            <a href="{{ url_for('index') }}" class="btn-cancel">취소</a>
+        </div>
+    </form>
+</div>
+{% endblock %} 

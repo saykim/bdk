@@ -1,0 +1,6 @@
+admin@example.com / admin123 (관리자)
+user1@example.com / user123 (김철수)
+user2@example.com / user123 (이영희)
+user3@example.com / user123 (박민수)
+user4@example.com / user123 (정지원)
+user5@example.com / user123 (한미영)

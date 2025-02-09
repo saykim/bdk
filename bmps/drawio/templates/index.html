@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로세스 맵 에디터</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>프로세스 맵 에디터</h1>
+            <div class="toolbar">
+                <div class="toolbar-group">
+                    <button id="newDiagram" title="새 다이어그램">
+                        <i class="fas fa-file"></i>
+                    </button>
+                    <button id="undoBtn" title="실행 취소">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button id="redoBtn" title="다시 실행">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+                <div class="toolbar-group shapes">
+                    <button id="addRect" class="shape-btn" title="사각형">
+                        <i class="fas fa-square"></i>
+                    </button>
+                    <button id="addCircle" class="shape-btn" title="원">
+                        <i class="fas fa-circle"></i>
+                    </button>
+                    <button id="addDiamond" class="shape-btn" title="마름모">
+                        <i class="fas fa-diamond"></i>
+                    </button>
+                    <button id="addParallelogram" class="shape-btn" title="평행사변형">
+                        <i class="fas fa-parallelogram"></i>
+                    </button>
+                </div>
+                <div class="toolbar-group">
+                    <button id="connectionMode" title="연결선">
+                        <i class="fas fa-project-diagram"></i>
+                    </button>
+                    <select id="connectionStyle">
+                        <option value="straight">직선</option>
+                        <option value="orthogonal">직각</option>
+                        <option value="curved">곡선</option>
+                    </select>
+                </div>
+                <div class="toolbar-group">
+                    <input type="color" id="shapeColor" title="도형 색상">
+                    <input type="color" id="textColor" title="텍스트 색상">
+                    <select id="fontSize">
+                        <option value="12">12px</option>
+                        <option value="14" selected>14px</option>
+                        <option value="16">16px</option>
+                        <option value="18">18px</option>
+                        <option value="20">20px</option>
+                    </select>
+                </div>
+                <div class="toolbar-group">
+                    <select id="templateSelect">
+                        <option value="">템플릿 선택</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h2>저장된 다이어그램</h2>
+                    <ul id="diagramList"></ul>
+                </div>
+                <div class="sidebar-section">
+                    <h2>속성</h2>
+                    <div class="property-panel">
+                        <div class="property-group">
+                            <label for="shapeText">텍스트</label>
+                            <input type="text" id="shapeText">
+                        </div>
+                        <div class="property-group">
+                            <label>크기</label>
+                            <input type="number" id="shapeWidth" placeholder="너비">
+                            <input type="number" id="shapeHeight" placeholder="높이">
+                        </div>
+                        <div class="property-group">
+                            <label>위치</label>
+                            <input type="number" id="shapeX" placeholder="X">
+                            <input type="number" id="shapeY" placeholder="Y">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div class="zoom-controls">
+                    <button id="zoomIn" title="확대"><i class="fas fa-plus"></i></button>
+                    <div class="zoom-level">100%</div>
+                    <button id="zoomOut" title="축소"><i class="fas fa-minus"></i></button>
+                    <button id="zoomFit" title="화면에 맞춤"><i class="fas fa-expand"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 컨텍스트 메뉴 -->
+    <div id="contextMenu" class="context-menu">
+        <ul>
+            <li id="editText">텍스트 편집</li>
+            <li id="bringToFront">맨 앞으로</li>
+            <li id="sendToBack">맨 뒤로</li>
+            <li id="deleteShape">삭제</li>
+        </ul>
+    </div>
+
+    <!-- 알림 메시지 -->
+    <div id="notification" class="notification"></div>
+
+    <!-- 내보내기 모달 -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <h2>다이어그램 내보내기</h2>
+            <div class="export-options">
+                <button id="exportPNG">PNG로 내보내기</button>
+                <button id="exportSVG">SVG로 내보내기</button>
+                <button id="exportJSON">JSON으로 내보내기</button>
+            </div>
+            <button class="close-modal">&times;</button>
+        </div>
+    </div>
+
+    <script src="/static/js/canvas.js"></script>
+</body>
+</html> 

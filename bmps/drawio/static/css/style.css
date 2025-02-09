@@ -1,0 +1,833 @@
+/* 기본 리셋 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f6fa;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.header {
+    background-color: #fff;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.toolbar {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.shape-btn, #connectionMode {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: #fff;
+    color: #2c3e50;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.shape-btn:hover, #connectionMode:hover {
+    background-color: #e9ecef;
+}
+
+.shape-btn.active, #connectionMode.active {
+    background-color: #3498db;
+    color: #fff;
+}
+
+select {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 0.9rem;
+}
+
+.content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #fff;
+    padding: 1rem;
+    border-right: 1px solid #ddd;
+}
+
+.sidebar h3 {
+    font-size: 1rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+#diagramList {
+    list-style: none;
+}
+
+#diagramList li {
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#diagramList li:hover {
+    background-color: #f8f9fa;
+}
+
+.canvas-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+}
+
+/* 헤더 스타일 */
+.header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* 툴바 스타일 */
+.toolbar {
+    background-color: #34495e;
+    padding: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    padding: 0.25rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.toolbar button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbar button:hover {
+    background-color: #2980b9;
+}
+
+.toolbar button.active {
+    background-color: #e74c3c;
+}
+
+.toolbar input[type="text"] {
+    padding: 0.5rem;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    min-width: 200px;
+}
+
+.toolbar select,
+.toolbar input[type="color"] {
+    padding: 0.25rem;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.toolbar input[type="color"] {
+    width: 36px;
+    height: 36px;
+    padding: 2px;
+}
+
+/* 메인 컨테이너 */
+.container {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* 사이드바 */
+.sidebar {
+    width: 300px;
+    background-color: white;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-section {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.sidebar h2 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+/* 속성 패널 */
+.property-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.property-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.property-group label {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.property-group input {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* 캔버스 컨테이너 */
+.canvas-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: #ecf0f1;
+    cursor: default;
+}
+
+.canvas-container.dragging {
+    cursor: move;
+}
+
+.canvas-container.selecting {
+    cursor: crosshair;
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: grab;
+}
+
+#canvas:active {
+    cursor: grabbing;
+}
+
+/* 컨텍스트 메뉴 */
+.context-menu {
+    position: fixed;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: none;
+    z-index: 1000;
+}
+
+.context-menu ul {
+    list-style: none;
+}
+
+.context-menu li {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.context-menu li:hover {
+    background-color: #f5f5f5;
+}
+
+/* 모달 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    min-width: 300px;
+}
+
+.modal h2 {
+    margin-bottom: 1rem;
+}
+
+.export-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.export-options button {
+    padding: 0.5rem 1rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.export-options button:hover {
+    background-color: #2980b9;
+}
+
+.close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+/* 알림 메시지 */
+.notification {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    padding: 1rem;
+    background-color: #2ecc71;
+    color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: none;
+    z-index: 1000;
+}
+
+.notification.error {
+    background-color: #e74c3c;
+}
+
+/* 다이어그램 목록 */
+.diagram-list {
+    list-style: none;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.diagram-list li {
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.diagram-list li:hover {
+    background-color: #f5f5f5;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 250px;
+    }
+    
+    .toolbar {
+        flex-wrap: wrap;
+    }
+    
+    .toolbar input[type="text"] {
+        min-width: 150px;
+    }
+    
+    .toolbar-group {
+        flex-wrap: wrap;
+    }
+}
+
+/* 템플릿 목록 스타일 */
+.template-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.template-item {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.template-item:hover {
+    border-color: #3498db;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.template-item h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.template-item p {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+}
+
+/* 도형 버튼 스타일 */
+.shapes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.25rem;
+}
+
+.shape-btn {
+    position: relative;
+}
+
+.shape-btn i {
+    font-size: 1.2rem;
+}
+
+.shape-btn.active {
+    background-color: #e74c3c;
+}
+
+/* 연결선 스타일 선택 */
+#connectionStyle,
+#connectionStyleProperty {
+    min-width: 100px;
+}
+
+/* 템플릿 선택 */
+#templateSelect {
+    min-width: 150px;
+    margin-left: 0.5rem;
+}
+
+/* 새 다이어그램 버튼 */
+#newDiagram {
+    background-color: #2ecc71;
+}
+
+#newDiagram:hover {
+    background-color: #27ae60;
+}
+
+/* 속성 패널 개선 */
+.property-panel {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 1rem;
+}
+
+.property-group {
+    margin-bottom: 1rem;
+}
+
+.property-group:last-child {
+    margin-bottom: 0;
+}
+
+.property-group label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.property-group input,
+.property-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.property-group input[type="number"] {
+    width: calc(50% - 0.25rem);
+    display: inline-block;
+}
+
+.property-group input[type="number"] + input[type="number"] {
+    margin-left: 0.5rem;
+}
+
+/* 컨텍스트 메뉴 개선 */
+.context-menu {
+    min-width: 150px;
+}
+
+.context-menu li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.context-menu li:before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 0.9rem;
+    width: 20px;
+}
+
+.context-menu li#editText:before {
+    content: "\f303"; /* 편집 아이콘 */
+}
+
+.context-menu li#bringToFront:before {
+    content: "\f062"; /* 위로 아이콘 */
+}
+
+.context-menu li#sendToBack:before {
+    content: "\f063"; /* 아래로 아이콘 */
+}
+
+.context-menu li#deleteShape:before {
+    content: "\f1f8"; /* 삭제 아이콘 */
+}
+
+.context-menu li#duplicate:before {
+    content: "\f0c5"; /* 복제 아이콘 */
+}
+
+/* 스냅 라인 스타일 */
+.snap-line {
+    position: absolute;
+    background-color: rgba(0, 150, 255, 0.5);
+    pointer-events: none;
+}
+
+.snap-line.vertical {
+    width: 1px;
+    height: 100%;
+}
+
+.snap-line.horizontal {
+    height: 1px;
+    width: 100%;
+}
+
+/* 선택된 도형 스타일 */
+.selected-shape {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+}
+
+/* 도형 핸들 스타일 */
+.shape-handle {
+    width: 8px;
+    height: 8px;
+    background-color: #fff;
+    border: 2px solid #3498db;
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+/* 도형 회전 핸들 */
+.rotation-handle {
+    width: 10px;
+    height: 10px;
+    background-color: #3498db;
+    border: 2px solid #fff;
+    position: absolute;
+    border-radius: 50%;
+    cursor: pointer;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* 연결점 스타일 */
+.connector-point {
+    width: 6px;
+    height: 6px;
+    background-color: #3498db;
+    border: 1px solid #fff;
+    position: absolute;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.connector-point:hover {
+    transform: scale(1.5);
+    transition: transform 0.2s;
+}
+
+/* 그리드 스타일 */
+.grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background-image: 
+        linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+/* 도형 드래그 시 가이드라인 */
+.guide-line {
+    position: absolute;
+    background-color: rgba(52, 152, 219, 0.5);
+    pointer-events: none;
+}
+
+.guide-line.vertical {
+    width: 1px;
+    height: 100%;
+}
+
+.guide-line.horizontal {
+    height: 1px;
+    width: 100%;
+}
+
+/* 도형 크기 조절 핸들 */
+.resize-handle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #fff;
+    border: 2px solid #3498db;
+    border-radius: 50%;
+}
+
+.resize-handle.nw { cursor: nw-resize; top: -4px; left: -4px; }
+.resize-handle.n  { cursor: n-resize;  top: -4px; left: 50%; transform: translateX(-50%); }
+.resize-handle.ne { cursor: ne-resize; top: -4px; right: -4px; }
+.resize-handle.w  { cursor: w-resize;  top: 50%; left: -4px; transform: translateY(-50%); }
+.resize-handle.e  { cursor: e-resize;  top: 50%; right: -4px; transform: translateY(-50%); }
+.resize-handle.sw { cursor: sw-resize; bottom: -4px; left: -4px; }
+.resize-handle.s  { cursor: s-resize;  bottom: -4px; left: 50%; transform: translateX(-50%); }
+.resize-handle.se { cursor: se-resize; bottom: -4px; right: -4px; }
+
+/* 도형 회전 시 각도 표시 */
+.rotation-indicator {
+    position: absolute;
+    background-color: rgba(52, 152, 219, 0.8);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+/* 키보드 단축키 힌트 */
+.shortcut-hint {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+/* 도형 정렬 가이드 */
+.alignment-guide {
+    position: absolute;
+    background-color: rgba(46, 204, 113, 0.5);
+    pointer-events: none;
+}
+
+.alignment-guide.center {
+    width: 1px;
+    height: 100%;
+}
+
+.alignment-guide.middle {
+    height: 1px;
+    width: 100%;
+}
+
+/* 확대/축소 컨트롤 */
+.zoom-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.zoom-controls button {
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    color: #666;
+}
+
+.zoom-controls button:hover {
+    color: #3498db;
+}
+
+.zoom-level {
+    text-align: center;
+    padding: 5px;
+    color: #666;
+    font-size: 12px;
+}
+
+/* 미니맵 */
+.minimap {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 200px;
+    height: 150px;
+    overflow: hidden;
+}
+
+.minimap-viewport {
+    position: absolute;
+    border: 2px solid #3498db;
+    background-color: rgba(52, 152, 219, 0.1);
+    cursor: move;
+}
+
+/* 상태 표시줄 */
+.status-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 25px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 12px;
+    color: #666;
+}
+
+.status-bar .coordinates {
+    margin-right: 20px;
+}
+
+.status-bar .zoom-level {
+    margin-right: 20px;
+}
+
+.status-bar .selection-info {
+    margin-right: 20px;
+}
+
+/* 도형 그룹화 스타일 */
+.shape-group {
+    position: relative;
+}
+
+.shape-group::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 2px dashed #3498db;
+    pointer-events: none;
+}
+
+/* 도형 복제 시 효과 */
+.shape-clone {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* 실행 취소/다시 실행 버튼 비활성화 상태 */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+} 

@@ -1,0 +1,1424 @@
+프로젝트 구조 및 코드 모음
+==================================================
+생성 시간: 2025-02-03 22:24:42
+==================================================
+
+[ 프로젝트 디렉토리 구조 ]
+📄 .DS_Store
+📄 app.py
+📄 project_structure_20250203_222442.txt
+📄 schema.sql
+📄 screenshot1.png
+📁 static
+    📄 scripts.js
+    📄 style.css
+📁 templates
+    📄 index.html
+    📄 products.html
+
+==================================================
+[ 파일별 코드 ]
+
+[파일 경로: app.py]
+```import sqlite3
+from flask import Flask, request, jsonify, render_template, g
+from datetime import datetime, timedelta
+
+app = Flask(__name__)
+DATABASE = 'production.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+        db.row_factory = sqlite3.Row
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
+def init_db():
+    with app.app_context():
+        db = get_db()
+        with app.open_resource('schema.sql') as f:
+            db.executescript(f.read().decode('utf8'))
+        db.close()
+
+def is_valid_time(time_str):
+    try:
+        hh, mm = time_str.split(':')
+        hh = int(hh)
+        mm = int(mm)
+        return 0 <= hh < 24 and 0 <= mm <60
+    except:
+        return False
+
+def calculate_end_datetime(start_date, start_time, duration_hours):
+    start_str = f"{start_date} {start_time}"
+    start_dt = datetime.strptime(start_str, "%Y-%m-%d %H:%M")
+    end_dt = start_dt + timedelta(hours=duration_hours)
+    return end_dt.strftime("%Y-%m-%d %H:%M")
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/add_plan', methods=['POST'])
+def add_plan():
+    try:
+        data = request.get_json()
+        
+        # 필수 필드 검증
+        required_fields = ['date', 'start_time', 'duration', 'line', 'product_id', 'product_name', 'bom', 'quantity']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'success': False, 'message': f'Missing field: {field}'}), 400
+
+        # 시작 시간과 종료 시간 계산
+        start_datetime = datetime.strptime(f"{data['date']} {data['start_time']}", "%Y-%m-%d %H:%M")
+        duration_hours = float(data['duration'])
+        end_datetime = start_datetime + timedelta(hours=duration_hours)
+        
+        conn = get_db()
+        cur = conn.cursor()
+        
+        # 계획 추가
+        cur.execute('''
+            INSERT INTO plans (date, start_time, duration, end_time, line, product_id, product_name, bom, quantity, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            data['date'],
+            data['start_time'],
+            duration_hours,
+            end_datetime.strftime("%Y-%m-%d %H:%M"),
+            data['line'],
+            data['product_id'],
+            data['product_name'],
+            data['bom'],
+            data['quantity'],
+            data.get('notes', '')
+        ))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        print('Error:', str(e))  # 서버 로그에 에러 출력
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+@app.route('/update_plan/<int:plan_id>', methods=['POST'])
+def update_plan(plan_id):
+    data = request.json
+    date = data.get('date')
+    start_time = data.get('startTime')
+    duration = data.get('duration')
+    line = data.get('line')
+    product_name = data.get('productName')
+    bom = data.get('bom')
+    notes = data.get('notes','')
+    quantity = data.get('quantity','0')
+
+    if not date:
+        return jsonify({"error":"일자 필요"}),400
+    if not start_time or not is_valid_time(start_time):
+        return jsonify({"error":"시작시간 오류"}),400
+    try:
+        d_val = float(duration)
+        if d_val<=0 or d_val>24:
+            return jsonify({"error":"생산시간 범위 오류"}),400
+    except:
+        return jsonify({"error":"생산시간 숫자"}),400
+    try:
+        l_val = int(line)
+        if l_val<1 or l_val>15:
+            return jsonify({"error":"라인 범위"}),400
+    except:
+        return jsonify({"error":"라인 숫자"}),400
+    if not product_name:
+        return jsonify({"error":"제품명 필요"}),400
+
+    end_str = calculate_end_datetime(date, start_time, float(duration))
+
+    db = get_db()
+    db.execute('UPDATE plans SET date=?,start_time=?,duration=?,end_time=?,line=?,product_name=?,bom=?,notes=?,quantity=? WHERE id=?',
+               (date, start_time, float(duration), end_str, l_val, product_name, bom, notes, quantity, plan_id))
+    db.commit()
+    return get_all_plans()
+
+@app.route('/delete_plan/<int:plan_id>', methods=['DELETE'])
+def delete_plan(plan_id):
+    db = get_db()
+    db.execute('DELETE FROM plans WHERE id=?',(plan_id,))
+    db.commit()
+    return get_all_plans()
+
+@app.route('/done_plan/<int:plan_id>', methods=['PATCH'])
+def done_plan(plan_id):
+    db = get_db()
+    db.execute('UPDATE plans SET done=1 WHERE id=?',(plan_id,))
+    db.commit()
+    return get_all_plans()
+
+@app.route('/undone_plan/<int:plan_id>', methods=['PATCH'])
+def undone_plan(plan_id):
+    db = get_db()
+    db.execute('UPDATE plans SET done=0 WHERE id=?',(plan_id,))
+    db.commit()
+    return get_all_plans()
+
+@app.route('/plans', methods=['GET'])
+def get_all_plans():
+    db = get_db()
+    rows = db.execute('SELECT * FROM plans').fetchall()
+    plans = [dict(row) for row in rows]
+    return jsonify({"plans": plans})
+
+# 기준정보 페이지
+@app.route('/products')
+def products_page():
+    return render_template('products.html')
+
+@app.route('/get_products', methods=['GET'])
+def get_products():
+    db = get_db()
+    rows = db.execute('SELECT * FROM products').fetchall()
+    result = [dict(r) for r in rows]
+    return jsonify({"products": result})
+
+@app.route('/add_product', methods=['POST'])
+def add_product():
+    data = request.json
+    product_name = data.get('product_name')
+    bom = data.get('bom')
+    if not product_name:
+        return jsonify({"error":"제품명 필요"}),400
+    
+    db = get_db()
+    db.execute('INSERT INTO products(product_name,bom) VALUES(?,?)',(product_name,bom))
+    db.commit()
+    return get_products()
+
+@app.route('/update_product/<int:prod_id>', methods=['POST'])
+def update_product(prod_id):
+    data = request.json
+    product_name = data.get('product_name')
+    bom = data.get('bom')
+    if not product_name:
+        return jsonify({"error":"제품명 필요"}),400
+
+    db = get_db()
+    db.execute('UPDATE products SET product_name=?,bom=? WHERE id=?',(product_name,bom,prod_id))
+    db.commit()
+    return get_products()
+
+@app.route('/delete_product/<int:prod_id>', methods=['DELETE'])
+def delete_product(prod_id):
+    db = get_db()
+    db.execute('DELETE FROM products WHERE id=?',(prod_id,))
+    db.commit()
+    return get_products()
+
+@app.route('/summary', methods=['GET'])
+def summary():
+    db = get_db()
+    rows = db.execute('SELECT date, product_name, bom, SUM(quantity) as total_qty FROM plans WHERE done=1 GROUP BY date, product_name, bom').fetchall()
+    result = [dict(r) for r in rows]
+    return jsonify({"summary": result})
+
+if __name__ == '__main__':
+    init_db()  # DB 초기화
+    app.run(debug=True)```
+==================================================
+
+[파일 경로: schema.sql]
+```DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS plans;
+
+CREATE TABLE products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_name TEXT NOT NULL,
+    bom TEXT NOT NULL
+);
+
+CREATE TABLE plans (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    start_time TEXT NOT NULL,
+    duration REAL NOT NULL,
+    end_time TEXT NOT NULL,
+    line INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    product_name TEXT NOT NULL,
+    bom TEXT NOT NULL,
+    quantity INTEGER NOT NULL,
+    notes TEXT,
+    done INTEGER DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES products (id)
+); ```
+==================================================
+
+[파일 경로: static/scripts.js]
+```// 전역 변수 선언
+let plans = [];
+let products = [];
+let productMap = {};
+let currentStartDate = new Date();
+const tooltip = document.getElementById('tooltip');
+let colorMap = {};
+const colors = [
+    '#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6',
+    '#1abc9c', '#e67e22', '#34495e', '#16a085', '#c0392b',
+    '#27ae60', '#2980b9', '#8e44ad', '#f39c12', '#d35400'
+];
+
+// DOM 로드 완료 시 초기화
+document.addEventListener('DOMContentLoaded', () => {
+    currentStartDate = getWeekStart(new Date());
+    getProductsList().then(() => {
+        loadData();
+    });
+
+    // 제품 선택 시 BOM 자동 업데이트
+    const productSelect = document.getElementById('productSelect');
+    const bomSelect = document.getElementById('bom');
+    
+    productSelect.addEventListener('change', function() {
+        const selectedProductName = this.value;
+        bomSelect.innerHTML = '<option value="">BOM 선택</option>';
+        
+        if (selectedProductName && productMap[selectedProductName]) {
+            const products = productMap[selectedProductName];
+            console.log('선택된 제품의 BOM 목록:', products); // 디버깅용
+            
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;  // BOM 선택 시 제품 ID 저장
+                option.textContent = product.bom;
+                bomSelect.appendChild(option);
+            });
+        }
+    });
+});
+
+// 유틸리티 함수
+function getWeekStart(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    d.setDate(diff);
+    d.setHours(0,0,0,0);
+    return d;
+}
+
+// 네비게이션 함수들
+function prevWeek() {
+    currentStartDate.setDate(currentStartDate.getDate() - 7);
+    renderGantt();
+}
+
+function nextWeek() {
+    currentStartDate.setDate(currentStartDate.getDate() + 7);
+    renderGantt();
+}
+
+function currentWeek() {
+    currentStartDate = getWeekStart(new Date());
+    renderGantt();
+}
+
+// 데이터 관련 함수들
+function getProductsList() {
+    return fetch('/get_products')
+        .then(res => res.json())
+        .then(data => {
+            console.log('서버 응답:', data); // 디버깅용
+            products = data.products;
+            productMap = {};  // productMap 초기화
+            
+            const productSelect = document.getElementById('productSelect');
+            productSelect.innerHTML = '<option value="">제품 선택</option>';
+            
+            // 제품명으로 그룹화
+            const uniqueProductNames = new Set();
+            products.forEach(product => {
+                uniqueProductNames.add(product.product_name);
+                productMap[product.product_name] = products.filter(p => 
+                    p.product_name === product.product_name
+                );
+            });
+            
+            // 고유한 제품명만 추가
+            uniqueProductNames.forEach(productName => {
+                const option = document.createElement('option');
+                option.value = productName;
+                option.textContent = productName;
+                productSelect.appendChild(option);
+            });
+        });
+}
+
+function addPlan() {
+    const productName = document.getElementById('productSelect').value;
+    const selectedProductId = document.getElementById('bom').value;
+    
+    if (!productName || !selectedProductId) {
+        alert('제품과 BOM을 선택해주세요.');
+        return;
+    }
+
+    // 선택된 제품 정보 찾기
+    const selectedProduct = products.find(p => p.id.toString() === selectedProductId);
+    if (!selectedProduct) {
+        alert('선택된 제품 정보를 찾을 수 없습니다.');
+        return;
+    }
+
+    // 필수 입력값 검증
+    const date = document.getElementById('date').value;
+    const startTime = document.getElementById('startTime').value;
+    const duration = document.getElementById('duration').value;
+    const line = document.getElementById('line').value;
+    const quantity = document.getElementById('quantity').value;
+
+    if (!date || !startTime || !duration || !line || !quantity) {
+        alert('모든 필수 항목을 입력해주세요.');
+        return;
+    }
+    
+    const data = {
+        date: date,
+        start_time: startTime,
+        duration: parseFloat(duration),
+        line: parseInt(line),
+        product_id: parseInt(selectedProductId),
+        product_name: selectedProduct.product_name,
+        bom: selectedProduct.bom,
+        quantity: parseInt(quantity),
+        notes: document.getElementById('notes').value || ''
+    };
+
+    console.log('서버로 보내는 데이터:', data); // 디버깅용
+
+    fetch('/add_plan', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => {
+        if (!res.ok) {
+            return res.json().then(err => {
+                throw new Error(err.message || '계획 추가 실패');
+            });
+        }
+        return res.json();
+    })
+    .then(result => {
+        if (result.success) {
+            loadData();
+            // 입력 필드 초기화
+            document.getElementById('date').value = '';
+            document.getElementById('startTime').value = '';
+            document.getElementById('duration').value = '';
+            document.getElementById('line').value = '';
+            document.getElementById('productSelect').value = '';
+            document.getElementById('bom').value = '';
+            document.getElementById('quantity').value = '';
+            document.getElementById('notes').value = '';
+        } else {
+            alert('계획 추가 실패: ' + result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert(error.message);
+    });
+}
+
+// 렌더링 함수들
+function renderYAxis() {
+    const ganttLines = document.querySelector('.gantt-lines');
+    ganttLines.innerHTML = '';
+
+    const lineLabelsContainer = document.createElement('div');
+    lineLabelsContainer.className = 'line-labels-container';
+
+    // 위치 기준 설정 - 높이 증가
+    lineLabelsContainer.style.position = 'relative';
+    lineLabelsContainer.style.height = (15 * 45) + 'px'; // 30px에서 45px로 증가
+    lineLabelsContainer.style.width = '50px';
+
+    for (let i = 1; i <= 15; i++) {
+        const lineLabel = document.createElement('div');
+        lineLabel.className = 'line-label';
+        lineLabel.textContent = i + '호기';
+
+        lineLabel.style.position = 'absolute';
+        lineLabel.style.top = ((i - 1) * 45) + 'px'; // 30px에서 45px로 증가
+        lineLabel.style.height = '45px'; // 30px에서 45px로 증가
+        lineLabel.style.lineHeight = '45px'; // 30px에서 45px로 증가
+        lineLabel.style.whiteSpace = 'nowrap';
+
+        lineLabelsContainer.appendChild(lineLabel);
+    }
+
+    ganttLines.appendChild(lineLabelsContainer);
+}
+
+function renderGantt() {
+    renderYAxis();
+    
+    const ganttGrid = document.querySelector('.gantt-grid');
+    const dateScale = document.querySelector('.date-scale');
+    const timeScale = document.querySelector('.time-scale');
+
+    // 데이터가 없을 경우 처리
+    if (plans.length === 0) {
+        timeScale.innerHTML = '';
+        dateScale.innerHTML = '';
+        ganttGrid.innerHTML = '';
+        return;
+    }
+
+    // 주간 날짜 범위 설정
+    let weekEnd = new Date(currentStartDate);
+    weekEnd.setDate(weekEnd.getDate() + 7);
+
+    // 날짜 스케일 렌더링
+    dateScale.innerHTML = '';
+    for (let d = new Date(currentStartDate); d < weekEnd; d.setDate(d.getDate() + 1)) {
+        const marker = document.createElement('div');
+        marker.className = 'date-marker';
+        const leftPercent = ((d - currentStartDate) / (weekEnd - currentStartDate)) * 100;
+        marker.style.left = leftPercent + '%';
+        marker.textContent = `${d.getMonth()+1}/${d.getDate()}`;
+        dateScale.appendChild(marker);
+    }
+
+    // 시간 스케일 렌더링
+    timeScale.innerHTML = '';
+    for (let h = 0; h < 24; h += 2) {
+        const marker = document.createElement('div');
+        marker.className = 'time-marker';
+        marker.style.left = (h / 24 * 100) + '%';
+        marker.textContent = `${String(h).padStart(2,'0')}:00`;
+        timeScale.appendChild(marker);
+    }
+
+    // 격자 생성
+    ganttGrid.innerHTML = '';
+    for (let i = 0; i < 15; i++) {
+        const row = document.createElement('div');
+        row.className = 'gantt-row';
+        row.style.top = (i * 45) + 'px';  // 30px에서 45px로 증가
+        ganttGrid.appendChild(row);
+    }
+
+    // 간트 바 렌더링
+    plans.forEach(plan => {
+        const startDate = new Date(plan.date + 'T' + plan.start_time);
+        const endDate = new Date(plan.end_time.replace(' ', 'T'));
+        
+        // 현재 표시 범위를 벗어나면 건너뛰기
+        if (startDate >= weekEnd || endDate <= currentStartDate) return;
+        
+        const totalMs = weekEnd - currentStartDate;
+        const leftPercent = Math.max(0, (startDate - currentStartDate) / totalMs * 100);
+        const widthPercent = Math.min(100 - leftPercent, (endDate - startDate) / totalMs * 100);
+
+        const bar = document.createElement('div');
+        bar.className = 'gantt-bar' + (plan.done ? ' done' : '');
+        
+        // 위치와 크기 설정
+        bar.style.left = leftPercent + '%';
+        bar.style.width = widthPercent + '%';
+        bar.style.top = ((plan.line - 1) * 45) + 'px';  // 30px에서 45px로 증가
+        bar.style.height = '39px';  // 24px에서 39px로 증가
+        
+        // 제품명과 BOM에 따른 색상 설정
+        if (!plan.done) {
+            bar.style.background = getColorForProduct(plan.product_name, plan.bom);
+        }
+        
+        // 제품명과 BOM 함께 표시
+        bar.textContent = `${plan.product_name} (${plan.bom})`;
+        
+        // 툴팁 이벤트
+        bar.addEventListener('mouseover', (e) => {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.innerHTML = `
+                <div>제품: ${plan.product_name}</div>
+                <div>BOM: ${plan.bom}</div>
+                <div>수량: ${plan.quantity}</div>
+                <div>시작: ${plan.start_time}</div>
+                <div>종료: ${plan.end_time}</div>
+                ${plan.notes ? `<div>비고: ${plan.notes}</div>` : ''}
+            `;
+            tooltip.style.display = 'block';
+            tooltip.style.left = e.pageX + 10 + 'px';
+            tooltip.style.top = e.pageY + 10 + 'px';
+        });
+        
+        bar.addEventListener('mousemove', (e) => {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.left = e.pageX + 10 + 'px';
+            tooltip.style.top = e.pageY + 10 + 'px';
+        });
+
+        bar.addEventListener('mouseout', () => {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.display = 'none';
+        });
+
+        ganttGrid.appendChild(bar);
+    });
+}
+
+function renderTable() {
+    const tbody = document.querySelector('#planTable tbody');
+    tbody.innerHTML = '';
+    plans.forEach(plan => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${plan.id}</td>
+            <td>${plan.date}</td>
+            <td>${plan.start_time}</td>
+            <td>${plan.duration}</td>
+            <td>${plan.end_time}</td>
+            <td>${plan.line}</td>
+            <td>${plan.product_name}</td>
+            <td>${plan.bom}</td>
+            <td>${plan.quantity}</td>
+            <td>${plan.notes}</td>
+            <td>
+                <button onclick="editPlan(${plan.id})">수정</button>
+                <button onclick="deletePlan(${plan.id})">삭제</button>
+                ${plan.done == 1 ? 
+                    `<button onclick="undonePlan(${plan.id})">완료취소</button>` :
+                    `<button onclick="donePlan(${plan.id})">완료</button>`}
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function renderSummary() {
+    fetch('/summary')
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector('#summaryTable tbody');
+            tbody.innerHTML = '';
+            data.summary.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${s.date}</td>
+                    <td>${s.product_name}</td>
+                    <td>${s.bom}</td>
+                    <td>${s.total_qty}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+}
+
+// CRUD 작업 함수들
+function editPlan(id) {
+    const plan = plans.find(p => p.id === id);
+    if (!plan) return;
+
+    // 수정 로직 구현
+    // ...
+}
+
+function deletePlan(id) {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+
+    fetch(`/delete_plan/${id}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                loadData();
+            } else {
+                alert('삭제 실패: ' + result.message);
+            }
+        });
+}
+
+function donePlan(id) {
+    fetch(`/done_plan/${id}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                loadData();
+            } else {
+                alert('완료 처리 실패: ' + result.message);
+            }
+        });
+}
+
+function undonePlan(id) {
+    fetch(`/undone_plan/${id}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                loadData();
+            } else {
+                alert('완료 취소 실패: ' + result.message);
+            }
+        });
+}
+
+// 데이터 로드
+function loadData() {
+    fetch('/plans')
+        .then(res => res.json())
+        .then(data => {
+            plans = data.plans;
+            renderTable();
+            renderGantt();
+            renderSummary();
+        });
+}
+
+// 이벤트 리스너
+window.addEventListener('resize', renderGantt);
+
+// 제품명+BOM 조합에 대한 색상 생성 함수
+function getColorForProduct(productName, bom) {
+    const key = `${productName}-${bom}`;
+    if (!colorMap[key]) {
+        // 같은 제품명은 비슷한 색상 계열을 사용
+        const existingProduct = Object.keys(colorMap).find(k => k.startsWith(productName + '-'));
+        if (existingProduct) {
+            // 기존 색상을 기반으로 약간 다른 색조 생성
+            const baseColor = colorMap[existingProduct];
+            const hslColor = rgbToHsl(hexToRgb(baseColor));
+            hslColor.h = (hslColor.h + 0.1) % 1; // 색조만 약간 변경
+            colorMap[key] = hslToHex(hslColor);
+        } else {
+            // 새로운 제품명이면 새로운 색상 할당
+            const unusedColors = colors.filter(c => !Object.values(colorMap).includes(c));
+            colorMap[key] = unusedColors.length > 0 ? unusedColors[0] : colors[Math.floor(Math.random() * colors.length)];
+        }
+    }
+    return colorMap[key];
+}
+
+// 색상 변환 유틸리티 함수들
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+function rgbToHsl(rgb) {
+    let r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+        h = s = 0;
+    } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+    return { h, s, l };
+}
+
+function hslToHex({ h, s, l }) {
+    let r, g, b;
+    if (s === 0) {
+        r = g = b = l;
+    } else {
+        const hue2rgb = (p, q, t) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1/6) return p + (q - p) * 6 * t;
+            if (t < 1/2) return q;
+            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+            return p;
+        };
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+    }
+    const toHex = x => {
+        const hex = Math.round(x * 255).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+    };
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+```
+==================================================
+
+[파일 경로: static/style.css]
+```/* 기본 스타일 */
+body { 
+    font-family: Arial, sans-serif; 
+    margin: 20px; 
+}
+
+/* 폼 컨테이너 */
+.form-container { 
+    display: flex; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+    margin-bottom: 20px; 
+}
+
+.form-container input, 
+.form-container button, 
+.form-container select { 
+    padding: 5px; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+}
+
+.form-container button { 
+    background: #007bff; 
+    color: #fff; 
+    cursor: pointer; 
+}
+
+/* 테이블 스타일 */
+table { 
+    border-collapse: collapse; 
+    width: 100%; 
+    margin-top: 20px; 
+}
+
+th, td { 
+    border: 1px solid #ccc; 
+    padding: 8px; 
+    text-align: center; 
+}
+
+.done-row { 
+    background: #f5f5f5; 
+}
+
+/* 간트 차트 */
+.gantt-wrapper {
+    display: flex;
+    height: 510px; /* 헤더(60px) + 15줄(30px*15) */
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.gantt-lines {
+    flex: 0 0 80px;
+    background: #f8f9fa;
+    border-right: 1px solid #ddd;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    padding-top: 60px; /* 헤더 높이만큼 패딩 */
+}
+
+.line-labels-container {
+    position: relative;
+    width: 100%;
+    background: #f8f9fa;
+}
+
+.line-label {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding: 0 5px;
+    box-sizing: border-box;
+}
+
+.gantt-grid {
+    position: relative;
+    height: calc(15 * 30px); /* 15행 * 30px */
+}
+
+.gantt-row {
+    position: absolute;
+    width: 100%;
+    height: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.gantt-container {
+    flex: 1;
+    overflow-x: auto;
+    position: relative;
+    min-width: 0;
+}
+
+.gantt-header {
+    height: 50px;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 3;
+    border-bottom: 2px solid #ddd;
+}
+
+.time-scale {
+    position: relative;
+    height: 100%;
+}
+
+.time-marker {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #666;
+    padding: 5px;
+    border-left: 1px solid #ddd;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.gantt-bar {
+    position: absolute;
+    height: 24px;
+    background: #3498db;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 3px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    margin-top: 3px;
+    cursor: pointer;
+    z-index: 1;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
+
+.gantt-bar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.gantt-bar.done {
+    background: #95a5a6;
+}
+
+.shift-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 2px dashed #ff6b6b;
+    z-index: 1;
+}
+
+.shift-label {
+    position: absolute;
+    top: 5px;
+    transform: translateX(-50%);
+    background: #ff6b6b;
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    z-index: 2;
+}
+
+.tooltip {
+    position: fixed;
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000;
+    pointer-events: none;
+    max-width: 300px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* 요약 테이블 */
+.summary-table {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.summary-table th,
+.summary-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.summary-table th {
+    background: #f8f9fa;
+}
+
+/* 간트 차트 네비게이션 */
+.nav-buttons {
+    margin: 10px 0;
+}
+
+.nav-buttons button {
+    padding: 5px 15px;
+    margin-right: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.nav-buttons button:hover {
+    background: #0056b3;
+}
+
+/* 간트 차트 헤더 */
+.gantt-header {
+    position: sticky;
+    top: 0;
+    height: 60px; /* 날짜와 시간 눈금을 위한 공간 */
+    background: white;
+    z-index: 3;
+    border-bottom: 2px solid #ddd;
+}
+
+.date-scale {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 30px;
+    border-bottom: 1px solid #ddd;
+}
+
+.time-scale {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 30px;
+    border-top: 1px solid #ddd;
+}
+
+.date-marker {
+    position: absolute;
+    transform: translateX(-50%);
+    padding: 5px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #333;
+}
+
+.time-marker {
+    position: absolute;
+    transform: translateX(-50%);
+    padding: 5px;
+    font-size: 10px;
+    color: #666;
+}
+
+/* 간트 차트 컨테이너 수정 */
+.gantt-container {
+    position: relative;
+    flex: 1;
+    overflow-x: auto;
+    background: #fff;
+    min-height: 480px;
+}
+
+.gantt-grid {
+    position: relative;
+    padding-top: 60px; /* 헤더 높이만큼 패딩 */
+}
+
+.gantt-row {
+    height: 30px;
+    border-bottom: 1px solid #eee;
+    background: #fafafa;
+}
+
+/* 교대 시간 라인 */
+.shift-lines {
+    position: absolute;
+    top: 60px; /* 헤더 높이만큼 띄움 */
+    bottom: 0;
+    width: 100%;
+    pointer-events: none;
+}
+
+.shift-line {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-left: 2px dashed #ff6b6b;
+}
+
+.shift-label {
+    position: absolute;
+    top: -25px;
+    transform: translateX(-50%);
+    background: #ff6b6b;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+/* 간트 바 스타일 개선 */
+.gantt-bar {
+    position: absolute;
+    height: 24px;
+    background: linear-gradient(to bottom, #3498db, #2980b9);
+    color: white;
+    font-size: 12px;
+    border-radius: 3px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    margin-top: 3px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+    z-index: 1;
+}
+
+.gantt-bar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.gantt-bar.done {
+    background: linear-gradient(to bottom, #95a5a6, #7f8c8d);
+}
+
+/* Y축 라인 라벨 개선 */
+.gantt-lines {
+    padding-top: 60px; /* 헤더 높이만큼 패딩 */
+}
+
+.line-label {
+    position: absolute;
+    width: 100%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #666;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+/* 툴팁 개선 */
+.tooltip {
+    position: fixed;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000;
+    pointer-events: none;
+    max-width: 300px;
+    line-height: 1.4;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* 각 행의 위치 설정 */
+.gantt-row:nth-child(1) { top: 0px; }
+.gantt-row:nth-child(2) { top: 30px; }
+.gantt-row:nth-child(3) { top: 60px; }
+/* ... 이하 생략 ... */
+
+.btn-products {
+    background-color: #2ecc71;
+    color: white;
+    padding: 6px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+    height: 28px;
+}
+
+.btn-products:hover {
+    background-color: #27ae60;
+}
+
+.btn-products:active {
+    transform: translateY(1px);
+}
+
+/* form-container 내부 버튼들 정렬 */
+.form-container button,
+.form-container .btn-products {
+    margin-left: 5px;
+}
+```
+==================================================
+
+[파일 경로: templates/index.html]
+```<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>생산 계획 관리</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<h1>생산 계획 관리</h1>
+<div class="form-container">
+  <input type="date" id="date">
+  <input type="time" id="startTime">
+  <input type="number" step="0.5" id="duration" placeholder="생산시간(h)">
+  <input type="number" id="line" placeholder="라인(1~15)">
+  <select id="productSelect">
+    <option value="">제품 선택</option>
+  </select>
+  <select id="bom">
+    <option value="">BOM 선택</option>
+  </select>
+  <input type="number" id="quantity" placeholder="생산수량">
+  <input type="text" id="notes" placeholder="특이사항">
+  <button onclick="addPlan()">계획 추가</button>
+  <a href="/products" class="btn-products">제품 관리</a>
+</div>
+
+<table id="planTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>일자</th>
+      <th>시작 시간</th>
+      <th>생산시간</th>
+      <th>종료 시간</th>
+      <th>라인</th>
+      <th>제품명</th>
+      <th>BOM</th>
+      <th>수량</th>
+      <th>특이사항</th>
+      <th>작업</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<h3>생산 계획 간트 차트</h3>
+<div class="nav-buttons">
+  <button onclick="prevWeek()">이전 주</button>
+  <button onclick="nextWeek()">다음 주</button>
+  <button onclick="currentWeek()">이번 주</button>
+</div>
+
+<div class="gantt-wrapper">
+  <div class="gantt-lines line-numbers">
+    <!-- Y축 라인 라벨들이 여기에 동적으로 추가됨 -->
+  </div>
+  <div class="gantt-container">
+    <div class="gantt-header">
+      <div class="date-scale">
+        <!-- 상단 날짜 눈금이 여기에 동적으로 추가됨 -->
+      </div>
+      <div class="time-scale">
+        <!-- 하단 시간 눈금이 여기에 동적으로 추가됨 -->
+      </div>
+    </div>
+    <div class="gantt-grid">
+      <!-- 격자와 간트 바들이 여기에 동적으로 추가됨 -->
+    </div>
+    <div class="shift-lines">
+      <div class="shift-line" id="shift7"><div class="shift-label">07:00</div></div>
+      <div class="shift-line" id="shift15"><div class="shift-label">15:00</div></div>
+      <div class="shift-line" id="shift23"><div class="shift-label">23:00</div></div>
+    </div>
+  </div>
+</div>
+<div class="tooltip" id="tooltip"></div>
+
+<h3>완료 처리된 생산량 요약</h3>
+<table class="summary-table" id="summaryTable">
+  <thead>
+    <tr>
+      <th>일자</th>
+      <th>제품명</th>
+      <th>BOM</th>
+      <th>총 생산수량</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>```
+==================================================
+
+[파일 경로: templates/products.html]
+```<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>제품 기준정보 관리</title>
+<style>
+  body { font-family:Arial, sans-serif; margin:20px; }
+  table { border-collapse:collapse; width:100%; margin-top:20px; }
+  th,td { border:1px solid #ccc; padding:8px; text-align:center; }
+  
+  /* 버튼 스타일 */
+  .btn-container {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-back {
+    background-color: #3498db;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-back:hover {
+    background-color: #2980b9;
+  }
+</style>
+</head>
+<body>
+<h1>기준정보 관리</h1>
+
+<!-- 돌아가기 버튼 추가 -->
+<div class="btn-container">
+  <a href="/" class="btn-back">← 생산계획으로 돌아가기</a>
+</div>
+
+<div>
+  <input type="text" id="product_name" placeholder="제품명">
+  <input type="text" id="bom" placeholder="BOM">
+  <button onclick="addProduct()">추가</button>
+</div>
+
+<table id="productTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>제품명</th>
+      <th>BOM</th>
+      <th>작업</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+let products = [];
+
+function getProducts(){
+  fetch('/get_products')
+  .then(res=>res.json())
+  .then(data=>{
+    products = data.products;
+    renderTable();
+  })
+}
+
+function renderTable(){
+  const tbody = document.querySelector('#productTable tbody');
+  tbody.innerHTML='';
+  products.forEach(p=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML=`
+      <td>${p.id}</td>
+      <td>${p.product_name}</td>
+      <td>${p.bom||''}</td>
+      <td>
+        <button onclick="editProduct(${p.id})">수정</button>
+        <button onclick="deleteProduct(${p.id})">삭제</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  })
+}
+
+function addProduct(){
+  const product_name = document.getElementById('product_name').value;
+  const bom = document.getElementById('bom').value;
+  fetch('/add_product',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({product_name,bom})
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    if(data.error) {alert(data.error); return;}
+    products = data.products;
+    renderTable();
+    clearForm();
+  })
+}
+
+function clearForm(){
+  document.getElementById('product_name').value='';
+  document.getElementById('bom').value='';
+}
+
+function editProduct(id){
+  const prod = products.find(x=>x.id===id);
+  if(!prod) return;
+  const product_name = prompt('제품명', prod.product_name);
+  if(!product_name)return;
+  const bom = prompt('BOM', prod.bom);
+  fetch(`/update_product/${id}`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({product_name,bom})
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    if(data.error){alert(data.error);return;}
+    products = data.products;
+    renderTable();
+  })
+}
+
+function deleteProduct(id){
+  if(!confirm('삭제?'))return;
+  fetch(`/delete_product/${id}`,{method:'DELETE'})
+  .then(res=>res.json())
+  .then(data=>{
+    if(data.error){alert(data.error);return;}
+    products = data.products;
+    renderTable();
+  })
+}
+
+getProducts();
+</script>
+</body>
+</html>```
+==================================================

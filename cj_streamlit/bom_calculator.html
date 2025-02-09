@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOM 기반 배합 계산기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        input[type="number"], input[type="text"] {
+            width: calc(100% - 18px);
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .ingredient-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .ingredient-row input {
+            width: calc(50% - 5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BOM 기반 배합 계산기</h1>
+        
+        <h2>BOM 정보 입력</h2>
+        <div id="ingredients"></div>
+        <button onclick="addIngredient()">재료 추가</button>
+        
+        <h2>기준 정보</h2>
+        <input type="number" id="baseTotal" placeholder="현재 BOM 완제품 중량 (kg)" min="0" step="0.01">
+        
+        <h2>목표 중량 입력</h2>
+        <input type="number" id="targetTotal" placeholder="목표 생산량 (kg)" min="0" step="0.01">
+        
+        <button onclick="calculate()">계산</button>
+        
+        <h2>결과</h2>
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th>재료</th>
+                    <th>원래 중량 (kg)</th>
+                    <th>조정된 중량 (kg)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <p id="totalAmount"></p>
+    </div>
+
+    <script>
+        function addIngredient() {
+            const ingredientsDiv = document.getElementById('ingredients');
+            const newIngredient = document.createElement('div');
+            newIngredient.className = 'ingredient-row';
+            newIngredient.innerHTML = `
+                <input type="text" placeholder="재료명" class="ingredient-name">
+                <input type="number" placeholder="중량 (kg)" class="ingredient-weight" min="0" step="0.01">
+            `;
+            ingredientsDiv.appendChild(newIngredient);
+        }
+
+        function calculate() {
+            const ingredients = document.getElementsByClassName('ingredient-name');
+            const weights = document.getElementsByClassName('ingredient-weight');
+            const baseTotal = parseFloat(document.getElementById('baseTotal').value);
+            const targetTotal = parseFloat(document.getElementById('targetTotal').value);
+
+            if (ingredients.length === 0 || isNaN(baseTotal) || isNaN(targetTotal)) {
+                alert('재료 정보, 현재 BOM 완제품 중량, 목표 생산량을 모두 입력해주세요.');
+                return;
+            }
+
+            const scaleFactor = targetTotal / baseTotal;
+            const adjustedWeights = [];
+
+            for (let weight of weights) {
+                adjustedWeights.push((parseFloat(weight.value) || 0) * scaleFactor);
+            }
+
+            const resultBody = document.querySelector('#resultTable tbody');
+            resultBody.innerHTML = '';
+
+            let total = 0;
+            for (let i = 0; i < ingredients.length; i++) {
+                const row = resultBody.insertRow();
+                row.insertCell(0).textContent = ingredients[i].value;
+                row.insertCell(1).textContent = weights[i].value;
+                row.insertCell(2).textContent = adjustedWeights[i].toFixed(2);
+                total += adjustedWeights[i];
+            }
+
+            document.getElementById('totalAmount').textContent = `총 중량: ${total.toFixed(2)} kg`;
+        }
+
+        // 페이지 로드 시 초기 재료 입력란 추가
+        window.onload = function() {
+            addIngredient();
+        }
+    </script>
+</body>
+</html>

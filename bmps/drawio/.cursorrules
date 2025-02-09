@@ -1,0 +1,6 @@
+# drawio 같은 프로스세스 맵 툴 사용 규칙을 지켜
+- 폴더 drawio 에 모든 코드를 작성해
+
+
+# drawio의 기본 기능 모두 구현해
+# Fastapi, sqlite, html, css, javascript, tailwindcss를 사용해

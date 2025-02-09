@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식품공장 생산계획 관리</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Frappe Gantt -->
+    <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">식품공장 생산계획 관리</h1>
+                <div class="space-x-2">
+                    <button onclick="exportPDF()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                        PDF 출력
+                    </button>
+                    <button onclick="exportExcel()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                        Excel 출력
+                    </button>
+                </div>
+            </div>
+
+            <!-- 생산오더 입력 폼 -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">공장</label>
+                        <input type="text" id="factory" class="form-input">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">제품</label>
+                        <input type="text" id="product" class="form-input">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">생산오더번호</label>
+                        <input type="text" id="order_no" class="form-input">
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">수량</label>
+                        <input type="number" id="quantity" class="form-input">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">시작시간</label>
+                        <input type="datetime-local" id="start_time" class="form-input">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">종료시간</label>
+                        <input type="datetime-local" id="end_time" class="form-input">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">상태</label>
+                        <select id="status" class="form-input">
+                            <option value="계획">계획</option>
+                            <option value="진행중">진행중</option>
+                            <option value="완료">완료</option>
+                            <option value="변경">변경</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button onclick="createOrder()" class="btn btn-primary w-full">
+                생산오더 등록
+            </button>
+        </div>
+
+        <!-- 간트 차트 -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="mb-4">
+                <select id="viewMode" onchange="updateViewMode()" class="form-input w-auto">
+                    <option value="Quarter Day">6시간</option>
+                    <option value="Half Day">12시간</option>
+                    <option value="Day">1일</option>
+                    <option value="Week">1주</option>
+                    <option value="Month">1달</option>
+                </select>
+            </div>
+            <div id="gantt"></div>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/gantt.js') }}"></script>
+</body>
+</html> 

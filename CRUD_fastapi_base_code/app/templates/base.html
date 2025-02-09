@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}게시판{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cssLink = document.querySelector('link[href*="style.css"]');
+            console.log('CSS 파일 경로:', cssLink.href);
+            
+            // CSS 파일 로드 상태 확인
+            const styleSheets = document.styleSheets;
+            for (let i = 0; i < styleSheets.length; i++) {
+                try {
+                    const href = styleSheets[i].href;
+                    console.log('로드된 스타일시트:', href);
+                } catch (e) {
+                    console.log('스타일시트 접근 오류:', e);
+                }
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>게시판</h1>
+            <nav class="nav-buttons d-flex justify-content-end mt-3 mb-4">
+                <a href="/" class="btn btn-outline-primary me-3 px-4 py-2">
+                    <i class="fas fa-home me-2"></i>홈
+                </a>
+                <a href="/write" class="btn btn-outline-success px-4 py-2">
+                    <i class="fas fa-pen me-2"></i>글쓰기
+                </a>
+            </nav>
+        </header>
+        
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html> 

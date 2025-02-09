@@ -1,0 +1,437 @@
+{% extends "base.html" %}
+
+{% block title %}Todo App - 메인{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">새 작업 추가</h5>
+            </div>
+            <div class="card-body">
+                <form id="taskForm">
+                    <div class="mb-3">
+                        <label for="orderNumber" class="form-label">오더번호</label>
+                        <input type="text" class="form-control" id="orderNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskName" class="form-label">작업명</label>
+                        <input type="text" class="form-control" id="taskName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskDescription" class="form-label">작업지시 내용</label>
+                        <textarea class="form-control" id="taskDescription" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskPriority" class="form-label">우선순위</label>
+                        <select class="form-select" id="taskPriority">
+                            <option value="0">낮음</option>
+                            <option value="1">중간</option>
+                            <option value="2">높음</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="startTime" class="form-label">생산 시작 시간</label>
+                        <input type="datetime-local" class="form-control" id="startTime" step="600">
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskDueDate" class="form-label">마감 시간</label>
+                        <input type="datetime-local" class="form-control" id="taskDueDate" step="600">
+                    </div>
+                    <div class="mb-3">
+                        <label for="assigneeId" class="form-label">담당자</label>
+                        <select class="form-select" id="assigneeId">
+                            <option value="">담당자 선택</option>
+                            <!-- 사용자 목록은 JavaScript로 동적으로 추가됩니다 -->
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">추가</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">작업 목록</h5>
+                    <div class="d-flex gap-2">
+                        <div class="form-check form-switch d-flex align-items-center" style="min-width: 150px;">
+                            <input class="form-check-input" type="checkbox" role="switch" id="showMyTasksOnly">
+                            <label class="form-check-label ms-2 text-nowrap" for="showMyTasksOnly">내 작업만 보기</label>
+                        </div>
+                        <select id="sortBy" class="form-select form-select-sm">
+                            <option value="priority">우선순위순</option>
+                            <option value="dueDate">마감일순</option>
+                            <option value="name">이름순</option>
+                            <option value="completed">완료 여부순</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="list-group" id="taskList">
+                    <!-- 작업 목록이 여기에 동적으로 추가됩니다 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentUser = null;
+let allTasks = [];  // 모든 작업을 저장할 배열
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadCurrentUser();
+    loadTasks();
+    loadUsers();
+    
+    document.getElementById('taskForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        addTask();
+    });
+    
+    document.getElementById('sortBy').addEventListener('change', function() {
+        filterAndDisplayTasks();
+    });
+
+    document.getElementById('showMyTasksOnly').addEventListener('change', function() {
+        filterAndDisplayTasks();
+    });
+});
+
+async function loadCurrentUser() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+
+        const response = await fetch('/auth/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (!response.ok) {
+            // 토큰이 유효하지 않거나 만료된 경우
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+            return;
+        }
+        
+        currentUser = await response.json();
+        
+        // 서버 재시작 여부 확인
+        const serverStartTime = await checkServerStatus();
+        const lastLoginTime = localStorage.getItem('lastLoginTime');
+        
+        if (!lastLoginTime || serverStartTime > parseInt(lastLoginTime)) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('lastLoginTime');
+            window.location.href = '/login';
+            return;
+        }
+    } catch (error) {
+        console.error('Error loading current user:', error);
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+    }
+}
+
+async function checkServerStatus() {
+    try {
+        const response = await fetch('/auth/server-status');
+        const data = await response.json();
+        return data.start_time;
+    } catch (error) {
+        console.error('Error checking server status:', error);
+        return Date.now(); // 에러 발생시 현재 시간 반환
+    }
+}
+
+async function loadUsers() {
+    try {
+        const response = await fetch('/auth/users', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        const users = await response.json();
+        
+        const assigneeSelect = document.getElementById('assigneeId');
+        users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = user.name || user.email;
+            assigneeSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error loading users:', error);
+    }
+}
+
+async function loadTasks() {
+    try {
+        console.log('Loading tasks...');
+        const response = await fetch('/tasks', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        allTasks = await response.json();
+        console.log('Loaded tasks:', allTasks);
+        filterAndDisplayTasks();
+    } catch (error) {
+        console.error('Error loading tasks:', error);
+    }
+}
+
+function filterAndDisplayTasks() {
+    console.log('Filtering tasks...');
+    const showMyTasksOnly = document.getElementById('showMyTasksOnly').checked;
+    const sortBy = document.getElementById('sortBy').value;
+    
+    let filteredTasks = [...allTasks];
+    console.log('All tasks:', filteredTasks);
+    
+    // 내 작업만 보기 필터 적용
+    if (showMyTasksOnly && currentUser) {
+        console.log('Filtering for user:', currentUser);
+        filteredTasks = filteredTasks.filter(task => task.assignee_id === currentUser.id);
+    }
+    
+    // 정렬 적용
+    filteredTasks = sortTasks(filteredTasks, sortBy);
+    console.log('Filtered and sorted tasks:', filteredTasks);
+    
+    // 화면에 표시
+    const taskList = document.getElementById('taskList');
+    taskList.innerHTML = '';
+    
+    if (filteredTasks.length === 0) {
+        taskList.innerHTML = '<div class="text-center text-muted mt-3">표시할 작업이 없습니다.</div>';
+        return;
+    }
+    
+    filteredTasks.forEach(task => {
+        const taskElement = createTaskElement(task);
+        taskList.appendChild(taskElement);
+    });
+}
+
+function createTaskElement(task) {
+    const div = document.createElement('div');
+    const isMyTask = currentUser && task.assignee_id === currentUser.id;
+    
+    // 완료 상태와 우선순위에 따른 클래스 설정
+    const priorityClasses = ['priority-low', 'priority-medium', 'priority-high'];
+    div.className = `list-group-item list-group-item-action 
+        ${isMyTask ? 'my-task' : ''} 
+        ${task.completed ? 'completed-task' : ''} 
+        ${priorityClasses[task.priority]}`;
+
+    // 기본 스타일 설정
+    if (isMyTask) {
+        div.style.backgroundColor = task.completed ? '#f8f9fa' : '#e3f2fd';
+        div.style.fontWeight = 'bold';
+    } else if (task.completed) {
+        div.style.backgroundColor = '#f8f9fa';
+    }
+    
+    div.innerHTML = `
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1 ${task.completed ? 'text-decoration-line-through' : ''}">
+                ${task.order_number} - ${task.name}
+                ${task.completed ? '<span class="badge bg-secondary ms-2">완료됨</span>' : ''}
+            </h5>
+            <small>${task.due_date ? new Date(task.due_date).toLocaleString() : '마감일 없음'}</small>
+        </div>
+        <p class="mb-1 ${task.completed ? 'text-decoration-line-through' : ''}">${task.description || ''}</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <span class="badge ${getPriorityBadgeClass(task.priority)} me-2">
+                    우선순위: ${['낮음', '중간', '높음'][task.priority]}
+                </span>
+                <small class="ms-2">시작: ${task.start_time ? new Date(task.start_time).toLocaleString() : '미정'}</small>
+                <small class="ms-2">담당: ${task.assignee ? task.assignee.name : '미배정'}</small>
+                <small class="ms-2">작성자: ${task.author ? task.author.name : '알 수 없음'}</small>
+            </div>
+            <div>
+                <button class="btn btn-sm ${task.completed ? 'btn-secondary' : 'btn-success'}" 
+                        onclick="toggleComplete(${task.id})">
+                    ${task.completed ? '완료 취소' : '완료'}
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">삭제</button>
+            </div>
+        </div>
+    `;
+    return div;
+}
+
+function getPriorityBadgeClass(priority) {
+    switch(priority) {
+        case 2: return 'bg-danger';    // 높음
+        case 1: return 'bg-warning';   // 중간
+        default: return 'bg-success';  // 낮음
+    }
+}
+
+function sortTasks(tasks, sortBy) {
+    return tasks.sort((a, b) => {
+        switch(sortBy) {
+            case 'priority':
+                return b.priority - a.priority;
+            case 'dueDate':
+                if (!a.due_date) return 1;
+                if (!b.due_date) return -1;
+                return new Date(a.due_date) - new Date(b.due_date);
+            case 'name':
+                return a.name.localeCompare(b.name);
+            case 'completed':
+                return (a.completed === b.completed) ? 0 : a.completed ? 1 : -1;
+            default:
+                return 0;
+        }
+    });
+}
+
+async function addTask() {
+    const taskData = {
+        order_number: document.getElementById('orderNumber').value,
+        name: document.getElementById('taskName').value,
+        description: document.getElementById('taskDescription').value,
+        priority: parseInt(document.getElementById('taskPriority').value),
+        start_time: document.getElementById('startTime').value || null,
+        due_date: document.getElementById('taskDueDate').value || null,
+        assignee_id: document.getElementById('assigneeId').value || null
+    };
+    
+    console.log('Adding task:', taskData);
+    
+    try {
+        const response = await fetch('/tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(taskData)
+        });
+        
+        console.log('Add task response status:', response.status);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error adding task:', errorData);
+            alert('작업 추가 중 오류가 발생했습니다: ' + (errorData.detail || '알 수 없는 오류'));
+            return;
+        }
+        
+        const result = await response.json();
+        console.log('Add task result:', result);
+        
+        document.getElementById('taskForm').reset();
+        await loadTasks();  // 작업 목록 새로고침
+        alert('작업이 성공적으로 추가되되되었습니다.');
+    } catch (error) {
+        console.error('Error adding task:', error);
+        alert('작업 추가 중 오류가 발생했습니다.');
+    }
+}
+
+async function toggleComplete(taskId) {
+    // 현재 작업 찾기
+    const task = allTasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    try {
+        const response = await fetch(`/tasks/${taskId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ completed: !task.completed })  // 현재 상태의 반대값으로 설정
+        });
+        
+        if (response.ok) {
+            await loadTasks();  // 작업 목록 새로고침
+        } else {
+            const errorData = await response.json();
+            alert('작업 상태 변경 중 오류가 발생했습니다: ' + (errorData.detail || '알 수 없는 오류'));
+        }
+    } catch (error) {
+        console.error('Error updating task:', error);
+        alert('작업 상태 변경 중 오류가 발생했습니다.');
+    }
+}
+
+async function deleteTask(taskId) {
+    if (!confirm('정말로 이 작업을 삭제하시겠습니까?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/tasks/${taskId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        
+        if (response.ok) {
+            loadTasks();
+        }
+    } catch (error) {
+        console.error('Error deleting task:', error);
+    }
+}
+</script>
+
+<style>
+.my-task {
+    border-left: 4px solid #2196f3 !important;
+    transition: all 0.3s ease;
+}
+
+.completed-task {
+    opacity: 0.8;
+}
+
+.priority-high {
+    border-left: 4px solid #dc3545 !important;
+}
+
+.priority-medium {
+    border-left: 4px solid #ffc107 !important;
+}
+
+.priority-low {
+    border-left: 4px solid #28a745 !important;
+}
+
+.my-task:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
+}
+
+.form-check-input:checked {
+    background-color: #2196f3;
+    border-color: #2196f3;
+}
+
+.badge {
+    font-weight: normal;
+}
+</style>
+{% endblock %} 

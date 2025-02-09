@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white shadow rounded-lg p-6">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">새 작업 로그 생성</h1>
+
+    <form method="POST" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="template_id" class="block text-sm font-medium text-gray-700">점검 템플릿</label>
+                <select name="template_id" id="template_id" required onchange="loadTemplate(this.value)"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="">템플릿을 선택하세요</option>
+                    {% for template in templates %}
+                    <option value="{{ template.id }}" data-items="{{ template.check_items }}">
+                        {{ template.name }}
+                        {% if template.factory %}
+                        ({{ template.factory.name }} - 
+                        {% if template.process %}{{ template.process.name }}{% endif %}
+                        {% if template.equipment %} - {{ template.equipment.name }}{% endif %})
+                        {% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="inspector" class="block text-sm font-medium text-gray-700">점검자</label>
+                <input type="text" name="inspector" id="inspector" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label for="shift" class="block text-sm font-medium text-gray-700">근무조</label>
+                <select name="shift" id="shift" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="주간">주간</option>
+                    <option value="야간">야간</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="check_form" class="hidden space-y-6">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h2 class="text-lg font-medium text-gray-900 mb-4">점검 항목</h2>
+                <div id="check_items_container" class="space-y-4">
+                    <!-- 템플릿 선택 시 동적으로 폼이 생성됩니다 -->
+                </div>
+            </div>
+
+            <div>
+                <label for="notes" class="block text-sm font-medium text-gray-700">특이사항</label>
+                <textarea name="notes" id="notes" rows="3"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-4">
+            <a href="{{ url_for('main.index') }}" class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50">
+                취소
+            </a>
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                생성
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+function loadTemplate(templateId) {
+    const formContainer = document.getElementById('check_form');
+    const itemsContainer = document.getElementById('check_items_container');
+    const selectedOption = document.querySelector(`option[value="${templateId}"]`);
+    
+    if (!selectedOption) {
+        formContainer.classList.add('hidden');
+        itemsContainer.innerHTML = '';
+        return;
+    }
+    
+    const items = JSON.parse(selectedOption.dataset.items);
+    let html = '';
+    
+    items.forEach(item => {
+        html += `
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div class="md:col-span-2">
+                    <label for="${item.name}" class="block text-sm font-medium text-gray-700">
+                        ${item.name}
+                        ${item.unit ? `(${item.unit})` : ''}
+                    </label>
+                    <div class="text-xs text-gray-500">
+                        ${item.min || item.max ? `허용 범위: ${item.min || '-∞'} ~ ${item.max || '∞'}` : ''}
+                    </div>
+                    <input type="number" step="any" name="${item.name}" id="${item.name}" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        ${item.min ? `min="${item.min}"` : ''}
+                        ${item.max ? `max="${item.max}"` : ''}>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">적합 여부</label>
+                    <select name="${item.name}_status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="적합">적합</option>
+                        <option value="부적합">부적합</option>
+                    </select>
+                </div>
+            </div>
+        `;
+    });
+    
+    itemsContainer.innerHTML = html;
+    formContainer.classList.remove('hidden');
+
+    // 입력값 변경 시 자동으로 적합/부적합 설정
+    itemsContainer.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const item = items.find(i => i.name === this.id);
+            if (!item) return;
+
+            const value = parseFloat(this.value);
+            const statusSelect = document.querySelector(`select[name="${this.id}_status"]`);
+            
+            if (item.min && value < parseFloat(item.min) || item.max && value > parseFloat(item.max)) {
+                statusSelect.value = '부적합';
+                this.classList.add('border-red-300');
+            } else {
+                statusSelect.value = '적합';
+                this.classList.remove('border-red-300');
+            }
+        });
+    });
+}
+</script>
+{% endblock %} 

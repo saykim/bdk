@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="post-detail card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <h2 class="card-title">{{ post.title }}</h2>
+            <span class="badge bg-{{ post.status.value | status_color }}">{{ post.status.value }}</span>
+        </div>
+        
+        <div class="post-meta text-muted mb-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><i class="fas fa-user"></i> 작성자: {{ post.author }}</p>
+                    <p><i class="far fa-clock"></i> 작성일: {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    {% if post.updated_at %}
+                    <p><i class="fas fa-edit"></i> 수정일: {{ post.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    {% if post.category %}
+                    <p><i class="fas fa-tag"></i> 카테고리: {{ post.category }}</p>
+                    {% endif %}
+                    {% if post.product_name %}
+                    <p><i class="fas fa-box"></i> 제품명: {{ post.product_name }}</p>
+                    {% endif %}
+                    {% if post.process_step %}
+                    <p><i class="fas fa-tasks"></i> 공정 단계: {{ post.process_step }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="post-content card mb-4">
+            <div class="card-body">
+                {{ post.content | replace('\n', '<br>') | safe }}
+            </div>
+        </div>
+
+        {% if post.attachment_path %}
+        <div class="mb-4">
+            <h5><i class="fas fa-paperclip"></i> 첨부 파일</h5>
+            <a href="/download/{{ post.id }}" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-download"></i> 다운로드
+            </a>
+        </div>
+        {% endif %}
+        
+        <div class="post-actions">
+            <a href="/edit/{{ post.id }}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> 수정
+            </a>
+            <form action="/delete/{{ post.id }}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?')">
+                    <i class="fas fa-trash"></i> 삭제
+                </button>
+            </form>
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-list"></i> 목록
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

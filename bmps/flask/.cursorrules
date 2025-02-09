@@ -1,0 +1,30 @@
+## 기본 아이디어
+- bmps 폴더에 만들어
+
+1) 기본 아이디어
+	•	Frontend: BPMN 다이어그램을 표시·편집할 수 있는 자바스크립트 라이브러리(예: bpmn.io, diagram-js 등)를 HTML/JS로 구성
+	•	Backend: Flask(파이썬)에서 BPMN XML(혹은 JSON 등)을 저장·로드·검증 및 프로세스 실행(또는 상태 관리) 로직을 처리
+	•	DB: BPMN 정의(모델) 및 실행 이력(프로세스 인스턴스, 토큰 상태 등)을 DB에 저장 *sqlite 사용
+
+즉, BPMN 시각화/에디팅은 주로 클라이언트(브라우저) 단에서 JS 라이브러리가 담당하고, Flask는 API 역할(저장·조회·실행 상태 변경 등)을 맡게 됩니다.
+
+(A) BPMN 에디터/뷰어(자바스크립트)
+	•	bpmn.io(bpmn-js)
+	•	Camunda가 오픈소스로 제공하는 BPMN 다이어그램 라이브러리
+	•	브라우저에서 BPMN XML을 불러와 다이어그램을 렌더링하고, 드래그·드롭으로 모델 편집 가능
+	•	편집 완료된 BPMN 모델을 다시 XML로 내보낼 수 있음
+	•	diagram-js
+	•	bpmn.io에 사용된 다이어그램 엔진. BPMN 외에도 커스텀 다이어그램을 만들 수 있지만, BPMN 표준 지원은 bpmn.io가 특화됨
+
+(B) Flask(Backend)
+	•	Flask 라우팅 예시:
+	•	GET /bpmn/<process_id> → DB에서 BPMN 모델(XML)을 가져와 JSON/XML 형태로 응답
+	•	POST /bpmn → 클라이언트(자바스크립트 bpmn.io)에서 수정·생성된 BPMN XML을 업로드·저장
+	•	POST /process/start → 특정 BPMN 정의로부터 프로세스 인스턴스 시작
+	•	POST /process/<instance_id>/completeTask → 사용자(또는 외부 시스템)가 특정 태스크를 완료했다는 이벤트 처리
+	•	장점: Python 생태계에서 머신러닝, 데이터 분석, 기타 백엔드 로직을 결합하기 쉬움
+
+(C) 프로세스 실행(엔진) 로직
+	•	완전한 BPMN 엔진(토큰 이동, 게이트웨이, 이벤트 등)까지 Python으로 직접 구현하려면 꽤 복잡.
+	•	간단한 방법: Python 내부에 “간이 BPMN 해석 로직”을 작성해, 사용자 이벤트(태스크 완료 등) 시 다음 흐름(게이트웨이, 시퀀스 플로우)을 코드로 처리.
+	•	고급 방법: 자바/노드 등에서 활발히 사용되는 BPMN 엔진(Camunda, Flowable, bpmn-engine 등)을 별도 서비스로 두고, Flask가 REST API로 연동.
