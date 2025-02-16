@@ -22,7 +22,7 @@ class Product:
         self.name = name
         self.processes = processes
 
-class ResourceMonitor:
+class EquipmentMonitor:
     def __init__(self, name):
         self.name = name
         self.total_wait_time = 0
@@ -36,23 +36,23 @@ class FoodFactory:
     def __init__(self, env, product_type):
         self.env = env
         self.product_type = product_type
-        self.resources = {}
-        self.resource_monitors = {}
+        self.equipment = {}
+        self.equipment_monitors = {}
         self.processing_times = []
         self.process_logs = []
         self.failed_products = []
         
-        # 각 공정별 리소스 생성
+        # 각 공정별 설비 생성
         for process in product_type.processes:
-            self.resources[process.name] = simpy.Resource(env, capacity=process.capacity)
-            self.resource_monitors[process.name] = ResourceMonitor(process.name)
+            self.equipment[process.name] = simpy.Resource(env, capacity=process.capacity)
+            self.equipment_monitors[process.name] = EquipmentMonitor(process.name)
 
     def process_step(self, product_id, process):
-        monitor = self.resource_monitors[process.name]
+        monitor = self.equipment_monitors[process.name]
         request_time = self.env.now
         monitor.start_times[product_id] = request_time
         
-        with self.resources[process.name].request() as req:
+        with self.equipment[process.name].request() as req:
             yield req
             
             # 대기 시간 계산
@@ -104,7 +104,7 @@ def product_line(env, product_id, factory):
 
 def product_generator(env, factory, num_products):
     for i in range(num_products):
-        yield env.timeout(random.uniform(2, 5))
+        yield env.timeout(random.uniform(2, 5))  # 이전 방식으로 복원
         env.process(product_line(env, i, factory))
 
 def save_product_types(product_types_dict):
@@ -261,26 +261,24 @@ def create_gantt_chart(process_logs):
     )
     return fig
 
-def create_resource_analysis(factory):
+def create_equipment_analysis(factory):
     analysis_data = []
-    for name, monitor in factory.resource_monitors.items():
+    for name, monitor in factory.equipment_monitors.items():
         if monitor.request_count > 0:
-            # 자원 활용률 = 총 처리 시간 / (시뮬레이션 시간 * 자원 용량)
-            resource_capacity = factory.resources[name].capacity
-            total_available_time = factory.env.now * resource_capacity
+            # 설비 가동률 = 총 처리 시간 / (시뮬레이션 시간 * 설비 용량)
+            equipment_capacity = factory.equipment[name].capacity
+            total_available_time = factory.env.now * equipment_capacity
             utilization = (monitor.total_process_time / total_available_time) * 100
             
-            # 평균 시간 계산
             avg_wait_time = monitor.total_wait_time / monitor.request_count
             avg_process_time = monitor.total_process_time / monitor.completed_count if monitor.completed_count > 0 else 0
             
-            # 처리량 및 WIP (Work in Progress) 계산
             throughput = monitor.completed_count / factory.env.now  # 단위 시간당 처리량
             wip = (monitor.request_count - monitor.completed_count)  # 현재 진행 중인 작업 수
             
             analysis_data.append({
                 'process': name,
-                'capacity': resource_capacity,
+                'capacity': equipment_capacity,
                 'utilization': utilization,
                 'avg_wait_time': avg_wait_time,
                 'avg_process_time': avg_process_time,
@@ -324,7 +322,7 @@ def show_guide():
     
     #### 좌측 사이드바 설정
     - **제품 유형 선택**: 시뮬레이션할 제품 선택 (즉석식품, 음료 등)
-    - **생산 제품 수**: 5-50개 범위에서 설정
+    - **생산 제품 수**: 10-10000개 범위에서 설정
     - **시뮬레이션 시간**: 100-1000분 범위에서 설정
     - **시뮬레이션 시작** 버튼: 설정된 조건으로 시뮬레이션 실행
     
@@ -425,11 +423,12 @@ def main():
                 list(product_types.keys())
             )
             
-            num_products = st.slider(
+            num_products = st.number_input(
                 '생산 제품 수',
-                min_value=5,
-                max_value=50,
-                value=20
+                min_value=10,
+                max_value=10000,
+                value=100,
+                step=10
             )
             
             simulation_time = st.slider(
@@ -462,19 +461,19 @@ def main():
                     st.metric("불량률", f"{failure_rate:.1f}%")
                 
                 # 자원 활용률 분석
-                st.subheader("공정별 자원 활용률 및 성능 분석")
-                resource_analysis = create_resource_analysis(factory)
+                st.subheader("공정별 설비 가동률 및 성능 분석")
+                resource_analysis = create_equipment_analysis(factory)
                 
-                # 자원 활용률 차트 (개선된 버전)
+                # 설비 가동률 차트
                 fig_utilization = px.bar(resource_analysis,
                                        x='process',
                                        y='utilization',
-                                       title='공정별 자원 활용률 (%)',
+                                       title='공정별 설비 가동률 (%)',
                                        text='utilization')
                 fig_utilization.update_traces(texttemplate='%{text:.1f}%')
                 fig_utilization.update_layout(
                     xaxis_title="공정",
-                    yaxis_title="자원 활용률 (%)",
+                    yaxis_title="설비 가동률 (%)",
                     yaxis_range=[0, 100]  # 0-100% 스케일 고정
                 )
                 st.plotly_chart(fig_utilization, use_container_width=True)
@@ -517,8 +516,8 @@ def main():
                 # 컬럼명 한글화
                 column_names = {
                     'process': '공정',
-                    'capacity': '처리용량',
-                    'utilization': '자원활용률',
+                    'capacity': '설비용량',
+                    'utilization': '설비가동률',
                     'avg_wait_time': '평균대기시간',
                     'avg_process_time': '평균처리시간',
                     'throughput': '처리량(개/분)',
