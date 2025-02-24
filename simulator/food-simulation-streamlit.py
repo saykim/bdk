@@ -8,6 +8,7 @@ from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go
 import json
+import os
 
 class Process:
     def __init__(self, name, min_time, max_time, capacity, is_quality_check=False):
@@ -31,6 +32,7 @@ class EquipmentMonitor:
         self.completed_count = 0
         self.failed_count = 0
         self.start_times = {}  # 요청 시작 시간 저장
+        self.queue_length_history = []
 
 class FoodFactory:
     def __init__(self, env, product_type):
@@ -85,6 +87,12 @@ class FoodFactory:
             }
             self.process_logs.append(log)
             
+            # 큐 길이 기록
+            monitor.queue_length_history.append({
+                'time': self.env.now,
+                'queue_length': len(self.equipment[process.name].queue)
+            })
+            
             return passed
 
 def product_line(env, product_id, factory):
@@ -124,7 +132,9 @@ def save_product_types(product_types_dict):
             ]
         }
     
-    # JSON 파일로 저장
+    # 디렉토리 생성 로직 추가
+    os.makedirs('simpy', exist_ok=True)
+    
     with open('simpy/product_types.json', 'w', encoding='utf-8') as f:
         json.dump(serialized_products, f, ensure_ascii=False, indent=2)
 
@@ -229,37 +239,14 @@ def edit_product_type(product_types, selected_product):
         st.success("변경사항이 저장되었습니다!")
         st.experimental_rerun()
 
-def run_simulation(product_type, num_products, simulation_time):
+def run_simulation(product_type, num_products, simulation_time, random_seed=None):
+    if random_seed:
+        random.seed(random_seed)
     env = simpy.Environment()
     factory = FoodFactory(env, product_type)
     env.process(product_generator(env, factory, num_products))
     env.run(until=simulation_time)
     return factory
-
-def create_gantt_chart(process_logs):
-    df = pd.DataFrame(process_logs)
-    df['end_time'] = df['timestamp'] + df['process_time']
-    
-    # 품질 검사 결과를 색상으로 표시
-    df['상태'] = '정상'
-    df.loc[df['passed'] == False, '상태'] = '불량'
-    df.loc[df['passed'].isna(), '상태'] = '정상'
-    
-    fig = px.timeline(df, 
-                     x_start='timestamp', 
-                     x_end='end_time',
-                     y='product_id',
-                     color='process',
-                     hover_data=['process_time', 'wait_time', '상태'],
-                     title='생산 공정 간트 차트')
-    
-    fig.update_layout(
-        height=600,
-        xaxis_title="시간 (분)",
-        yaxis_title="제품 번호",
-        showlegend=True
-    )
-    return fig
 
 def create_equipment_analysis(factory):
     analysis_data = []
@@ -544,11 +531,6 @@ def main():
                 # 상세 분석 테이블
                 st.subheader("공정별 상세 분석")
                 st.dataframe(resource_analysis.round(2))
-                
-                # 간트 차트
-                st.subheader("생산 공정 진행 현황")
-                gantt_chart = create_gantt_chart(factory.process_logs)
-                st.plotly_chart(gantt_chart, use_container_width=True)
                 
                 # 공정별 처리 시간 분포
                 st.subheader("공정별 처리 시간 분포")
