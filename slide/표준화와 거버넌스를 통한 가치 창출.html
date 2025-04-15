@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식품제조업 디지털 혁신</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .slides-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 50px;
+            padding: 50px 0;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            padding-bottom: 70px;
+        }
+        .blue-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background-color: #0F5A99;
+        }
+        /* 표지 슬라이드 스타일 */
+        .cover-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 80px 100px;
+        }
+        .title-section {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #0F5A99;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        .subtitle {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 60px;
+        }
+        /* 일반 슬라이드 스타일 */
+        .content {
+            padding: 50px 80px;
+        }
+        .divider {
+            width: 80px;
+            height: 4px;
+            background-color: #0F5A99;
+            margin-bottom: 30px;
+        }
+        .cover-divider {
+            width: 100px;
+            height: 5px;
+            background-color: #0F5A99;
+            margin: 40px 0;
+        }
+        .section-title {
+            color: #0F5A99;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .insight-box {
+            background-color: #F5F8FC;
+            border-left: 4px solid #0F5A99;
+            padding: 20px 25px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .summary-card {
+            background-color: #F5F8FC;
+            border-radius: 6px;
+            padding: 25px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(15, 90, 153, 0.1);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #0F5A99;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .card-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #0F5A99;
+        }
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #777;
+            padding: 0 80px;
+            position: absolute;
+            bottom: 20px;
+            width: calc(100% - 160px);
+        }
+        .company-logo {
+            font-weight: 600;
+            color: #777;
+        }
+        .date {
+            color: #777;
+        }
+        .page-number {
+            font-weight: 500;
+        }
+        .decorative-element {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(15,90,153,0.05) 0%, rgba(15,90,153,0.1) 100%);
+            z-index: 0;
+        }
+        .decorative-element2 {
+            position: absolute;
+            top: 100px;
+            right: 180px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(15,90,153,0.02) 0%, rgba(15,90,153,0.05) 100%);
+            z-index: 0;
+        }
+        /* 세 번째 슬라이드 추가 스타일 */
+        .chart-container {
+            height: 250px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .bar {
+            position: absolute;
+            bottom: 0;
+            width: 8%;
+            background: linear-gradient(to top, #0F5A99, #3498db);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease-in-out;
+        }
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+        }
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #0F5A99;
+        }
+        .trend-card {
+            background-color: #F5F8FC;
+            border-radius: 6px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0F5A99;
+        }
+        .matrix {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 20px;
+            height: 280px;
+            margin: 30px 0;
+        }
+        .matrix-cell {
+            background-color: #F5F8FC;
+            border-radius: 6px;
+            padding: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .matrix-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #0F5A99;
+            margin-bottom: 10px;
+        }
+        .adoption-high {
+            border-top: 4px solid #27AE60;
+        }
+        .adoption-low {
+            border-top: 4px solid #E74C3C;
+        }
+        /* 네 번째 슬라이드 추가 스타일 */
+        .maturity-scale {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 20px 0;
+            position: relative;
+            height: 70px;
+        }
+        .maturity-level {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10px;
+            z-index: 2;
+        }
+        .maturity-level-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        .maturity-level-desc {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .maturity-indicator {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #0F5A99;
+            border-radius: 50%;
+            top: -15px;
+            left: 42%;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .maturity-indicator::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid #0F5A99;
+        }
+        .maturity-progress {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(15,90,153,0.1) 0%, rgba(15,90,153,0.5) 100%);
+            border-radius: 8px 0 0 8px;
+            z-index: 1;
+        }
+        .gap-analysis-section {
+            display: flex;
+            gap: 25px;
+            margin-top: 30px;
+        }
+        .gap-card {
+            flex: 1;
+            background-color: #F5F8FC;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .gap-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background-color: #0F5A99;
+            border-radius: 8px 8px 0 0;
+        }
+        .gap-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: #0F5A99;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .gap-item {
+            display: flex;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+        .gap-icon {
+            width: 28px;
+            height: 28px;
+            background-color: rgba(15,90,153,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0F5A99;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .radar-chart {
+            width: 100%;
+            height: 320px;
+            background-color: #F5F8FC;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+        }
+        .radar-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: #0F5A99;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .spider-web {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 0 auto;
+        }
+        .spider-axis {
+            position: absolute;
+            top: 110px;
+            left: 110px;
+            width: 110px;
+            height: 1px;
+            background-color: rgba(108, 117, 125, 0.2);
+            transform-origin: left center;
+        }
+        .spider-circle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 1px solid rgba(108, 117, 125, 0.2);
+            border-radius: 50%;
+        }
+        .spider-circle-inner {
+            position: absolute;
+            top: 25%;
+            left: 25%;
+            width: 50%;
+            height: 50%;
+            border: 1px solid rgba(108, 117, 125, 0.2);
+            border-radius: 50%;
+        }
+        .spider-circle-innermost {
+            position: absolute;
+            top: 40%;
+            left: 40%;
+            width: 20%;
+            height: 20%;
+            border: 1px solid rgba(108, 117, 125, 0.2);
+            border-radius: 50%;
+        }
+        .spider-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(110px 40px, 170px 90px, 150px 170px, 70px 170px, 50px 90px);
+            background-color: rgba(15, 90, 153, 0.2);
+        }
+        .spider-area-ideal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(110px 10px, 200px 60px, 200px 190px, 20px 190px, 20px 60px);
+            background-color: rgba(15, 90, 153, 0.1);
+            border: 1px dashed rgba(15, 90, 153, 0.6);
+        }
+        .spider-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #0F5A99;
+            border-radius: 50%;
+            transform: translate(-4px, -4px);
+        }
+        .spider-point-ideal {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: rgba(15, 90, 153, 0.4);
+            border: 1px solid #0F5A99;
+            border-radius: 50%;
+            transform: translate(-4px, -4px);
+        }
+        .spider-label {
+            position: absolute;
+            font-size: 12px;
+            color: #495057;
+            font-weight: 500;
+        }
+        /* 다섯 번째 슬라이드 추가 스타일 */
+        .barrier-framework {
+            display: flex;
+            margin-top: 20px;
+            position: relative;
+        }
+        .barrier-column {
+            flex: 1;
+            padding: 0 15px;
+        }
+        .barrier-card {
+            background-color: #F5F8FC;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid #0F5A99;
+            position: relative;
+        }
+        .barrier-card.high-impact {
+            border-left: 4px solid #E74C3C;
+        }
+        .barrier-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: #0F5A99;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .barrier-icon {
+            width: 36px;
+            height: 36px;
+            background-color: rgba(15,90,153,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0F5A99;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .barrier-card.high-impact .barrier-icon {
+            background-color: rgba(231,76,60,0.1);
+            color: #E74C3C;
+        }
+        .impact-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .impact-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-right: 8px;
+        }
+        .impact-bar {
+            width: 60px;
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        .impact-fill {
+            height: 100%;
+            background-color: #0F5A99;
+            border-radius: 4px;
+        }
+        .high-impact .impact-fill {
+            background-color: #E74C3C;
+        }
+        .venn-diagram {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            margin: 30px 0;
+        }
+        .venn-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+        }
+        .circle-tech {
+            width: 200px;
+            height: 200px;
+            background-color: rgba(15,90,153,0.7);
+            left: 130px;
+            top: 50px;
+            z-index: 1;
+        }
+        .circle-process {
+            width: 200px;
+            height: 200px;
+            background-color: rgba(231,76,60,0.7);
+            left: 250px;
+            top: 50px;
+            z-index: 2;
+        }
+        .circle-people {
+            width: 200px;
+            height: 200px;
+            background-color: rgba(46,204,113,0.7);
+            left: 190px;
+            top: 150px;
+            z-index: 3;
+        }
+        .venn-label {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .venn-sublabel {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .venn-center {
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background-color: white;
+            border-radius: 50%;
+            left: 245px;
+            top: 155px;
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(15,90,153,0.7);
+            color: #0F5A99;
+            font-weight: 700;
+            font-size: 13px;
+            text-align: center;
+        }
+        .venn-annotation {
+            position: absolute;
+            background-color: white;
+            border-radius: 6px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 14px;
+            width: 180px;
+        }
+        .venn-annotation-1 {
+            left: 40px;
+            top: 20px;
+        }
+        .venn-annotation-2 {
+            right: 40px;
+            top: 20px;
+        }
+        .venn-annotation-3 {
+            right: 40px;
+            bottom: 20px;
+        }
+        .venn-connector {
+            position: absolute;
+            width: 30px;
+            height: 2px;
+            background-color: #6c757d;
+        }
+        .connector-1 {
+            left: 130px;
+            top: 40px;
+            transform: rotate(-20deg);
+        }
+        .connector-2 {
+            right: 140px;
+            top: 40px;
+            transform: rotate(20deg);
+        }
+        .connector-3 {
+            right: 140px;
+            bottom: 40px;
+            transform: rotate(-20deg);
+        }
+        .key-insight {
+            background-color: #F5F8FC;
+            border-left: 4px solid #0F5A99;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        /* 여섯 번째 슬라이드 추가 스타일 */
+        .chart-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .chart-left {
+            width: 45%;
+            border-radius: 8px;
+            background-color: #F5F8FC;
+            padding: 20px;
+        }
+        .chart-right {
+            width: 52%;
+            border-radius: 8px;
+            background-color: #F5F8FC;
+            padding: 20px;
+        }
+        .chart-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: #0F5A99;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .bar-chart {
+            height: 280px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 0 10px;
+            position: relative;
+        }
+        .bar-group {
+            display: flex;
+            align-items: flex-end;
+            width: 120px;
+        }
+        .bar {
+            width: 50px;
+            background-color: #0F5A99;
+            border-radius: 4px 4px 0 0;
+            margin: 0 5px;
+            position: relative;
+        }
+        .bar.before {
+            background-color: #ADB5BD;
+        }
+        .bar.after {
+            background-color: #0F5A99;
+        }
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            color: #495057;
+        }
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0F5A99;
+        }
+        .bar.before .bar-value {
+            color: #6C757D;
+        }
+        .x-axis {
+            height: 1px;
+            background-color: #CED4DA;
+            margin-top: 30px;
+            position: relative;
+        }
+        .metric-cards {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .metric-card {
+            width: 23%;
+            text-align: center;
+            background-color: #F5F8FC;
+            border-radius: 8px;
+            padding: 20px 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        .metric-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #0F5A99;
+            border-radius: 8px 8px 0 0;
+        }
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0F5A99;
+            margin-bottom: 5px;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #495057;
+            line-height: 1.4;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+        .legend-text {
+            font-size: 12px;
+            color: #6C757D;
+        }
+        .case-study {
+            margin-top: 30px;
+            background-color: #F5F8FC;
+            border-left: 4px solid #0F5A99;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        .case-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: #0F5A99;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .case-icon {
+            width: 36px;
+            height: 36px;
+            background-color: rgba(15,90,153,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0F5A99;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="slides-wrapper">
+        <!-- 첫 번째 슬라이드 (표지) -->
+        <div class="slide-container">
+            <div class="blue-bar"></div>
+            <div class="decorative-element"></div>
+            <div class="decorative-element2"></div>
+            
+            <div class="cover-content">
+                <div class="title-section">
+                    <div class="text-gray-500 font-light text-lg">BCG 인사이트 리포트</div>
+                    <div class="main-title">식품제조업 디지털 혁신</div>
+                    <div class="subtitle">표준화와 거버넌스를 통한 가치 창출</div>
+                    <div class="cover-divider"></div>
+                    <div class="text-gray-600 max-w-2xl mt-6">
+                        표준화된 프로세스와 강력한 IT 거버넌스 체계를 통해 
+                        식품제조업의 디지털 전환을 가속화하고 지속 가능한 경쟁우위를 확보하는 전략
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <div class="company-logo">회사 로고</div>
+                    <div class="date">2025년 4월</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 두 번째 슬라이드 (Executive Summary) -->
+        <div class="slide-container">
+            <div class="blue-bar"></div>
+            
+            <div class="content">
+                <div class="section-title">디지털 혁신의 현황과 기회: 핵심 인사이트</div>
+                <div class="divider"></div>
+                
+                <div class="insight-box">
+                    <p class="font-semibold text-gray-800 mb-2">식품제조업은 디지털화의 기로에 있으나, 체계적 접근 부재로 투자 효과 제한적</p>
+                    <p class="text-gray-600 text-sm">무작정 시스템을 도입하는 현 상황에서 벗어나, <span class="font-semibold text-blue-700">표준화된 프로세스와 거버넌스 체계 확립</span>이 선행되어야 진정한 가치 창출 가능</p>
+                </div>
+                
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="card-title">시장 동향과 기회</div>
+                        </div>
+                        <ul class="text-gray-600 text-sm space-y-2">
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-700 text-xs mt-1.5 mr-2"></i>
+                                <span>글로벌 식품제조업 디지털화 시장 규모 2025년까지 <span class="font-semibold">연평균 17% 성장</span> 전망</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-700 text-xs mt-1.5 mr-2"></i>
+                                <span>식품 안전 규제 강화로 <span class="font-semibold">데이터 기반 품질관리 시스템</span> 도입 필수화</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-700 text-xs mt-1.5 mr-2"></i>
+                                <span>국내 식품제조업 디지털화 성숙도는 제조업 평균 대비 <span class="font-semibold">30% 낮은 수준</span></span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="card-title">당면 과제</div>
+                        </div>
+                        <ul class="text-gray-600 text-sm space-y-2">
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-700 text-xs mt-1.5 mr-2"></i>
+                                <span>디지털 시스템 도입에도 불구하고 <span class="font-semibold">표준화된 프로세스 부재</span>로 효과 제한적</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-700 text-xs mt-1.5 mr-2"></i>
+                                <span>생산-IT 부서 간 <span class="font-semibold">협업 체계와 거버넌스 미흡</span>으로 디지털 이니셔티브 실패율 68%</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-700 text-xs mt-1.5 mr-2"></i>
+                                <span>디지털 전환에 대한 <span class="font-semibold">ROI 불확실성과 현장 저항</span>으로 변화 관리 어려움</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <div class="card-title">핵심 기회 영역</div>
+                        </div>
+                        <ul class="text-gray-600 text-sm space-y-2">
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-700 text-xs mt-1.5 mr-2"></i>
+                                <span><span class="font-semibold">표준화된 SOP 구축</span>을 통해 생산성 30%, 품질 일관성 35% 개선 가능</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-700 text-xs mt-1.5 mr-2"></i>
+                                <span><span class="font-semibold">IT 거버넌스 체계 확립</span>으로 디지털 이니셔티브 성공률 2.5배 증가</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-700 text-xs mt-1.5 mr-2"></i>
+                                <span>생산-IT 협업 강화로 <span class="font-semibold">데이터 기반 의사결정</span> 체계 구축 및 대응 시간 40% 단축</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="card-title">권장 접근법</div>
+                        </div>
+                        <ul class="text-gray-600 text-sm space-y-2">
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-700 text-xs mt-1.5 mr-2"></i>
+                                <span><span class="font-semibold">시스템 도입 전 프로세스 표준화</span> 및 SOP 구축 단계적 접근</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-700 text-xs mt-1.5 mr-2"></i>
+                                <span>생산-IT 협업을 위한 <span class="font-semibold">거버넌스 체계 및 의사결정 구조</span> 수립</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-blue-700 text-xs mt-1.5 mr-2"></i>
+                                <span><span class="font-semibold">핵심 성과 지표(KPI) 중심</span>의 단계적 디지털화 추진 및 ROI 측정</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <div class="company-logo">회사 로고</div>
+                <div class="page-number">2 / 15</div>
+            </div>
+        </div>
+        
+        <!-- 세 번째 슬라이드 -->
+        <div class="slide-container">
+            <div class="blue-bar"></div>
+            
+            <div class="content">
+                <div class="section-title">식품제조업, 디지털화 흐름에서 뒤처지고 있다</div>
+                <div class="divider"></div>
+                
+                <div class="flex items-center mb-4">
+                    <div class="w-1/2 pr-8">
+                        <div class="trend-card">
+                            <div class="flex items-center mb-2">
+                                <div class="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center text-white mr-3">
+                                    <i class="fas fa-globe"></i>
+                                </div>
+                                <h3 class="font-semibold text-gray-800">글로벌 디지털화 진행 현황</h3>
+                            </div>
+                            <ul class="text-gray-600 text-sm space-y-2 pl-11">
+                                <li class="flex items-start">
+                                    <i class="fas fa-arrow-trend-up text-green-600 mt-1 mr-2"></i>
+                                    <span>식품제조업 디지털 투자 규모 연평균 <span class="font-semibold">17% 증가</span> (2021-2025)</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-arrow-trend-up text-green-600 mt-1 mr-2"></i>
+                                    <span>선도기업들의 전체 매출 대비 디지털 투자 비중 <span class="font-semibold">4.5%</span>로 확대</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-700 mt-1 mr-2"></i>
+                                    <span>표준화된 작업 방식과 거버넌스 도입 기업의 디지털 성숙도 <span class="font-semibold">2.8배 높음</span></span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="trend-card">
+                            <div class="flex items-center mb-2">
+                                <div class="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center text-white mr-3">
+                                    <i class="fas fa-flag"></i>
+                                </div>
+                                <h3 class="font-semibold text-gray-800">국내 식품제조업 현황</h3>
+                            </div>
+                            <ul class="text-gray-600 text-sm space-y-2 pl-11">
+                                <li class="flex items-start">
+                                    <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-2"></i>
+                                    <span>스마트공장 구축률 <span class="font-semibold">2.3%</span>로 전체 제조업 대비 현저히 낮은 수준</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-2"></i>
+                                    <span>디지털 전환 성공률 <span class="font-semibold">32%</span>에 그치며 투자 효율성 저조</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-2"></i>
+                                    <span>표준화된 SOP와 거버넌스 체계를 갖춘 기업 비율 <span class="font-semibold">15%</span>에 불과</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="w-1/2 pl-8">
+                        <div class="text-center mb-6">
+                            <h3 class="font-semibold text-gray-800 mb-3">산업별 디지털 성숙도 비교 (2025)</h3>
+                            <div class="chart-container">
+                                <div class="bar" style="left: 5%; height: 85%;">
+                                    <div class="bar-value">85%</div>
+                                    <div class="bar-label">IT</div>
+                                </div>
+                                <div class="bar" style="left: 16%; height: 78%;">
+                                    <div class="bar-value">78%</div>
+                                    <div class="bar-label">금융</div>
+                                </div>
+                                <div class="bar" style="left: 27%; height: 67%;">
+                                    <div class="bar-value">67%</div>
+                                    <div class="bar-label">자동차</div>
+                                </div>
+                                <div class="bar" style="left: 38%; height: 63%;">
+                                    <div class="bar-value">63%</div>
+                                    <div class="bar-label">전자</div>
+                                </div>
+                                <div class="bar" style="left: 49%; height: 58%;">
+                                    <div class="bar-value">58%</div>
+                                    <div class="bar-label">화학</div>
+                                </div>
+                                <div class="bar" style="left: 60%; height: 52%;">
+                                    <div class="bar-value">52%</div>
+                                    <div class="bar-label">제약</div>
+                                </div>
+                                <div class="bar" style="left: 71%; height: 47%;">
+                                    <div class="bar-value">47%</div>
+                                    <div class="bar-label">소매</div>
+                                </div>
+                                <div class="bar" style="left: 82%; height: 35%; background: linear-gradient(to top, #E74C3C, #F39C12);">
+                                    <div class="bar-value" style="color: #E74C3C;">35%</div>
+                                    <div class="bar-label">식품</div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-500 text-right">출처: BCG 디지털 성숙도 글로벌 벤치마크(2025)</div>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                            <h3 class="font-semibold text-blue-800 mb-2 text-sm">핵심 인사이트</h3>
+                            <p class="text-gray-700 text-sm">식품제조업은 타 산업 대비 디지털화가 지연되고 있으나, <span class="font-bold">표준화 및 거버넌스 체계</span>를 갖추고 디지털화를 추진한 기업들은 생산성 향상과 품질 개선에서 유의미한 효과를 거두고 있습니다.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="font-semibold text-gray-800 mb-3 text-center">식품제조업 디지털화 기술 도입 매트릭스</h3>
+                <div class="matrix">
+                    <div class="matrix-cell adoption-high">
+                        <div class="matrix-title">높은 가치 / 높은 도입률</div>
+                        <ul class="text-gray-600 text-xs space-y-1 mt-auto">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-600 mt-0.5 mr-1.5"></i>
+                                <span>바코드/RFID 기반 재고 관리</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-600 mt-0.5 mr-1.5"></i>
+                                <span>기본 생산관리 시스템(MES)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-600 mt-0.5 mr-1.5"></i>
+                                <span>전사적 자원 관리(ERP)</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="matrix-cell adoption-low">
+                        <div class="matrix-title">높은 가치 / 낮은 도입률</div>
+                        <ul class="text-gray-600 text-xs space-y-1 mt-auto">
+                            <li class="flex items-start">
+                                <i class="fas fa-star text-blue-700 mt-0.5 mr-1.5"></i>
+                                <span>표준화된 작업 지침(SOP) 시스템</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-star text-blue-700 mt-0.5 mr-1.5"></i>
+                                <span>프로세스 마이닝 & 자동화</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-star text-blue-700 mt-0.5 mr-1.5"></i>
+                                <span>디지털 품질관리 시스템</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="matrix-cell adoption-low">
+                        <div class="matrix-title">중간 가치 / 낮은 도입률</div>
+                        <ul class="text-gray-600 text-xs space-y-1 mt-auto">
+                            <li class="flex items-start">
+                                <i class="fas fa-lightbulb text-yellow-500 mt-0.5 mr-1.5"></i>
+                                <span>AI 기반 예측 유지보수</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-lightbulb text-yellow-500 mt-0.5 mr-1.5"></i>
+                                <span>디지털 트윈 생산 시뮬레이션</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-lightbulb text-yellow-500 mt-0.5 mr-1.5"></i>
+                                <span>IoT 센서 네트워크</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="matrix-cell adoption-high">
+                        <div class="matrix-title">기회 영역: 이것에 집중하라</div>
+                        <div class="bg-blue-100 rounded-lg p-3 text-sm text-blue-800 font-medium mt-auto">
+                            <p>표준화된 SOP와 IT 거버넌스 체계 구축은<br>가장 높은 ROI를 제공하는 디지털화 기회</p>
+                            <p class="mt-1">- 생산성 30% 향상<br>- 품질 불량률 35% 감소<br>- 디지털 투자 성공률 2.5배 증가</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <div class="company-logo">회사 로고</div>
+                <div class="page-number">3 / 15</div>
+            </div>
+        </div>
+        <!-- 네 번째 슬라이드 -->
+        <div class="slide-container">
+            <div class="blue-bar"></div>
+            <div class="content">
+                <div class="section-title">현재 당사 디지털화 수준은 초기 단계에 머물러 있다</div>
+                <div class="divider"></div>
+                <div class="flex items-center mb-2">
+                    <div class="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center text-white mr-3">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-800">디지털 성숙도 진단 결과</h3>
+                </div>
+                <div class="maturity-scale">
+                    <div class="maturity-progress" style="width: 32%;"></div>
+                    <div class="maturity-level">
+                        <div class="maturity-level-title">레벨 1</div>
+                        <div class="maturity-level-desc">기초 단계</div>
+                        <div class="maturity-indicator">
+                            <i class="fas fa-star text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="maturity-level">
+                        <div class="maturity-level-title">레벨 2</div>
+                        <div class="maturity-level-desc">초기 디지털화</div>
+                    </div>
+                    <div class="maturity-level">
+                        <div class="maturity-level-title">레벨 3</div>
+                        <div class="maturity-level-desc">통합 단계</div>
+                    </div>
+                    <div class="maturity-level">
+                        <div class="maturity-level-title">레벨 4</div>
+                        <div class="maturity-level-desc">최적화 단계</div>
+                    </div>
+                    <div class="maturity-level">
+                        <div class="maturity-level-title">레벨 5</div>
+                        <div class="maturity-level-desc">혁신 단계</div>
+                    </div>
+                </div>
+                <div class="text-center text-sm text-gray-500 mb-4">
+                    <span class="inline-block px-2 py-1 bg-blue-50 text-blue-700 rounded">현재 성숙도 점수: 1.6/5.0</span>
+                    <span class="ml-2">업계 평균: 2.3/5.0</span>
+                    <span class="ml-2">글로벌 선도기업: 4.2/5.0</span>
+                </div>
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="col-span-2">
+                        <div class="gap-analysis-section">
+                            <div class="gap-card">
+                                <div class="gap-title">
+                                    <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>핵심 문제점 분석
+                                </div>
+                                <div class="gap-item">
+                                    <div class="gap-icon">
+                                        <i class="fas fa-random"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-800 text-sm">프로세스 표준화 부재</h4>
+                                        <p class="text-gray-600 text-xs mt-1">제품별, 라인별로 상이한 작업 방식으로 인해 시스템 활용도 저하 및 데이터 일관성 부족</p>
+                                    </div>
+                                </div>
+                                <div class="gap-item">
+                                    <div class="gap-icon">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-800 text-sm">SOP 관리 체계 미흡</h4>
+                                        <p class="text-gray-600 text-xs mt-1">문서화된 표준작업지침이 있으나 현장 활용도가 낮고 시스템과 연계되지 않아 실질적 효과 제한적</p>
+                                    </div>
+                                </div>
+                                <div class="gap-item">
+                                    <div class="gap-icon">
+                                        <i class="fas fa-sitemap"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-800 text-sm">거버넌스 체계 부재</h4>
+                                        <p class="text-gray-600 text-xs mt-1">IT와 생산본부 간 명확한 의사결정 구조와 역할 정의 부재로 디지털 이니셔티브 추진력 약화</p>
+                                    </div>
+                                </div>
+                                <div class="gap-item">
+                                    <div class="gap-icon">
+                                        <i class="fas fa-database"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-800 text-sm">데이터 통합 및 활용 미흡</h4>
+                                        <p class="text-gray-600 text-xs mt-1">개별 시스템 간 데이터 연계성 부족으로 통합적 분석과 의사결정 지원 역량 약화</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gap-card">
+                                <div class="gap-title">
+                                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>개선 기회 영역
+                                </div>
+                                <div class="gap-item">
+                                    <div class="gap-icon">
+                                        <i class="fas fa-check-double"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-800 text-sm">핵심 프로세스 표준화</h4>
+                                        <p class="text-gray-600 text-xs mt-1">주요 생산 공정별 표준 프로세스 정의 및 효율화를 통한 품질 일관성 확보 (<span class="text-green-600 font-medium">품질 35% 개선 기회</span>)</p>
+                                    </div>
+                                </div>
+                                <div class="gap-item">
+                                    <div class="gap-icon">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-800 text-sm">디지털 SOP 체계 구축</h4>
+                                        <p class="text-gray-600 text-xs mt-1">표준작업지침의 디지털화 및 시스템 연계를 통한 현장 활용성 증대 (<span class="text-green-600 font-medium">생산성 30% 향상 가능</span>)</p>
+                                    </div>
+                                </div>
+                                <div class="gap-item">
+                                    <div class="gap-icon">
+                                        <i class="fas fa-users-cog"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-800 text-sm">IT-생산 거버넌스 수립</h4>
+                                        <p class="text-gray-600 text-xs mt-1">명확한 책임과 권한, 의사결정 체계 수립으로 디지털 이니셔티브 효과성 강화 (<span class="text-green-600 font-medium">프로젝트 성공률 2.5배 증가</span>)</p>
+                                    </div>
+                                </div>
+                                <div class="gap-item">
+                                    <div class="gap-icon">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-800 text-sm">데이터 기반 의사결정</h4>
+                                        <p class="text-gray-600 text-xs mt-1">통합된 데이터 분석 체계 구축으로 실시간 모니터링 및 예측 역량 강화 (<span class="text-green-600 font-medium">의사결정 시간 40% 단축</span>)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-1">
+                        <div class="radar-chart">
+                            <div class="radar-title">디지털 역량 GAP 분석</div>
+                            <div class="spider-web">
+                                <div class="spider-circle"></div>
+                                <div class="spider-circle-inner"></div>
+                                <div class="spider-circle-innermost"></div>
+                                <div class="spider-axis" style="transform: rotate(0deg);"></div>
+                                <div class="spider-axis" style="transform: rotate(72deg);"></div>
+                                <div class="spider-axis" style="transform: rotate(144deg);"></div>
+                                <div class="spider-axis" style="transform: rotate(216deg);"></div>
+                                <div class="spider-axis" style="transform: rotate(288deg);"></div>
+                                <div class="spider-area"></div>
+                                <div class="spider-area-ideal"></div>
+                                <!-- Current points -->
+                                <div class="spider-point" style="left: 110px; top: 40px;"></div>
+                                <div class="spider-point" style="left: 170px; top: 90px;"></div>
+                                <div class="spider-point" style="left: 150px; top: 170px;"></div>
+                                <div class="spider-point" style="left: 70px; top: 170px;"></div>
+                                <div class="spider-point" style="left: 50px; top: 90px;"></div>
+                                <!-- Ideal points -->
+                                <div class="spider-point-ideal" style="left: 110px; top: 10px;"></div>
+                                <div class="spider-point-ideal" style="left: 200px; top: 60px;"></div>
+                                <div class="spider-point-ideal" style="left: 200px; top: 190px;"></div>
+                                <div class="spider-point-ideal" style="left: 20px; top: 190px;"></div>
+                                <div class="spider-point-ideal" style="left: 20px; top: 60px;"></div>
+                                <!-- Labels -->
+                                <div class="spider-label" style="left: 90px; top: -10px; text-align: center;">프로세스<br>표준화</div>
+                                <div class="spider-label" style="left: 210px; top: 90px;">시스템<br>통합</div>
+                                <div class="spider-label" style="left: 160px; top: 200px; text-align: center;">데이터<br>활용</div>
+                                <div class="spider-label" style="left: 40px; top: 200px; text-align: center;">디지털<br>인재</div>
+                                <div class="spider-label" style="left: -20px; top: 90px; text-align: right;">거버넌스</div>
+                            </div>
+                            <div class="flex justify-center mt-6 text-xs text-gray-600">
+                                <div class="flex items-center mr-4">
+                                    <div class="w-3 h-3 bg-blue-700 rounded-full mr-1"></div>
+                                    <span>현재 수준</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 bg-white border border-blue-700 rounded-full mr-1"></div>
+                                    <span>목표 수준</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg mt-4">
+                            <h3 class="font-semibold text-blue-800 mb-2 text-sm">핵심 인사이트</h3>
+                            <p class="text-gray-700 text-xs">현재 당사의 가장 큰 디지털화 저해 요인은 <span class="font-bold">표준화된 프로세스와 거버넌스 체계 부재</span>입니다. 성공적인 디지털 전환을 위해서는 기술 도입 이전에 이 두 가지 기반 요소를 우선적으로 강화해야 합니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="company-logo">회사 로고</div>
+                <div class="page-number">4 / 15</div>
+            </div>
+        </div>
+        <!-- 다섯 번째 슬라이드 -->
+        <div class="slide-container">
+            <div class="blue-bar"></div>
+            <div class="content">
+                <div class="section-title">업계 디지털화의 최대 장벽은 기술이 아닌 프로세스와 거버넌스다</div>
+                <div class="divider"></div>
+                <div class="barrier-framework">
+                    <div class="barrier-column">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                            고영향 장벽 요소
+                        </h3>
+                        <div class="barrier-card high-impact">
+                            <div class="barrier-title">
+                                <div class="barrier-icon">
+                                    <i class="fas fa-sitemap"></i>
+                                </div>
+                                <span>표준화된 프로세스 부재</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">공정별, 제품별로 상이한 작업 방식과 일관된 표준의 부재로 인해 디지털 시스템의 효과적 활용이 불가능함</p>
+                            <div class="flex flex-wrap text-xs text-gray-600">
+                                <div class="bg-red-50 text-red-700 px-2 py-1 rounded mr-2 mb-1">디지털 효과 저하</div>
+                                <div class="bg-red-50 text-red-700 px-2 py-1 rounded mr-2 mb-1">데이터 품질 저하</div>
+                                <div class="bg-red-50 text-red-700 px-2 py-1 rounded mr-2 mb-1">중복 업무 발생</div>
+                            </div>
+                            <div class="impact-indicator">
+                                <div class="impact-label">영향도</div>
+                                <div class="impact-bar">
+                                    <div class="impact-fill" style="width: 95%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="barrier-card high-impact">
+                            <div class="barrier-title">
+                                <div class="barrier-icon">
+                                    <i class="fas fa-users-cog"></i>
+                                </div>
+                                <span>거버넌스 체계 미비</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">IT와 생산부서 간 역할 책임 불명확, 의사결정 구조 부재로 인한 디지털 이니셔티브 추진력 약화</p>
+                            <div class="flex flex-wrap text-xs text-gray-600">
+                                <div class="bg-red-50 text-red-700 px-2 py-1 rounded mr-2 mb-1">프로젝트 지연</div>
+                                <div class="bg-red-50 text-red-700 px-2 py-1 rounded mr-2 mb-1">투자 효율성 저하</div>
+                                <div class="bg-red-50 text-red-700 px-2 py-1 rounded mr-2 mb-1">협업 장벽</div>
+                            </div>
+                            <div class="impact-indicator">
+                                <div class="impact-label">영향도</div>
+                                <div class="impact-bar">
+                                    <div class="impact-fill" style="width: 90%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="barrier-column">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-exclamation-circle text-blue-600 mr-2"></i>
+                            중간 영향 장벽 요소
+                        </h3>
+                        <div class="barrier-card">
+                            <div class="barrier-title">
+                                <div class="barrier-icon">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <span>기존 설비 호환성 문제</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">노후화된 설비와 신규 디지털 시스템 간 인터페이스 구현의 기술적 제약</p>
+                            <div class="flex flex-wrap text-xs text-gray-600">
+                                <div class="bg-blue-50 text-blue-700 px-2 py-1 rounded mr-2 mb-1">데이터 수집 한계</div>
+                                <div class="bg-blue-50 text-blue-700 px-2 py-1 rounded mr-2 mb-1">추가 투자 요구</div>
+                            </div>
+                            <div class="impact-indicator">
+                                <div class="impact-label">영향도</div>
+                                <div class="impact-bar">
+                                    <div class="impact-fill" style="width: 60%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="barrier-card">
+                            <div class="barrier-title">
+                                <div class="barrier-icon">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <span>현장 저항 및 변화 관리 미흡</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">디지털화에 대한 현장 직원의 우려와 참여 부족, 체계적 변화 관리 프로그램 부재</p>
+                            <div class="flex flex-wrap text-xs text-gray-600">
+                                <div class="bg-blue-50 text-blue-700 px-2 py-1 rounded mr-2 mb-1">도입 지연</div>
+                                <div class="bg-blue-50 text-blue-700 px-2 py-1 rounded mr-2 mb-1">활용도 저하</div>
+                            </div>
+                            <div class="impact-indicator">
+                                <div class="impact-label">영향도</div>
+                                <div class="impact-bar">
+                                    <div class="impact-fill" style="width: 65%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="barrier-card">
+                            <div class="barrier-title">
+                                <div class="barrier-icon">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <span>ROI 불확실성</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">디지털 투자 대비 성과의 가시성 부족, 비즈니스 케이스 미흡으로 인한 투자 결정 지연</p>
+                            <div class="flex flex-wrap text-xs text-gray-600">
+                                <div class="bg-blue-50 text-blue-700 px-2 py-1 rounded mr-2 mb-1">투자 계획 지연</div>
+                                <div class="bg-blue-50 text-blue-700 px-2 py-1 rounded mr-2 mb-1">안전 지향적 접근</div>
+                            </div>
+                            <div class="impact-indicator">
+                                <div class="impact-label">영향도</div>
+                                <div class="impact-bar">
+                                    <div class="impact-fill" style="width: 55%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="key-insight">
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center text-white mr-3 flex-shrink-0">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-2">디지털 성공의 핵심 인사이트</h4>
+                            <p class="text-gray-600 text-sm">BCG의 분석에 따르면 식품제조업 디지털화 실패 사례의 <span class="font-bold text-red-600">68%</span>가 기술 문제가 아닌 표준화된 프로세스와 거버넌스 체계 부재에서 기인합니다. 성공적인 디지털 혁신을 위해서는 기술 도입 이전에 <span class="font-bold text-blue-700">프로세스 표준화와 거버넌스 체계 구축</span>이 선행되어야 합니다.</p>
+                            <div class="mt-2 flex">
+                                <div class="text-center mr-8">
+                                    <div class="text-xl font-bold text-red-600">42%</div>
+                                    <div class="text-xs text-gray-500">표준화 부재로 인한<br>디지털 실패</div>
+                                </div>
+                                <div class="text-center mr-8">
+                                    <div class="text-xl font-bold text-red-600">26%</div>
+                                    <div class="text-xs text-gray-500">거버넌스 미흡으로<br>인한 디지털 실패</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-xl font-bold text-gray-600">32%</div>
+                                    <div class="text-xs text-gray-500">기타 요인으로<br>인한 디지털 실패</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="company-logo">회사 로고</div>
+                <div class="page-number">5 / 15</div>
+            </div>
+        </div>
+       
+<!-- 여섯번째 슬라이드 -->
+<div class="slide-container">
+    <div class="blue-bar"></div>
+    
+    <div class="content">
+        <div class="section-title">표준화와 SOP 구축은 측정 가능한 비즈니스 가치를 창출한다</div>
+        <div class="divider"></div>
+        
+        <div class="chart-container">
+            <div class="chart-left">
+                <div class="chart-title">표준화 도입 전후 핵심 지표 변화</div>
+                <div class="bar-chart">
+                    <div class="bar-group">
+                        <div class="bar before" style="height: 110px;">
+                            <div class="bar-value">58%</div>
+                        </div>
+                        <div class="bar after" style="height: 210px;">
+                            <div class="bar-value">87%</div>
+                        </div>
+                        <div class="bar-label">생산 효율성</div>
+                    </div>
+                    
+                    <div class="bar-group">
+                        <div class="bar before" style="height: 100px;">
+                            <div class="bar-value">11%</div>
+                        </div>
+                        <div class="bar after" style="height: 40px;">
+                            <div class="bar-value">4%</div>
+                        </div>
+                        <div class="bar-label">품질 불량률</div>
+                    </div>
+                    
+                    <div class="bar-group">
+                        <div class="bar before" style="height: 150px;">
+                            <div class="bar-value">78%</div>
+                        </div>
+                        <div class="bar after" style="height: 220px;">
+                            <div class="bar-value">95%</div>
+                        </div>
+                        <div class="bar-label">설비 가동률</div>
+                    </div>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ADB5BD;"></div>
+                        <div class="legend-text">도입 전</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #0F5A99;"></div>
+                        <div class="legend-text">도입 후</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-right">
+                <div class="chart-title">식품제조업 SOP 표준화 효과 분석</div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded shadow-sm">
+                        <div class="text-gray-700 font-semibold text-sm mb-2">생산 일정 준수율</div>
+                        <div class="flex items-end">
+                            <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+                            <div class="text-xs ml-2 text-gray-500">50%</div>
+                        </div>
+                        <div class="flex items-end mt-1">
+                            <div class="h-4 bg-blue-600 rounded w-4/5"></div>
+                            <div class="text-xs ml-2 text-blue-600 font-semibold">80%</div>
+                        </div>
+                        <div class="text-xs text-green-600 mt-1">△30%p</div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded shadow-sm">
+                        <div class="text-gray-700 font-semibold text-sm mb-2">재작업 발생률</div>
+                        <div class="flex items-end">
+                            <div class="h-4 bg-gray-300 rounded w-3/5"></div>
+                            <div class="text-xs ml-2 text-gray-500">15%</div>
+                        </div>
+                        <div class="flex items-end mt-1">
+                            <div class="h-4 bg-blue-600 rounded w-1/5"></div>
+                            <div class="text-xs ml-2 text-blue-600 font-semibold">5%</div>
+                        </div>
+                        <div class="text-xs text-green-600 mt-1">▼10%p</div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded shadow-sm">
+                        <div class="text-gray-700 font-semibold text-sm mb-2">작업 전환 시간</div>
+                        <div class="flex items-end">
+                            <div class="h-4 bg-gray-300 rounded w-4/5"></div>
+                            <div class="text-xs ml-2 text-gray-500">45분</div>
+                        </div>
+                        <div class="flex items-end mt-1">
+                            <div class="h-4 bg-blue-600 rounded w-1/3"></div>
+                            <div class="text-xs ml-2 text-blue-600 font-semibold">18분</div>
+                        </div>
+                        <div class="text-xs text-green-600 mt-1">▼60%</div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded shadow-sm">
+                        <div class="text-gray-700 font-semibold text-sm mb-2">직원 만족도</div>
+                        <div class="flex items-end">
+                            <div class="h-4 bg-gray-300 rounded w-2/5"></div>
+                            <div class="text-xs ml-2 text-gray-500">65/100</div>
+                        </div>
+                        <div class="flex items-end mt-1">
+                            <div class="h-4 bg-blue-600 rounded w-4/5"></div>
+                            <div class="text-xs ml-2 text-blue-600 font-semibold">82/100</div>
+                        </div>
+                        <div class="text-xs text-green-600 mt-1">△26%</div>
+                    </div>
+                    
+                    <div class="col-span-2 mt-1 text-xs text-gray-500 italic text-right">* BCG 글로벌 식품기업 표준화 구축 사례 통계</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metric-cards mb-8">
+            <div class="metric-card">
+                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="metric-value">30%</div>
+                <div class="metric-label">생산성 향상<br>효과</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="metric-value">35%</div>
+                <div class="metric-label">품질 불량률<br>감소</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="metric-value">45%</div>
+                <div class="metric-label">출시 시간<br>단축</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="metric-value">520%</div>
+                <div class="metric-label">SOP 투자<br>ROI</div>
+            </div>
+        </div>
+        
+        <div class="case-study">
+            <div class="case-title">
+                <div class="case-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <span>성공 사례: 풀무원 디지털 SOP 구축 효과</span>
+            </div>
+            <div class="flex">
+                <div class="w-3/4 pr-6">
+                    <p class="text-gray-600 text-sm">풀무원은 2022년 디지털 클러스터 스마트공장 구축 프로젝트에서 제조 라인의 표준화된 SOP를 먼저 구축한 후 디지털 시스템을 도입했습니다. 표준 프로세스 정의와 SOP 디지털화를 통해 생산 효율성이 대폭 향상되었으며, 이는 시스템 도입 이전에 <span class="font-semibold text-blue-700">프로세스 기반을 먼저 탄탄히 구축</span>하는 접근법의 효과를 입증했습니다.</p>
+                </div>
+                <div class="w-1/4 bg-white p-3 rounded-lg shadow-sm text-center">
+                    <div class="text-xs text-gray-500 mb-2">주요 성과</div>
+                    <div class="text-blue-700 font-bold text-xl mb-1">30%</div>
+                    <div class="text-xs text-gray-600 mb-2">생산성 향상</div>
+                    <div class="text-blue-700 font-bold text-xl mb-1">25%</div>
+                    <div class="text-xs text-gray-600 mb-2">불량률 감소</div>
+                    <div class="text-blue-700 font-bold text-xl">45%</div>
+                    <div class="text-xs text-gray-600">의사결정 시간 단축</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <div class="company-logo">회사 로고</div>
+        <div class="page-number">6 / 15</div>
+    </div>
+</div>

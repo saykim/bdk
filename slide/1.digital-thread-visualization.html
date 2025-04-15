@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>식품 제조 기업의 디지털 쓰레드 도입 분석</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    /* 기본 스타일 */
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #333;
+      background-color: #f8f9fa;
+    }
+    
+    .card {
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .section-title {
+      position: relative;
+      padding-bottom: 10px;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background-color: #3b82f6;
+    }
+    
+    .chart-container {
+      height: 300px;
+      position: relative;
+    }
+    
+    @media (max-width: 768px) {
+      .chart-container {
+        height: 250px;
+      }
+    }
+    
+    /* 인터랙티브 요소 스타일 */
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .tab-button {
+      position: relative;
+      padding-bottom: 5px;
+    }
+    
+    .tab-button.active {
+      color: #3b82f6;
+    }
+    
+    .tab-button.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: #3b82f6;
+    }
+    
+    /* 접근성 향상 스타일 */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="bg-white shadow-md">
+    <div class="container mx-auto px-4 py-6">
+      <h1 class="text-3xl font-bold text-center text-blue-600">식품 제조 기업의 디지털 쓰레드 도입 분석</h1>
+      <p class="text-center text-gray-600 mt-2">데이터 기반 의사결정을 위한 디지털 전환 여정</p>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-4 py-8">
+    <!-- 요약 정보 섹션 -->
+    <section class="mb-12 bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-4 section-title">핵심 인사이트 요약</h2>
+      <div class="grid md:grid-cols-3 gap-6 mt-8">
+        <div class="card bg-blue-50 p-5 border-l-4 border-blue-500">
+          <h3 class="font-bold text-lg mb-2">WHY</h3>
+          <p>식품 제조업의 디지털 쓰레드 도입은 <strong>공급망 투명성</strong>, <strong>규제 준수</strong>, <strong>운영 효율성</strong>, <strong>의사결정 민첩성</strong>을 제공하는 필수 전략입니다.</p>
+        </div>
+        <div class="card bg-red-50 p-5 border-l-4 border-red-500">
+          <h3 class="font-bold text-lg mb-2">HOW</h3>
+          <p>현재 <strong>기술적 장벽</strong>, <strong>조직 문화적 저항</strong>, <strong>투자 우선순위 문제</strong> 등의 장애요소가 디지털 전환을 방해하고 있습니다.</p>
+        </div>
+        <div class="card bg-green-50 p-5 border-l-4 border-green-500">
+          <h3 class="font-bold text-lg mb-2">WHAT</h3>
+          <p><strong>수기 기록 의존</strong>, <strong>설비 데이터 연동 부재</strong>, <strong>부서 간 정보 단절</strong> 현상이 관찰되며, <strong>지금이 디지털 전환의 결정적 시점</strong>입니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 주요 탭 네비게이션 -->
+    <div class="mb-8 bg-white p-4 rounded-lg shadow-md">
+      <div class="flex flex-wrap border-b">
+        <button id="tab-why" class="tab-button active mr-8 pb-2 focus:outline-none" aria-selected="true">
+          WHY (존재 이유)
+        </button>
+        <button id="tab-how" class="tab-button mr-8 pb-2 focus:outline-none" aria-selected="false">
+          HOW (접근 방식)
+        </button>
+        <button id="tab-what" class="tab-button mr-8 pb-2 focus:outline-none" aria-selected="false">
+          WHAT (현상)
+        </button>
+        <button id="tab-now" class="tab-button pb-2 focus:outline-none" aria-selected="false">
+          WHY NOW (지금의 중요성)
+        </button>
+      </div>
+
+      <!-- WHY 탭 내용 -->
+      <div id="content-why" class="tab-content active py-6">
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold mb-4">디지털 쓰레드 도입의 이유</h3>
+          <div class="chart-container mb-6">
+            <canvas id="whyChart"></canvas>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <h4 class="font-bold mb-2">공급망 투명성과 품질 보증</h4>
+            <p>식품 산업에서 원재료부터 최종 제품까지의 추적성은 식품 안전과 품질 관리에 필수적입니다.</p>
+          </div>
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <h4 class="font-bold mb-2">규제 준수와 리스크 관리</h4>
+            <p>식품 안전 규제가 강화되는 상황에서 데이터 기반 증빙은 리콜 발생 시 피해를 최소화할 수 있습니다.</p>
+          </div>
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <h4 class="font-bold mb-2">운영 효율성 향상</h4>
+            <p>수기 작업에서 발생하는 인적 오류와 비효율을 줄여 생산성 향상과 비용 절감이 가능합니다.</p>
+          </div>
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <h4 class="font-bold mb-2">의사결정 민첩성</h4>
+            <p>실시간 데이터를 통한 신속한 의사결정으로 시장 변화에 대응할 수 있습니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- HOW 탭 내용 -->
+      <div id="content-how" class="tab-content py-6">
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold mb-4">디지털 쓰레드 추진의 장애요소</h3>
+          <div class="chart-container mb-6">
+            <canvas id="howChart"></canvas>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-bold mb-3 text-lg">과거 실패의 교훈</h4>
+          <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="card bg-white p-5 shadow-sm border border-gray-200">
+              <h5 class="font-bold mb-2 text-red-600">근본 원인 (WHY)</h5>
+              <ul class="list-disc pl-5 space-y-2">
+                <li>전략적 중요성 인식 부족</li>
+                <li>지속가능한 변화관리 부재</li>
+                <li>경영진의 일관된 지원 부족</li>
+              </ul>
+            </div>
+            <div class="card bg-white p-5 shadow-sm border border-gray-200">
+              <h5 class="font-bold mb-2 text-orange-600">실행 과정의 문제점 (HOW)</h5>
+              <ul class="list-disc pl-5 space-y-2">
+                <li>책임소재 불명확</li>
+                <li>거버넌스 체계 미비</li>
+                <li>연속성 부족</li>
+                <li>자원 배분 문제</li>
+              </ul>
+            </div>
+          </div>
+          <h4 class="font-bold mb-3 text-lg">인사이트 및 개선 방향</h4>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="card bg-white p-5 shadow-sm border-l-4 border-blue-500">
+              <h5 class="font-bold mb-2">전담 조직 구성의 중요성</h5>
+              <p>디지털 전환을 위한 전문 조직을 구성하고 명확한 권한과 책임 부여</p>
+              <p class="text-sm text-gray-600 mt-2">사례: 포드(Ford)는 'Digital Transformation Office'를 별도로 설립해 성공적인 제조 디지털화 달성</p>
+            </div>
+            <div class="card bg-white p-5 shadow-sm border-l-4 border-blue-500">
+              <h5 class="font-bold mb-2">통합 거버넌스 체계 구축</h5>
+              <p>전사적 차원의 디지털 전환을 관리할 수 있는 프로세스와 의사결정 체계 마련</p>
+              <p class="text-sm text-gray-600 mt-2">사례: 유니레버는 'Connected Operations' 프로그램에서 글로벌 거버넌스 모델을 통해 400개 이상의 공장 디지털화 성공</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WHAT 탭 내용 -->
+      <div id="content-what" class="tab-content py-6">
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold mb-4">현재 관찰되는 구체적인 문제점</h3>
+          <div class="chart-container mb-6">
+            <canvas id="whatChart"></canvas>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <div class="flex items-center mb-3">
+              <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
+              <h4 class="font-bold">수기 기록에 의존한 생산 관리</h4>
+            </div>
+            <p>생산량, 품질 검사, 재고 관리 등이 수작업으로 이루어져 실시간성 부족</p>
+          </div>
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <div class="flex items-center mb-3">
+              <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
+              <h4 class="font-bold">설비 데이터 연동 부재</h4>
+            </div>
+            <p>생산 설비로부터 발생하는 데이터가 자동으로 수집되지 않아 설비 성능 분석과 예측 정비 불가</p>
+          </div>
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <div class="flex items-center mb-3">
+              <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
+              <h4 class="font-bold">부서 간 정보 단절</h4>
+            </div>
+            <p>생산, 품질, 유지보수, 공급망 관리 부서 간 실시간 정보 공유 어려움</p>
+          </div>
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <div class="flex items-center mb-3">
+              <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
+              <h4 class="font-bold">의사결정 지연</h4>
+            </div>
+            <p>데이터 집계와 분석에 시간이 소요되어 신속한 의사결정과 조치 불가능</p>
+          </div>
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <div class="flex items-center mb-3">
+              <span class="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
+              <h4 class="font-bold">반복적 행정 업무 증가</h4>
+            </div>
+            <p>동일한 데이터를 여러 시스템에 중복 입력하는 비효율 발생</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- WHY NOW 탭 내용 -->
+      <div id="content-now" class="tab-content py-6">
+        <div class="mb-6">
+          <h3 class="text-xl font-semibold mb-4">지금이 디지털 쓰레드 도입의 결정적 시점인 이유</h3>
+          <div class="chart-container mb-6">
+            <canvas id="whyNowChart"></canvas>
+          </div>
+        </div>
+        <div class="bg-yellow-50 p-4 rounded-lg mb-6 border-l-4 border-yellow-500">
+          <h4 class="font-bold text-lg mb-2">전환점(Tipping Point) 임박</h4>
+          <p>식품 제조업은 디지털화의 전환점에 도달했으며, 이 시점을 놓치면 따라잡기 더욱 어려워짐</p>
+          <p class="text-sm text-gray-700 mt-2">데이터: Deloitte의 식품 제조업 연구에 따르면, 디지털 선도 기업과 후발 기업 간 생산성 격차가 2019년 15%에서 2023년 37%로 확대됨</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <h4 class="font-bold mb-2">산업 변곡점</h4>
+            <p>식품 제조업이 데이터 기반 의사결정으로 급속히 전환되는 시점에서, 뒤처질 경우 경쟁력 상실 위험이 커짐</p>
+          </div>
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <h4 class="font-bold mb-2">소비자 신뢰 요구 증가</h4>
+            <p>최근 식품 안전사고 증가로 원재료부터 최종 제품까지 투명한 추적성에 대한 소비자 요구가 높아짐</p>
+          </div>
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <h4 class="font-bold mb-2">총소유비용(TCO) 관점</h4>
+            <p>더 미룰수록 레거시 시스템 유지 비용과 미래 전환 비용이 모두 증가</p>
+            <p class="text-sm text-gray-600 mt-2">사례: General Mills는 디지털 전환 지연으로 발생한 추가 비용이 초기 투자액의 2.5배에 달했다고 보고</p>
+          </div>
+          <div class="card bg-white p-5 shadow-sm border border-gray-200">
+            <h4 class="font-bold mb-2">인재 확보의 어려움</h4>
+            <p>디지털 역량을 갖춘 인재들은 혁신적인 환경을 선호하며, 디지털화가 지연될수록 인재 유치와 유지가 어려워짐</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 권장 솔루션 섹션 -->
+    <section class="mb-12 bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-4 section-title">디지털 쓰레드 도입 권장 솔루션</h2>
+      <div class="grid md:grid-cols-4 gap-6 mt-8">
+        <div class="card bg-blue-50 p-5 shadow-sm">
+          <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center mb-3">1</div>
+          <h3 class="font-bold text-lg mb-2">단계적 디지털 전환 접근법</h3>
+          <p>모든 공정을 한번에 디지털화하려 하기보다 핵심 병목 공정부터 단계적 접근</p>
+        </div>
+        <div class="card bg-blue-50 p-5 shadow-sm">
+          <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center mb-3">2</div>
+          <h3 class="font-bold text-lg mb-2">현장 직원 참여형 디자인</h3>
+          <p>수기 작업을 하는 현장 직원들의 니즈와 피드백을 반영한 사용자 중심 설계</p>
+        </div>
+        <div class="card bg-blue-50 p-5 shadow-sm">
+          <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center mb-3">3</div>
+          <h3 class="font-bold text-lg mb-2">명확한 ROI 설정</h3>
+          <p>단기적으로 가시적인 효과를 보여줄 수 있는 영역(품질 불량률 감소, 설비 가동률 향상 등)에 초점</p>
+        </div>
+        <div class="card bg-blue-50 p-5 shadow-sm">
+          <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center mb-3">4</div>
+          <h3 class="font-bold text-lg mb-2">하이브리드 접근법</h3>
+          <p>완전한 디지털화가 어려운 영역은 임시로 디지털-아날로그 연계 지점 마련</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between">
+        <div>
+          <h3 class="font-bold text-lg mb-2">식품 제조 기업의 디지털 쓰레드 도입 분석</h3>
+          <p class="text-gray-400">데이터 기반 의사결정을 위한 디지털 전환 여정</p>
+        </div>
+        <div class="mt-4 md:mt-0">
+          <p class="text-gray-400">© 2025 디지털 전환 연구소. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 데이터 정의
+    const whyData = {
+      labels: ['공급망 투명성', '규제 준수', '운영 효율성', '의사결정 민첩성'],
+      datasets: [{
+        label: '중요도',
+        data: [90, 85, 80, 75],
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.7)',
+          'rgba(59, 130, 246, 0.6)',
+          'rgba(59, 130, 246, 0.5)',
+          'rgba(59, 130, 246, 0.4)'
+        ],
+        borderColor: [
+          'rgb(59, 130, 246)',
+          'rgb(59, 130, 246)',
+          'rgb(59, 130, 246)',
+          'rgb(59, 130, 246)'
+        ],
+        borderWidth: 1
+      }]
+    };
+
+    const howData = {
+      labels: ['기술적 장벽', '조직 문화적 저항', '투자 우선순위 문제', '데이터 표준화 부재', '전문 인력 부족'],
+      datasets: [{
+        label: '심각도',
+        data: [85, 80, 75, 70, 65],
+        backgroundColor: 'rgba(239, 68, 68, 0.7)',
+        borderColor: 'rgb(239, 68, 68)',
+        borderWidth: 1
+      }]
+    };
+
+    const whatData = {
+      labels: ['수기 기록 의존', '설비 데이터 연동 부재', '부서 간 정보 단절', '의사결정 지연', '반복적 행정 업무'],
+      datasets: [{
+        label: '영향도',
+        data: [90, 85, 80, 75, 70],
+        backgroundColor: 'rgba(245, 158, 11, 0.7)',
+        borderColor: 'rgb(245, 158, 11)',
+        borderWidth: 1
+      }]
+    };
+
+    const whyNowData = {
+      labels: ['산업 변곡점', '소비자 신뢰 요구', '규제 환경 변화', '노동력 변화', '코로나19 이후 변화'],
+      datasets: [{
+        label: '시급성',
+        data: [95, 90, 85, 80, 75],
+        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+        borderColor: 'rgb(16, 185, 129)',
+        borderWidth: 1
+      }]
+    };
+
+    // 차트 렌더링 함수
+    function renderCharts() {
+      // WHY 차트
+      const whyCtx = document.getElementById('whyChart').getContext('2d');
+      const whyChart = new Chart(whyCtx, {
+        type: 'bar',
+        data: whyData,
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `중요도: ${context.raw}/100`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              max: 100,
+              beginAtZero: true,
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
+
+      // HOW 차트
+      const howCtx = document.getElementById('howChart').getContext('2d');
+      const howChart = new Chart(howCtx, {
+        type: 'bar',
+        data: howData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `심각도: ${context.raw}/100`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
+
+      // WHAT 차트
+      const whatCtx = document.getElementById('whatChart').getContext('2d');
+      const whatChart = new Chart(whatCtx, {
+        type: 'radar',
+        data: {
+          labels: whatData.labels,
+          datasets: [{
+            label: '현재 문제점',
+            data: whatData.datasets[0].data,
+            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+            borderColor: 'rgb(245, 158, 11)',
+            pointBackgroundColor: 'rgb(245, 158, 11)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(245, 158, 11)'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              angleLines: {
+                display: true
+              },
+              suggestedMin: 0,
+              suggestedMax: 100
+            }
+          }
+        }
+      });
+
+      // WHY NOW 차트
+      const whyNowCtx = document.getElementById('whyNowChart').getContext('2d');
+      const whyNowChart = new Chart(whyNowCtx, {
+        type: 'polarArea',
+        data: {
+          labels: whyNowData.labels,
+          datasets: [{
+            data: whyNowData.datasets[0].data,
+            backgroundColor: [
+              'rgba(16, 185, 129, 0.7)',
+              'rgba(14, 165, 233, 0.7)',
+              'rgba(99, 102, 241, 0.7)',
+              'rgba(139, 92, 246, 0.7)',
+              'rgba(236, 72, 153, 0.7)'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return `시급성: ${context.raw}/100`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // 탭 기능 구현
+    function setupTabs() {
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // 모든 탭 비활성화
+          tabButtons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+          });
+          tabContents.forEach(content => {
+            content.classList.remove('active');
+          });
+
+          // 클릭한 탭 활성화
+          button.classList.add('active');
+          button.setAttribute('aria-selected', 'true');
+          const targetId = button.id.replace('tab-', 'content-');
+          document.getElementById(targetId).classList.add('active');
+        });
+      });
+    }
+
+    // 카드 호버 효과 강화
+    function enhanceCardInteraction() {
+      const cards = document.querySelectorAll('.card');
+      
+      cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          card.style.transform = 'translateY(-10px)';
+          card.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.1)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'translateY(0)';
+          card.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+        });
+      });
+    }
+
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCharts();
+      setupTabs();
+      enhanceCardInteraction();
+
+      // 반응형 차트 조정
+      window.addEventListener('resize', () => {
+        // 차트 리사이징을 위한 코드 (Chart.js가 자동으로 처리)
+      });
+    });
+  </script>
+</body>
+</html>

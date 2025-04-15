@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES 도입 실패에서 MOS 구축으로의 전환</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        .slide {
+            width: 100%;
+            height: 100vh;
+            padding: 40px;
+            box-sizing: border-box;
+            position: relative;
+            page-break-after: always;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2563EB;
+            background: linear-gradient(90deg, #2563EB, #1e40af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #475569;
+            margin-top: -10px;
+        }
+        .date {
+            font-size: 14px;
+            color: #475569;
+        }
+        .content {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+        }
+        .section {
+            flex: 1;
+        }
+        .section-title {
+            font-size: 18px;
+            color: #1e40af;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .section-title i {
+            margin-right: 8px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #475569;
+        }
+        .kpi-box {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .kpi-item {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            flex: 1;
+            margin: 0 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .kpi-title {
+            font-size: 14px;
+            color: #475569;
+        }
+        .kpi-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563EB;
+            margin: 10px 0;
+        }
+        .kpi-desc {
+            font-size: 12px;
+            color: #475569;
+        }
+        .highlight {
+            color: #2563EB;
+            font-weight: bold;
+        }
+        .chart {
+            height: 200px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px dashed #ccc;
+        }
+        .timeline {
+            display: flex;
+            margin: 20px 0;
+        }
+        .timeline-item {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        .timeline-item:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            right: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #2563EB;
+        }
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            background-color: #2563EB;
+            border-radius: 50%;
+            margin: 15px auto;
+        }
+        .timeline-text {
+            font-size: 12px;
+            color: #475569;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .table th, .table td {
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+        }
+        .factor-box {
+            background-color: #f1f5f9;
+            border-left: 4px solid #2563EB;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .factor-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #1e40af;
+        }
+        .org-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .org-level {
+            display: flex;
+            margin: 15px 0;
+            width: 100%;
+            justify-content: center;
+        }
+        .org-box {
+            background-color: white;
+            border: 1px solid #2563EB;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 0 10px;
+            text-align: center;
+            min-width: 120px;
+        }
+        .org-arrow {
+            text-align: center;
+            font-size: 20px;
+            color: #2563EB;
+            margin: 0;
+        }
+        .risk-table td:first-child {
+            width: 25%;
+        }
+        .risk-high {
+            color: #ef4444;
+            font-weight: bold;
+        }
+        .risk-medium {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+        .risk-low {
+            color: #10b981;
+            font-weight: bold;
+        }
+        .step-box {
+            display: flex;
+            margin: 10px 0;
+        }
+        .step-number {
+            background-color: #2563EB;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+        }
+        .step-content {
+            flex: 1;
+        }
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .action-item {
+            display: flex;
+            margin: 10px 0;
+            align-items: center;
+        }
+        .action-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #2563EB;
+            border-radius: 4px;
+            margin-right: 15px;
+        }
+        .action-text {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 슬라이드 1: 표지 -->
+<div class="slide">
+    <div class="header">
+        <div>
+            <div class="title">MES 도입 실패에서 MOS 구축으로의 전환</div>
+            <div class="subtitle">생산본부가 '운영 설계자'로 진화하기 위한 제조 운영체계(MOS) 구축 전략</div>
+        </div>
+        <div class="date">2025년 4월 12일</div>
+    </div>
+    <div class="content" style="justify-content: center; align-items: center; flex-direction: column;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <img src="/api/placeholder/400/200" alt="Manufacturing Operations System" />
+        </div>
+        <div style="text-align: center; max-width: 600px;">
+            <div class="factor-box">
+                <div class="factor-title">핵심 질문</div>
+                <p>"MES를 반복 도입하면서도 생산 조직의 운영 체계가 정착되지 못한 상황에서, 생산본부가 '운영 설계자'로 전환되기 위해 어떤 구조적 변화가 필요하며, 이를 어떻게 MOS 개념으로 발전시켜야 하는가?"</p>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div>McKinsey Style Strategic Consulting Report</div>
+        <div>기밀문서 | 내부용</div>
+    </div>
+</div>
+
+<!-- 슬라이드 2: 임원 요약 -->
+<div class="slide">
+    <div class="header">
+        <div class="title">임원 요약(Executive Summary)</div>
+        <div class="date">2025년 4월 12일</div>
+    </div>
+    <div class="kpi-box">
+        <div class="kpi-item">
+            <div class="kpi-title">MES 도입 실패율</div>
+            <div class="kpi-value">70%</div>
+            <div class="kpi-desc">업계 평균 대비</div>
+        </div>
+        <div class="kpi-item">
+            <div class="kpi-title">표준화 수준</div>
+            <div class="kpi-value">35%</div>
+            <div class="kpi-desc">공장 간 프로세스</div>
+        </div>
+        <div class="kpi-item">
+            <div class="kpi-title">데이터 활용률</div>
+            <div class="kpi-value">22%</div>
+            <div class="kpi-desc">수집 데이터 중</div>
+        </div>
+        <div class="kpi-item">
+            <div class="kpi-title">기대 OEE 향상</div>
+            <div class="kpi-value">+25%</div>
+            <div class="kpi-desc">MOS 구축 시</div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="section">
+            <div class="section-title">
+                <i>📊</i> 핵심 문제
+            </div>
+            <div class="card">
+                <ul>
+                    <li><span class="highlight">단순 MES 설치 접근</span>: 기술 도입에만 집중, 운영 모델 설계 부족</li>
+                    <li><span class="highlight">운영체계 설계 권한 부재</span>: 생산본부는 '시스템 사용자'에 머물러 있음</li>
+                    <li><span class="highlight">공장별 상이한 운영방식</span>: 데이터 구조 불일치, 표준화 부재</li>
+                    <li><span class="highlight">조직 역량 갭</span>: 제조혁신팀 역할 제한적, 영향력 부족</li>
+                </ul>
+            </div>
+            <div class="section-title">
+                <i>🔍</i> 원인 분석
+            </div>
+            <div class="card">
+                <div class="factor-box">
+                    <div class="factor-title">MES ≠ 운영체계</div>
+                    <p>MES를 단순 '시스템 설치'로 접근하여 운영 프로세스, 역할 체계, 표준화의 필수적 변화가 누락됨</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">IT 주도 vs 현장 소외</div>
+                    <p>IT팀 주도로 진행되는 프로젝트에서 현장(생산본부)의 프로세스 표준화, R&R 설계 권한이 제한됨</p>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">
+                <i>📈</i> 핵심 해결 방향
+            </div>
+            <div class="card">
+                <ol>
+                    <li><span class="highlight">운영 설계 중심의 시각 전환</span>: MES를 운영 프로세스 구현의 수단으로 재정의</li>
+                    <li><span class="highlight">생산본부 주도 표준화</span>: 현장이 프로세스의 'Owner'가 되어 표준 설계</li>
+                    <li><span class="highlight">MOS 프레임워크 구축</span>: 사람-프로세스-기술이 통합된 운영체계 수립</li>
+                    <li><span class="highlight">단계적 디지털화</span>: 데이터 인프라→MES 통합→AI 파일럿→전사 확장</li>
+                </ol>
+            </div>
+            <div class="section-title">
+                <i>⚡</i> 기대 효과
+            </div>
+            <div class="chart">
+                <img src="/api/placeholder/350/180" alt="MOS 구축 기대효과" />
+            </div>
+            <div class="card">
+                <table class="table">
+                    <tr>
+                        <th>핵심 지표</th>
+                        <th>현재</th>
+                        <th>목표(2년 내)</th>
+                    </tr>
+                    <tr>
+                        <td>OEE (설비종합효율)</td>
+                        <td>65%</td>
+                        <td>85%</td>
+                    </tr>
+                    <tr>
+                        <td>불량률</td>
+                        <td>4.8%</td>
+                        <td>1.5%</td>
+                    </tr>
+                    <tr>
+                        <td>데이터 기반 의사결정 비율</td>
+                        <td>30%</td>
+                        <td>80%</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div>McKinsey Style Strategic Consulting Report</div>
+        <div>1/9</div>
+    </div>
+</div>
+
+<!-- 슬라이드 3: 현황 분석 -->
+<div class="slide">
+    <div class="header">
+        <div class="title">MES 도입 반복 실패의 구조적 원인</div>
+        <div class="date">2025년 4월 12일</div>
+    </div>
+    <div class="content">
+        <div class="section">
+            <div class="section-title">
+                <i>🔄</i> 반복되는 실패의 악순환
+            </div>
+            <div class="chart">
+                <img src="/api/placeholder/400/200" alt="MES 실패 사이클" />
+            </div>
+            <div class="card">
+                <div class="step-box">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">기술 중심 접근</div>
+                        <p>MES를 단순 '시스템 설치'로 인식, 운영 모델 설계 부재</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">현장-IT 간 단절</div>
+                        <p>IT 주도 프로젝트, 생산본부는 단순 사용자 역할</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">비표준화된 공장 운영</div>
+                        <p>공장별 상이한 운영 방식, 데이터 구조 불일치</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">시스템 활용도 저하</div>
+                        <p>기술부채 증가, 현장 신뢰 상실, 다시 새 시스템 도입</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">
+                <i>⚠️</i> 현재 조직 구조의 한계
+            </div>
+            <div class="card">
+                <table class="table risk-table">
+                    <tr>
+                        <th>조직 영역</th>
+                        <th>현재 상태</th>
+                        <th>리스크</th>
+                    </tr>
+                    <tr>
+                        <td>생산본부</td>
+                        <td>시스템 사용자에 머물러 있으며, 운영 표준화 설계 권한 부재</td>
+                        <td class="risk-high">높음</td>
+                    </tr>
+                    <tr>
+                        <td>제조혁신팀</td>
+                        <td>신설되었으나 조직적 권한, 프로세스 표준화 권위 미약</td>
+                        <td class="risk-high">높음</td>
+                    </tr>
+                    <tr>
+                        <td>IT 부서</td>
+                        <td>기술 도입 주도하나 현장 운영에 대한 이해 부족</td>
+                        <td class="risk-medium">중간</td>
+                    </tr>
+                    <tr>
+                        <td>공장 현장</td>
+                        <td>공장별 상이한 운영방식, 표준화 저항</td>
+                        <td class="risk-high">높음</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="section-title">
+                <i>🧩</i> 근본 원인 분석
+            </div>
+            <div class="card">
+                <div class="factor-box">
+                    <div class="factor-title">운영체계 설계자 부재</div>
+                    <p><span class="highlight">왜 중요한가?</span> 조직 내 누구도 전체 운영체계(MOS)를 통합적으로 설계하는 역할을 맡지 않아, 단편적 시스템 도입에 그침</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">표준화 저항의 원인</div>
+                    <p><span class="highlight">식품 특성상</span> "우리 공정은 다르다"라는 인식이 강하며, 표준화가 획일화로 오해되어 저항이 큼</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">현재 데이터 구조의 문제</div>
+                    <p><span class="highlight">공장별 상이한</span> 레시피 기준, 데이터 구조, KPI 정의로 인해 통합 분석 및 AI/DT 확장성 저하</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div>McKinsey Style Strategic Consulting Report</div>
+        <div>2/9</div>
+    </div>
+</div>
+
+<!-- 슬라이드 4: 핵심 과제 -->
+<div class="slide">
+    <div class="header">
+        <div class="title">생산본부 '운영 설계자' 전환을 위한 구조적 변화</div>
+        <div class="date">2025년 4월 12일</div>
+    </div>
+    <div class="content">
+        <div class="section">
+            <div class="section-title">
+                <i>🔄</i> 시각의 전환: MES → MOS
+            </div>
+            <div class="card">
+                <table class="table">
+                    <tr>
+                        <th>기존 MES 접근법</th>
+                        <th>MOS(제조 운영체계) 접근법</th>
+                    </tr>
+                    <tr>
+                        <td>시스템 설치 중심</td>
+                        <td><span class="highlight">운영 설계 중심</span></td>
+                    </tr>
+                    <tr>
+                        <td>IT 부서 주도</td>
+                        <td><span class="highlight">생산본부(현장) 주도</span></td>
+                    </tr>
+                    <tr>
+                        <td>공장별 개별 운영</td>
+                        <td><span class="highlight">표준화된 운영 원칙</span></td>
+                    </tr>
+                    <tr>
+                        <td>기능 중심 관점</td>
+                        <td><span class="highlight">가치 흐름 중심 관점</span></td>
+                    </tr>
+                    <tr>
+                        <td>데이터 수집 중심</td>
+                        <td><span class="highlight">의사결정 활용 중심</span></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="section-title">
+                <i>🏗️</i> 필요한 최소 조직 역량
+            </div>
+            <div class="card">
+                <div class="org-chart">
+                    <div class="org-level">
+                        <div class="org-box" style="background-color: #e0f2fe; border-color: #0ea5e9;">
+                            MOS 총괄 리더<br>
+                            <small>(생산본부 임원)</small>
+                        </div>
+                    </div>
+                    <div class="org-arrow">↓</div>
+                    <div class="org-level">
+                        <div class="org-box">
+                            프로세스 오너<br>
+                            <small>(생산계획)</small>
+                        </div>
+                        <div class="org-box">
+                            프로세스 오너<br>
+                            <small>(품질)</small>
+                        </div>
+                        <div class="org-box">
+                            데이터 오너<br>
+                            <small>(마스터데이터)</small>
+                        </div>
+                        <div class="org-box" style="background-color: #f0f9ff; border-color: #7dd3fc;">
+                            제조혁신팀<br>
+                            <small>(CoE)</small>
+                        </div>
+                    </div>
+                    <div class="org-arrow">↓</div>
+                    <div class="org-level">
+                        <div class="org-box" style="background-color: #f0fdfa; border-color: #2dd4bf;">
+                            공장 A<br>
+                            MOS 담당자
+                        </div>
+                        <div class="org-box" style="background-color: #f0fdfa; border-color: #2dd4bf;">
+                            공장 B<br>
+                            MOS 담당자
+                        </div>
+                        <div class="org-box" style="background-color: #f0fdfa; border-color: #2dd4bf;">
+                            공장 C<br>
+                            MOS 담당자
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">
+                <i>🔑</i> 핵심 역할 정의
+            </div>
+            <div class="card">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: bold; color: #0ea5e9;">MOS 총괄 리더</div>
+                    <ul>
+                        <li>전사 표준·프로세스·운영 지침 확립 책임</li>
+                        <li>경영진 승인 및 권한 위임 필요</li>
+                        <li>MOS 전략 방향성 수립 및 자원 확보</li>
+                    </ul>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: bold; color: #2563EB;">프로세스 & 데이터 오너</div>
+                    <ul>
+                        <li>업무 영역별 프로세스 표준화 및 SOP 정의</li>
+                        <li>마스터데이터·KPI 표준 관리</li>
+                        <li>본부 내 변화관리 주도</li>
+                    </ul>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: bold; color: #2dd4bf;">공장 MOS 담당자</div>
+                    <ul>
+                        <li>본부 표준을 공장 현장에 적용 및 피드백</li>
+                        <li>현장 문제해결·개선 주도</li>
+                        <li>중앙(본부)-현장 연결 역할</li>
+                    </ul>
+                </div>
+                <div>
+                    <div style="font-weight: bold; color: #7dd3fc;">제조혁신팀</div>
+                    <ul>
+                        <li>MES/IoT/AI 기술 프로젝트 총괄</li>
+                        <li>현장과 IT 간 조정 역할</li>
+                        <li>CoE(Center of Excellence) 기능</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="section-title">
+                <i>⚙️</i> 운영 메커니즘
+            </div>
+            <div class="card">
+                <div class="factor-box">
+                    <div class="factor-title">정기 협의체 운영</div>
+                    <p>본부-공장 간 표준화 이행상태, KPI 모니터링, 개선사항 공유를 위한 정기 미팅 체계화</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">의사결정 프로세스</div>
+                    <p>표준 프로세스 변경, 신규 기술 도입, 개선안 승인 등에 대한 명확한 의사결정 체계 수립</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">역량 개발 체계</div>
+                    <p>변화 리더십, 데이터 분석, 프로세스 설계 등 필요 역량 개발을 위한 교육 프로그램 운영</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div>McKinsey Style Strategic Consulting Report</div>
+        <div>3/9</div>
+    </div>
+</div>
+
+<!-- 슬라이드 5: MOS 프레임워크 -->
+<div class="slide">
+    <div class="header">
+        <div class="title">MOS(Manufacturing Operating System) 프레임워크</div>
+        <div class="date">2025년 4월 12일</div>
+    </div>
+    <div class="content">
+        <div class="section">
+            <div class="section-title">
+                <i>🏭</i> MOS 개념 정의
+            </div>
+            <div class="card">
+                <p>MOS는 <span class="highlight">단순한 시스템이 아닌</span> 사람(조직)·프로세스·시스템이 유기적으로 결합된 총체적 <span class="highlight">운영체계</span>입니다.</p>
+                <div class="chart">
+                    <img src="/api/placeholder/400/180" alt="MOS 개념도" />
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">MOS의 핵심 가치</div>
+                    <p>- 표준화된 운영으로 <span class="highlight">변동성 감소</span><br>
+                    - 데이터 기반 <span class="highlight">의사결정</span> 고도화<br>
+                    - 지속적 개선 메커니즘 내재화<br>
+                    - 혁신 기술의 <span class="highlight">체계적 도입</span> 기반 제공</p>
+                </div>
+            </div>
+            <div class="section-title">
+                <i>🔄</i> 지속 개선 사이클
+            </div>
+            <div class="card">
+                <div class="chart">
+                    <img src="/api/placeholder/400/180" alt="PDCA Cycle" />
+                </div>
+                <div class="step-box">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">표준 운영 절차(SOP) 확립</div>
+                        <p>공장 간 표준화된 운영 프로세스 수립</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">실시간 데이터 수집</div>
+                        <p>MES/IoT를 통한 운영 데이터 자동화 수집</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">모니터링 & 분석</div>
+                        <p>KPI 기반 성과 측정, 문제점 식별</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">표준 개선 & 시스템화</div>
+                        <p>개선된 프로세스를 다시 표준화, 시스템 반영</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">
+                <i>🧩</i> MOS 구성요소
+            </div>
+            <div class="card">
+                <table class="table">
+                    <tr>
+                        <th>구성요소</th>
+                        <th>주요 내용</th>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">운영 원칙 & 목표</span></td>
+                        <td>- 기업의 제조철학<br>- 핵심 KPI(납기, 품질, 효율 등)<br>- 거버넌스 구조</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">표준 프로세스 & 역할</span></td>
+                        <td>- 공정별 SOP<br>- 책임/권한(R&R)<br>- 운영 루틴(Daily Meeting 등)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">성과 관리 & 시각화</span></td>
+                        <td>- 실시간 KPI 대시보드<br>- 공장별 성과 모니터링<br>- 성과 리뷰 체계</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">기술 아키텍처</span></td>
+                        <td>- MES, ERP, IoT, AI 분석<br>- 통합 데이터 허브<br>- 인터페이스 표준화</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">지속 개선 구조</span></td>
+                        <td>- 현장 개선 제안 프로세스<br>- 데이터 기반 의사결정<br>- 표준 업데이트 메커니즘</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="section-title">
+                <i>💡</i> 구현 사례 흐름
+            </div>
+            <div class="card">
+                <div class="factor-box">
+                    <div class="factor-title">사례: 데이터 기반 의사결정 체계</div>
+                    <p><span class="highlight">운영 원칙:</span> "데이터 기반 의사결정"<br>
+                    <span class="highlight">프로세스:</span> 공정별 실시간 KPI 확인<br>
+                    <span class="highlight">시스템:</span> MES+IoT 센서로 자동 데이터 수집<br>
+                    <span class="highlight">성과 관리:</span> 일일/주간 회의에서 KPI 기반 토론<br>
+                    <span class="highlight">지속 개선:</span> 문제 식별→개선 실행→효과 측정→SOP 업데이트</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">사례: 품질 관리 체계</div>
+                    <p><span class="highlight">운영 원칙:</span> "품질 우선주의"<br>
+                    <span class="highlight">프로세스:</span> 표준화된 품질 검사 프로토콜<br>
+                    <span class="highlight">시스템:</span> 비전검사 시스템 + MES 품질모듈<br>
+                    <span class="highlight">성과 관리:</span> 불량률, 고객 클레임 실시간 모니터링<br>
+                    <span class="highlight">지속 개선:</span> 품질 이슈 근본원인 분석→개선→검증</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div>McKinsey Style Strategic Consulting Report</div>
+        <div>4/9</div>
+    </div>
+</div>
+
+<!-- 슬라이드 6: 표준화 전략 -->
+<div class="slide">
+    <div class="header">
+        <div class="title">공장 간 표준화 전략: "Bottom-up 수렴형"</div>
+        <div class="date">2025년 4월 12일</div>
+    </div>
+    <div class="content">
+        <div class="section">
+            <div class="section-title">
+                <i>🔍</i> 비표준 환경에서의 단계적 접근
+            </div>
+            <div class="card">
+                <div class="chart">
+                    <img src="/api/placeholder/400/180" alt="Bottom-up 표준화 접근법" />
+                </div>
+                <div class="step-box">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">핵심 공정 식별 & 공통분모 찾기</div>
+                        <p>모든 공장이 '공통'으로 수행하는 핵심 공정(배합, 포장 등) 우선 표준화</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">현장 참여 '워킹그룹' 운영</div>
+                        <p>각 공장 우수사례·노하우를 모아 표준 SOP 구성, 현장 검증</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">파일럿 적용 후 점진 전개</div>
+                        <p>특정 공장(의지가 높은 곳)에서 시범 → 성과 확인 → 수정/보완 후 전사 확대</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">피드백 루프 & 업데이트</div>
+                        <p>공장별 적용 후 개선 제안, 표준 업데이트, 지속적 학습·확산</p>
+                    </div>
+                </div>
+            </div>
+            <div class="section-title">
+                <i>⚠️</i> 식품 산업 특수성 고려
+            </div>
+            <div class="card">
+                <div class="factor-box">
+                    <div class="factor-title">표준화 저항의 특성</div>
+                    <p>식품 특성상 <span class="highlight">"우리 공정은 다르다"</span>라는 인식이 강해 표준화 저항이 높음</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">표준화 vs 획일화</div>
+                    <p>표준화가 공장별 특성을 무시한 획일화가 아님을 강조, <span class="highlight">공통원칙 + 현장 자율 최적화</span>의 균형 필요</p>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">
+                <i>🏆</i> 표준화 성공 요소
+            </div>
+            <div class="card">
+                <table class="table">
+                    <tr>
+                        <th>성공 요소</th>
+                        <th>실행 방안</th>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">현장 참여</span></td>
+                        <td>- 워킹그룹에 현장 작업자 필수 포함<br>- Bottom-up 개선 제안 권장<br>- 표준 작성에 현장 의견 반영</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Best Practice 공유</span></td>
+                        <td>- 공장 간 우수사례 교류 시스템<br>- 성공 사례 문서화 및 공유<br>- 정기 워크샵 운영</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">점진적 접근</span></td>
+                        <td>- 핵심 공정부터 단계적 표준화<br>- 작은 성공 사례를 통한 신뢰 구축<br>- 현장 수용성 고려한 속도 조절</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">명확한 혜택 제시</span></td>
+                        <td>- 표준화를 통한 작업 효율화 측정<br>- 현장 부담 감소 효과 가시화<br>- 개선 성과의 보상 체계</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="section-title">
+                <i>📊</i> 표준화 우선순위 매트릭스
+            </div>
+            <div class="chart">
+                <img src="/api/placeholder/400/180" alt="표준화 우선순위 매트릭스" />
+            </div>
+            <div class="card">
+                <div class="factor-box">
+                    <div class="factor-title">표준화 우선순위 결정 기준</div>
+                    <p>- <span class="highlight">영향도</span>: 품질, 생산성, 안전에 미치는 영향<br>
+                    - <span class="highlight">표준화 용이성</span>: 공장 간 공통점, 기술적 구현 난이도<br>
+                    - <span class="highlight">데이터 중요도</span>: 의사결정에 활용되는 핵심 데이터 여부<br>
+                    - <span class="highlight">현장 수용성</span>: 현장의 변화 수용 가능성</p>
+                </div>
+                <p style="font-style: italic; margin-top: 15px;">
+                    <span class="highlight">영향도 높고 표준화 용이한 영역부터</span> 우선 진행하여 <span class="highlight">가시적 성과 창출</span> → 신뢰 기반 확대
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div>McKinsey Style Strategic Consulting Report</div>
+        <div>5/9</div>
+    </div>
+</div>
+
+<!-- 슬라이드 7: 로드맵 -->
+<div class="slide">
+    <div class="header">
+        <div class="title">AI·DT·KPI 시스템 연계 로드맵</div>
+        <div class="date">2025년 4월 12일</div>
+    </div>
+    <div class="content">
+        <div class="section">
+            <div class="section-title">
+                <i>🛣️</i> 단계별 추진 로드맵
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-text">1단계<br>(~6개월)</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-text">2단계<br>(6~18개월)</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-text">3단계<br>(18~30개월)</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-text">4단계<br>(30개월~)</div>
+                </div>
+            </div>
+            <div class="card">
+                <table class="table">
+                    <tr>
+                        <th>단계</th>
+                        <th>주요 내용 & 범위</th>
+                        <th>우선순위</th>
+                    </tr>
+                    <tr>
+                        <td>1단계<br>(~6개월)</td>
+                        <td>- 데이터 인프라 & KPI 정의<br>- 핵심 공정 설비 센서 연결, MES 기초구축<br>- 표준 KPI (OEE, 불량률 등) 대시보드</td>
+                        <td class="risk-high">매우 높음<br>(기초)</td>
+                    </tr>
+                    <tr>
+                        <td>2단계<br>(6~18개월)</td>
+                        <td>- MES 기능 확장 & 프로세스 통합<br>- MES-ERP-PLM 등 통합, 표준 프로세스 전개<br>- KPI 회의 루틴 정착 & 현장 교육</td>
+                        <td class="risk-high">높음</td>
+                    </tr>
+                    <tr>
+                        <td>3단계<br>(18~30개월)</td>
+                        <td>- AI/DT 파일럿 (비전검사·예지보전 등)<br>- 제한된 라인 혹은 공장에서 실증<br>- 조직 AI 역량 내재화</td>
+                        <td class="risk-medium">중간</td>
+                    </tr>
+                    <tr>
+                        <td>4단계<br>(30개월~)</td>
+                        <td>- 전사 확장 & 지능화<br>- 전 공장에 AI 비전, 예지보전 확대적용<br>- 운영 최적화·자율화 시도</td>
+                        <td class="risk-medium">중간</td>
+                    </tr>
+                </table>
+                <p style="font-style: italic; margin-top: 15px; text-align: center;">
+                    <span class="highlight">핵심: 1·2단계에서 데이터 표준화·프로세스 통합이 먼저. 이후 AI/DT를 도입해 의미 있는 성과 도출.</span>
+                </p>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">
+                <i>💻</i> 기술 요소별 구현 전략
+            </div>
+            <div class="card">
+                <div class="step-box">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">데이터 인프라 구축</div>
+                        <ul>
+                            <li>핵심 공정 <span class="highlight">센서화 및 데이터 수집</span> 자동화</li>
+                            <li>마스터데이터 관리(MDM) 체계 구축</li>
+                            <li>데이터 품질 관리 프로세스 수립</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">MES 기본 기능 구현</div>
+                        <ul>
+                            <li>생산계획/실적 관리, 품질관리, 설비관리 등 <span class="highlight">핵심 모듈 우선</span> 구현</li>
+                            <li>현장 사용 편의성 최우선 고려</li>
+                            <li>ERP 연계 통한 End-to-End 가시성 확보</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">KPI 대시보드 구축</div>
+                        <ul>
+                            <li>표준화된 KPI 정의 및 <span class="highlight">실시간 모니터링</span> 체계</li>
+                            <li>계층별(경영진/관리자/현장) 맞춤형 대시보드</li>
+                            <li>정기 KPI 회의 운영 체계화</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">AI/DT 솔루션 도입</div>
+                        <ul>
+                            <li>비전검사, 예지보전, 공정최적화 등 <span class="highlight">ROI 높은 영역 우선</span> 적용</li>
+                            <li>파일럿 → 검증 → 확대 적용의 단계적 접근</li>
+                            <li>내재화 가능한 기술 중심 접근</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="section-title">
+                <i>⚠️</i> 주요 리스크 및 대응 방안
+            </div>
+            <div class="card">
+                <table class="table risk-table">
+                    <tr>
+                        <th>리스크 요소</th>
+                        <th>대응 방안</th>
+                        <th>중요도</th>
+                    </tr>
+                    <tr>
+                        <td>데이터 정확성 문제</td>
+                        <td>- 바코드/RFID 등 자동화 수단 도입<br>- 데이터 검증 알고리즘 개발<br>- 인센티브 연계 정확도 관리</td>
+                        <td class="risk-high">높음</td>
+                    </tr>
+                    <tr>
+                        <td>현장 기술 수용성</td>
+                        <td>- 사용자 경험(UX) 최우선 고려<br>- 단계적 교육 및 현장 지원<br>- 챔피언 제도 운영</td>
+                        <td class="risk-high">높음</td>
+                    </tr>
+                    <tr>
+                        <td>ROI 가시성 지연</td>
+                        <td>- 초기 Quick Win 확보<br>- 단계별 성과 측정 및 공유<br>- 전략적 투자 관점 유지</td>
+                        <td class="risk-medium">중간</td>
+                    </tr>
+                    <tr>
+                        <td>레거시 시스템 통합</td>
+                        <td>- 데이터 중심 연계 전략<br>- 단계적 마이그레이션<br>- 하이브리드 접근법</td>
+                        <td class="risk-medium">중간</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div>McKinsey Style Strategic Consulting Report</div>
+        <div>6/9</div>
+    </div>
+</div>
+
+<!-- 슬라이드 8: 조직 변화 -->
+<div class="slide">
+    <div class="header">
+        <div class="title">제조혁신팀 역할 및 권한 강화 방안</div>
+        <div class="date">2025년 4월 12일</div>
+    </div>
+    <div class="content">
+        <div class="section">
+            <div class="section-title">
+                <i>🏛️</i> 조직적 위상 강화
+            </div>
+            <div class="card">
+                <div class="chart">
+                    <img src="/api/placeholder/400/180" alt="제조혁신팀 조직 위상" />
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">경영진 지원 & 공식 위임</div>
+                    <p>CEO/생산총괄이 <span class="highlight">"혁신팀 = 전사 MOS 사령탑"</span>으로 공식 선언, 부서 간 조정 권한 부여</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">조직적 입지</div>
+                    <p><span class="highlight">생산본부장 직속(혹은 사장 직속)</span> 편제 → 의사결정 속도, 현장 영향력 강화</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">인적 구성</div>
+                    <p>OT(제조) & IT 융합형 인재 구성, 현장 경험 + 기술 역량 균형</p>
+                </div>
+            </div>
+            <div class="section-title">
+                <i>📋</i> 역할 및 책임 정의
+            </div>
+            <div class="card">
+                <table class="table">
+                    <tr>
+                        <th>역할 영역</th>
+                        <th>주요 R&R</th>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">운영 설계</span></td>
+                        <td>- MOS 표준 프레임워크 개발<br>- 프로세스 표준화 주도<br>- R&R 및 운영 메커니즘 설계</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">기술 도입</span></td>
+                        <td>- MES, IoT, AI 기술 검토 및 도입<br>- 기술 로드맵 수립<br>- IT-OT 통합 아키텍처 설계</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">변화 관리</span></td>
+                        <td>- 교육 프로그램 개발<br>- 현장 설득 및 참여 유도<br>- 변화 리더십 발휘</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">성과 측정</span></td>
+                        <td>- KPI 정의 및 측정 체계 수립<br>- 경영진 보고<br>- 장애 요소 제거</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">
+                <i>⚖️</i> 자율성과 책임 균형
+            </div>
+            <div class="card">
+                <div class="factor-box">
+                    <div class="factor-title">의사결정 권한 위임</div>
+                    <p>혁신팀에 <span class="highlight">일정 범위 내 의사결정 권한 위임</span> (프로젝트 예산, 파일럿 우선순위 등)</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">실패 용인 문화</div>
+                    <p>초기 파일럿 단계에서의 <span class="highlight">실패를 학습 기회</span>로 인식, 과도한 책임 추궁 지양</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">성과 평가 체계</div>
+                    <p>단기적 성과와 장기적 역량 구축을 <span class="highlight">균형 있게 평가</span>하는 KPI 설계</p>
+                </div>
+            </div>
+            <div class="section-title">
+                <i>🤝</i> 부서 간 협업 체계
+            </div>
+            <div class="chart">
+                <img src="/api/placeholder/400/180" alt="부서 간 협업 체계" />
+            </div>
+            <div class="card">
+                <div class="step-box">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">유관 부서 협의체 운영</div>
+                        <ul>
+                            <li>IT부서, 생산본부, 품질, 설비 등 <span class="highlight">핵심 이해관계자 참여</span></li>
+                            <li>정기 협의체 통한 의견 조율 및 의사결정</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">프로젝트 거버넌스</div>
+                        <ul>
+                            <li><span class="highlight">스폰서십</span>: CEO/생산본부장</li>
+                            <li><span class="highlight">추진위원회</span>: 각 부서 임원급</li>
+                            <li><span class="highlight">실무추진단</span>: 제조혁신팀 + 부서 대표</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">이해관계자 관리</div>
+                        <ul>
+                            <li>정기적 <span class="highlight">성과 공유</span> 및 피드백 수렴</li>
+                            <li>부서 니즈 반영한 <span class="highlight">맞춤형 혜택</span> 설계</li>
+                            <li>장기적 신뢰 관계 구축</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div>McKinsey Style Strategic Consulting Report</div>
+        <div>7/9</div>
+    </div>
+</div>
+
+<!-- 슬라이드 9: 실행 계획 -->
+<div class="slide">
+    <div class="header">
+        <div class="title">변화 관리 및 실행 계획</div>
+        <div class="date">2025년 4월 12일</div>
+    </div>
+    <div class="content">
+        <div class="section">
+            <div class="section-title">
+                <i>🔄</i> 인식 전환 & 커뮤니케이션 전략
+            </div>
+            <div class="card">
+                <div class="factor-box">
+                    <div class="factor-title">핵심 메시지</div>
+                    <p>- <span class="highlight">"MES는 전산도구 아님, 새로운 '운영방식'을 실현하는 틀"</span><br>
+                    - "식품이라서 표준화 안 된다" → 글로벌 식품사도 표준 운영체계로 성공<br>
+                    - 표준화가 획일화가 아니라, 공통원칙 + 현장 자율 최적화의 틀<br>
+                    - 데이터 기반 운영으로 야근 감소, 실수 줄이기, 현장 부담 경감</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">교육 & 현장 참여</div>
+                        <ul>
+                            <li>파일럿 성공 사례 적극 홍보 → <span class="highlight">작은 성공으로 현장 동기 유발</span></li>
+                            <li>현장 스탭 중심 '개선 아이디어 제안' 제도화, 우수 제안 보상</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">글로벌 사례 활용</div>
+                        <ul>
+                            <li>Nestlé, Danone 등 표준화 & MES/AI로 제조효율·품질 개선한 사례 제시</li>
+                            <li><span class="highlight">"우리만의 문제 X, 식품업계 글로벌 트렌드"</span> 강조</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="section-title">
+                <i>🎯</i> 주요 성과 지표
+            </div>
+            <div class="card">
+                <table class="table">
+                    <tr>
+                        <th>영역</th>
+                        <th>핵심 KPI</th>
+                        <th>목표</th>
+                    </tr>
+                    <tr>
+                        <td>생산성</td>
+                        <td>OEE(설비종합효율)</td>
+                        <td>85% 이상</td>
+                    </tr>
+                    <tr>
+                        <td>품질</td>
+                        <td>불량률, 고객 클레임</td>
+                        <td>1.5% 이하</td>
+                    </tr>
+                    <tr>
+                        <td>운영 효율</td>
+                        <td>재고회전율, 납기준수율</td>
+                        <td>90% 이상</td>
+                    </tr>
+                    <tr>
+                        <td>데이터 활용</td>
+                        <td>데이터 기반 의사결정 비율</td>
+                        <td>80% 이상</td>
+                    </tr>
+                    <tr>
+                        <td>디지털 성숙도</td>
+                        <td>Smart Factory 성숙도 지수</td>
+                        <td>Level 3 이상</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">
+                <i>📝</i> 100일 실행 계획
+            </div>
+            <div class="card">
+                <div class="action-item">
+                    <div class="action-checkbox"></div>
+                    <div class="action-text">
+                        <strong>1-30일: 기반 구축</strong>
+                        <ul>
+                            <li>MOS 총괄 리더 임명 및 권한 부여</li>
+                            <li>제조혁신팀 역할 재정립 및 인력 보강</li>
+                            <li>주요 이해관계자 워크샵 및 비전 공유</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-checkbox"></div>
+                    <div class="action-text">
+                        <strong>31-60일: 현황 분석 & 표준화 시작</strong>
+                        <ul>
+                            <li>공장별 운영 현황 심층 분석</li>
+                            <li>핵심 공정 표준화 워킹그룹 구성</li>
+                            <li>데이터 요구사항 정의 및 표준화</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-checkbox"></div>
+                    <div class="action-text">
+                        <strong>61-90일: 파일럿 준비</strong>
+                        <ul>
+                            <li>1차 표준 프로세스 및 KPI 정의</li>
+                            <li>파일럿 공장 선정 및 준비</li>
+                            <li>MES 기본 요구사항 정의</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="action-item">
+                    <div class="action-checkbox"></div>
+                    <div class="action-text">
+                        <strong>91-100일: 착수 및 성과 체계 구축</strong>
+                        <ul>
+                            <li>파일럿 공장 표준 프로세스 적용 시작</li>
+                            <li>KPI 대시보드 프로토타입 개발</li>
+                            <li>초기 성과 측정 및 피드백 체계 가동</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="section-title">
+                <i>🔑</i> 핵심 성공 요소
+            </div>
+            <div class="card">
+                <div class="factor-box">
+                    <div class="factor-title">최고 경영진의 일관된 지원</div>
+                    <p>CEO/생산본부장이 <span class="highlight">지속적 스폰서십</span> 제공, 단기 성과 압박보다 장기적 전환 지원</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">현장 주도성 확보</div>
+                    <p>현장 참여 확대로 <span class="highlight">'우리 방식'이라는 주인의식</span> 형성, Bottom-up 개선 활성화</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">데이터 정확성 확보</div>
+                    <p><span class="highlight">현장 데이터의 정확한 수집이 MOS 성패 좌우</span> - 바코드, IoT 자동화, 스캔 누락방지 등 세부 실행계획 중요</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">단계적 접근과 지속적 개선</div>
+                    <p>Big Bang 방식 보다 <span class="highlight">점진적 변화와 학습 중시</span>, 실패를 개선 기회로 삼는 문화 형성</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div>McKinsey Style Strategic Consulting Report</div>
+        <div>8/9</div>
+    </div>
+</div>
+
+<!-- 슬라이드 10: 결론 -->
+<div class="slide">
+    <div class="header">
+        <div class="title">결론 & 실행 제언</div>
+        <div class="date">2025년 4월 12일</div>
+    </div>
+    <div class="content">
+        <div class="section" style="flex: 2;">
+            <div class="section-title">
+                <i>📝</i> 핵심 결론
+            </div>
+            <div class="card">
+                <p>단순 IT 관점의 MES 설치로는 <span class="highlight">운영 고도화를 달성하기 어렵다</span>. 조직·프로세스·데이터·기술을 아우른 <span class="highlight">MOS(Manufacturing Operating System)</span> 관점에서, 생산본부가 "운영 설계자" 역할을 주도해야 한다. 단계적 표준화와 권한 강화, AI·DT 활용 순서를 명확히 하여, 궁극적으로 미래형 제조 운영체계를 구축해야 한다.</p>
+            </div>
+            <div class="section-title">
+                <i>🚀</i> 6대 핵심 실행 제언
+            </div>
+            <div class="card">
+                <div class="step-box">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">운영 설계 중심 MES 접근</div>
+                        <p>시스템보다 프로세스·조직 운영모델 설계를 우선. MES는 이를 지원하는 툴.</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">생산본부 주도 표준화·R&R 재정립</div>
+                        <p>본부에 MOS 리더·프로세스 오너·데이터 오너 배치, 공장 MOS 담당자와 함께 표준 운영 체계 구축.</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">단계별 로드맵 수립 및 실행</div>
+                        <p>데이터 인프라→MES 통합→AI 파일럿→전사 확장의 단계적 접근.</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">제조혁신팀 권한·역할 강화</div>
+                        <p>경영진 공식 지원, 전사 통합 추진 주체로서 권한 부여, 실패를 학습으로 연결.</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <div class="step-title">인식 전환과 현장 참여 확대</div>
+                        <p>"식품이라서 안 돼" 편견 극복, 표준화 이점 강조, 파일럿 성공사례 적극 공유.</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <div class="step-title">MOS 구축 완성</div>
+                        <p>사람(역량)·프로세스(표준)·기술(MES/IoT/AI) 삼박자를 일관된 운영 원리로 묶어, 공장 간 운영 변동성 줄이고, 지속적 개선·혁신을 만들어내는 '제조 운영체계' 완성.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section" style="flex: 1;">
+            <div class="section-title">
+                <i>📊</i> 기대 효과
+            </div>
+            <div class="chart">
+                <img src="/api/placeholder/300/180" alt="MOS 기대효과" />
+            </div>
+            <div class="card">
+                <ul>
+                    <li><span class="highlight">생산성 향상</span>: OEE 20% 이상 개선</li>
+                    <li><span class="highlight">품질 안정화</span>: 불량률 70% 감소</li>
+                    <li><span class="highlight">의사결정 고도화</span>: 데이터 기반 의사결정 비율 3배 증가</li>
+                    <li><span class="highlight">신기술 확장성</span>: AI/DT 적용 기반 마련</li>
+                    <li><span class="highlight">현장 부담 경감</span>: 수작업 문서 70% 감소</li>
+                </ul>
+            </div>
+            <div class="section-title">
+                <i>⚠️</i> 주의사항
+            </div>
+            <div class="card">
+                <div class="factor-box">
+                    <div class="factor-title">데이터 정확성 확보 필수</div>
+                    <p>현장 데이터 자동 수집 및 정확성 확보를 위한 디테일한 실행 계획이 반드시 필요</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">균형적 접근</div>
+                    <p>기술(IT)과 운영(OT) 간 균형, 표준화와 현장 자율성 간 균형 중요</p>
+                </div>
+                <div class="factor-box">
+                    <div class="factor-title">변화관리 중요성</div>
+                    <p>기술적 변화보다 <span class="highlight">사람과 조직문화 변화</span>가 더 어려우므로 집중 관리 필요</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div>McKinsey Style Strategic Consulting Report</div>
+        <div>9/9</div>
+    </div>
+</div>
+
+</body>
+</html>
