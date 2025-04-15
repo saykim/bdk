@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식품제조업 디지털화의 장애요소</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .accent-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #005BBB 0%, #007BFF 100%);
+        }
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 3rem;
+        }
+        .footer {
+            height: 40px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .challenge-card {
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #005BBB;
+            background-color: #f8f9fa;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .challenge-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="accent-bar"></div>
+        
+        <div class="content-section">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-1">식품제조업 디지털화의 장애요소</h1>
+                <div class="w-20 h-1 bg-blue-600"></div>
+            </div>
+            
+            <div class="flex space-x-6 mt-6">
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        식품산업의 디지털화 장벽
+                    </h2>
+                    
+                    <div class="challenge-card">
+                        <h3 class="font-medium text-gray-800 mb-1">1. 안전 및 규제 위주의 생산 문화</h3>
+                        <p class="text-sm text-gray-600">식품 안전성과 규제 준수에 집중하는 환경에서 디지털 혁신은 우선순위에서 밀리는 경향이 있습니다.</p>
+                    </div>
+                    
+                    <div class="challenge-card">
+                        <h3 class="font-medium text-gray-800 mb-1">2. 비표준화된 제조 프로세스</h3>
+                        <p class="text-sm text-gray-600">제품별, 라인별 상이한 프로세스로 인해 시스템 통합과 데이터 표준화가 어렵습니다.</p>
+                    </div>
+                    
+                    <div class="challenge-card">
+                        <h3 class="font-medium text-gray-800 mb-1">3. 기존 설비와의 호환성 문제</h3>
+                        <p class="text-sm text-gray-600">노후화된 생산설비와 최신 디지털 기술 간의 연결성 확보가 기술적으로 제한적입니다.</p>
+                    </div>
+                    
+                    <div class="challenge-card">
+                        <h3 class="font-medium text-gray-800 mb-1">4. 단기적 ROI 중심 의사결정</h3>
+                        <p class="text-sm text-gray-600">디지털 투자의 장기적 효과보다 단기 수익에 집중하는 의사결정 패턴이 혁신을 저해합니다.</p>
+                    </div>
+                </div>
+                
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        조직 내부 변화 관리 과제
+                    </h2>
+                    
+                    <div class="mt-4 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                        <h3 class="font-medium text-gray-800 mb-3">디지털화 추진 시 발생하는 주요 문제점</h3>
+                        
+                        <div class="flex items-start mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <span class="text-sm font-medium text-gray-700">변화에 대한 저항:</span>
+                                <p class="text-sm text-gray-600">기존 업무 방식 변경에 대한 불안감과 새로운 시스템 적응에 대한 부담감</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <span class="text-sm font-medium text-gray-700">IT와 생산부서 간 소통 부재:</span>
+                                <p class="text-sm text-gray-600">기술 중심의 IT와 현장 중심의 생산부서 간 관점 차이와 소통 장벽</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <span class="text-sm font-medium text-gray-700">디지털 역량 부족:</span>
+                                <p class="text-sm text-gray-600">생산인력의 데이터 활용 및 디지털 기술 이해도 부족</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <span class="text-sm font-medium text-gray-700">표준 프로세스 부재:</span>
+                                <p class="text-sm text-gray-600">명확한 SOP와 표준 프로세스 없이 시스템만 도입하여 혼란 가중</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="text-sm font-medium text-gray-700">
+                                <span class="text-blue-800">업계 통계:</span> 식품제조업의 디지털 전환 성공률은 10% 미만으로, 체계적인 표준화와 거버넌스 부재가 주요 원인으로 지목됩니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <span>회사 로고</span>
+            <span>3/15</span>
+        </div>
+    </div>
+</body>
+</html>

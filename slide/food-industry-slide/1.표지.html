@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식품제조업 디지털 혁신</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .slide-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            z-index: -1;
+        }
+        .slide-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg');
+            background-size: 400px;
+            background-repeat: repeat;
+            opacity: 0.03;
+            z-index: -1;
+        }
+        .gradient-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background: linear-gradient(to bottom, rgba(0,91,187,0) 0%, rgba(0,91,187,0.1) 100%);
+            z-index: -1;
+        }
+        .accent-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #005BBB 0%, #007BFF 100%);
+        }
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        .footer {
+            height: 40px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-background"></div>
+        <div class="slide-pattern"></div>
+        <div class="gradient-overlay"></div>
+        <div class="accent-bar"></div>
+        
+        <div class="content-section">
+            <div class="flex items-center justify-center w-full">
+                <div class="text-center">
+                    <h1 class="text-5xl font-bold text-gray-800 mb-6">식품제조업 디지털 혁신</h1>
+                    <h2 class="text-3xl font-medium text-gray-700 mb-10">표준화와 거버넌스를 통한 생산 혁신</h2>
+                    
+                    <div class="w-24 h-1 bg-blue-600 mx-auto mb-10"></div>
+                    
+                    <div class="flex items-center justify-center space-x-6 mb-8">
+                        <div class="flex flex-col items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span class="mt-2 text-gray-600">프로세스 표준화</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            <span class="mt-2 text-gray-600">시스템 통합</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            </svg>
+                            <span class="mt-2 text-gray-600">IT 거버넌스</span>
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-600 max-w-2xl mx-auto mt-6">
+                        식품제조업의 디지털화를 성공적으로 추진하기 위한 표준화 전략과 거버넌스 체계 수립
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <span>회사 로고</span>
+            <span>2025년 4월</span>
+        </div>
+    </div>
+</body>
+</html>

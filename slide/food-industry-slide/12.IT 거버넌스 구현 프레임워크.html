@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT 거버넌스 구현 프레임워크</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .accent-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #005BBB 0%, #007BFF 100%);
+        }
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 3rem;
+        }
+        .footer {
+            height: 40px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .governance-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+        }
+        .governance-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .process-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: flex-start;
+            transition: transform 0.2s;
+            border-left: 3px solid #005BBB;
+        }
+        .process-card:hover {
+            transform: translateX(5px);
+            background-color: #f0f7ff;
+        }
+        .hexagon {
+            position: relative;
+            width: 100px;
+            height: 110px;
+            background-color: #005BBB;
+            margin: 0 auto;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            transition: transform 0.2s;
+        }
+        .hexagon:hover {
+            transform: scale(1.05);
+        }
+        .connector {
+            height: 30px;
+            width: 2px;
+            background-color: #005BBB;
+            margin: 0 auto;
+        }
+        .matrix-cell {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+        .matrix-cell:hover {
+            background-color: #e6f0ff;
+        }
+        .matrix-header {
+            background-color: #005BBB;
+            color: white;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="accent-bar"></div>
+        
+        <div class="content-section">
+            <div class="mb-5">
+                <h1 class="text-3xl font-bold text-gray-800 mb-1">IT 거버넌스 구현 프레임워크</h1>
+                <div class="w-20 h-1 bg-blue-600"></div>
+                <p class="text-gray-600 mt-3">식품제조업의 디지털 거버넌스 체계 구축 방법론</p>
+            </div>
+            
+            <div class="flex space-x-6">
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-cogs text-blue-600 mr-2"></i>
+                        IT 거버넌스 5대 핵심 영역
+                    </h2>
+                    
+                    <div class="flex flex-col items-center mb-4">
+                        <div class="hexagon">
+                            <i class="fas fa-sitemap text-2xl mb-1"></i>
+                            <span class="text-xs font-medium">전략 연계</span>
+                        </div>
+                        <div class="connector"></div>
+                        <div class="hexagon">
+                            <i class="fas fa-chart-line text-2xl mb-1"></i>
+                            <span class="text-xs font-medium">가치 전달</span>
+                        </div>
+                        <div class="connector"></div>
+                        <div class="hexagon">
+                            <i class="fas fa-shield-alt text-2xl mb-1"></i>
+                            <span class="text-xs font-medium">위험 관리</span>
+                        </div>
+                        <div class="connector"></div>
+                        <div class="hexagon">
+                            <i class="fas fa-balance-scale text-2xl mb-1"></i>
+                            <span class="text-xs font-medium">자원 최적화</span>
+                        </div>
+                        <div class="connector"></div>
+                        <div class="hexagon">
+                            <i class="fas fa-tasks text-2xl mb-1"></i>
+                            <span class="text-xs font-medium">성과 측정</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mt-3">
+                        <div class="flex items-start">
+                            <i class="fas fa-lightbulb text-blue-600 mr-3 mt-1"></i>
+                            <p class="text-sm text-gray-700">
+                                <span class="font-medium text-blue-800">COBIT 프레임워크:</span> 국제적으로 인정받는 IT 거버넌스 프레임워크로, 식품제조업에 맞게 조정하여 적용할 수 있습니다. 각 영역별 세부 통제 항목과 성숙도 모델을 참조하여 단계적 구현이 가능합니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-project-diagram text-blue-600 mr-2"></i>
+                        거버넌스 구현 메커니즘
+                    </h2>
+                    
+                    <div class="process-card">
+                        <div class="bg-blue-100 w-10 h-10 rounded-full flex items-center justify-center text-blue-600 mr-3 flex-shrink-0">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-800 text-sm">의사결정 구조 수립</h3>
+                            <p class="text-xs text-gray-600 mt-1">
+                                IT-생산 협의체, 디지털 전략 위원회 등 의사결정 기구와 권한 체계 정립
+                            </p>
+                            <div class="mt-1 text-xs text-blue-600 font-medium">
+                                <i class="fas fa-check-circle mr-1"></i> RACI 매트릭스로 역할과 책임 명확화
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="process-card">
+                        <div class="bg-blue-100 w-10 h-10 rounded-full flex items-center justify-center text-blue-600 mr-3 flex-shrink-0">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-800 text-sm">정책 및 프로세스 구현</h3>
+                            <p class="text-xs text-gray-600 mt-1">
+                                IT 투자 심의, 변경 관리, 위험 관리 등의 핵심 프로세스 정의 및 문서화
+                            </p>
+                            <div class="mt-1 text-xs text-blue-600 font-medium">
+                                <i class="fas fa-check-circle mr-1"></i> 식품 산업 규제 요건 반영 (HACCP, FSSC 22000)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="process-card">
+                        <div class="bg-blue-100 w-10 h-10 rounded-full flex items-center justify-center text-blue-600 mr-3 flex-shrink-0">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-800 text-sm">성과 측정 체계 구축</h3>
+                            <p class="text-xs text-gray-600 mt-1">
+                                KPI 정의 및 모니터링 체계, 정기 보고 및 검토 프로세스 수립
+                            </p>
+                            <div class="mt-1 text-xs text-blue-600 font-medium">
+                                <i class="fas fa-check-circle mr-1"></i> BSC(균형성과표) 방법론 활용
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="process-card">
+                        <div class="bg-blue-100 w-10 h-10 rounded-full flex items-center justify-center text-blue-600 mr-3 flex-shrink-0">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-gray-800 text-sm">지속적 개선 메커니즘</h3>
+                            <p class="text-xs text-gray-600 mt-1">
+                                정기 평가, 감사 및 개선 활동을 통한 거버넌스 체계의 성숙도 향상
+                            </p>
+                            <div class="mt-1 text-xs text-blue-600 font-medium">
+                                <i class="fas fa-check-circle mr-1"></i> PDCA 사이클 기반 지속적 개선
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="font-medium text-gray-800 mb-3 text-sm flex items-center">
+                            <i class="fas fa-th text-blue-600 mr-2"></i>
+                            RACI 매트릭스 예시 (IT 프로젝트 거버넌스)
+                        </h3>
+                        <div class="grid grid-cols-5 text-xs">
+                            <div class="matrix-cell matrix-header">활동 / 역할</div>
+                            <div class="matrix-cell matrix-header">경영진</div>
+                            <div class="matrix-cell matrix-header">IT부서</div>
+                            <div class="matrix-cell matrix-header">생산부서</div>
+                            <div class="matrix-cell matrix-header">품질부서</div>
+                            
+                            <div class="matrix-cell font-medium bg-gray-50">전략 수립</div>
+                            <div class="matrix-cell">A/R</div>
+                            <div class="matrix-cell">C</div>
+                            <div class="matrix-cell">C</div>
+                            <div class="matrix-cell">I</div>
+                            
+                            <div class="matrix-cell font-medium bg-gray-50">요구사항 정의</div>
+                            <div class="matrix-cell">I</div>
+                            <div class="matrix-cell">C</div>
+                            <div class="matrix-cell">A/R</div>
+                            <div class="matrix-cell">C</div>
+                            
+                            <div class="matrix-cell font-medium bg-gray-50">시스템 구현</div>
+                            <div class="matrix-cell">I</div>
+                            <div class="matrix-cell">A/R</div>
+                            <div class="matrix-cell">C</div>
+                            <div class="matrix-cell">C</div>
+                        </div>
+                        <div class="mt-2 text-xs text-gray-500 flex flex-wrap">
+                            <span class="mr-3"><strong>R</strong>: 실행 담당</span>
+                            <span class="mr-3"><strong>A</strong>: 승인 책임</span>
+                            <span class="mr-3"><strong>C</strong>: 협의</span>
+                            <span><strong>I</strong>: 정보 수신</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                <div class="flex items-start">
+                    <i class="fas fa-clipboard-check text-green-600 mr-3 mt-1 text-lg"></i>
+                    <p class="text-sm font-medium text-gray-700">
+                        <span class="text-green-800">실행 성공 포인트:</span> IT 거버넌스는 기술적 요소보다 <strong>조직 문화와 사람</strong>에 더 많이 좌우됩니다. 경영진의 지지와 현장 참여를 확보하고, 단기 성과를 가시화하여 추진력을 유지하세요. 식품제조업의 특성에 맞게 <strong>실용적이고 유연한 거버넌스</strong>를 구축하는 것이 핵심입니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <span>회사 로고</span>
+            <span>12/15</span>
+        </div>
+    </div>
+</body>
+</html>

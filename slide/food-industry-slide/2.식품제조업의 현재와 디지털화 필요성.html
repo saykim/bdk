@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식품제조업의 현재와 디지털화 필요성</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .slide-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            z-index: -1;
+        }
+        .slide-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 400px;
+            background-repeat: repeat;
+            opacity: 0.03;
+            z-index: -1;
+        }
+        .accent-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #005BBB 0%, #007BFF 100%);
+        }
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 3rem;
+        }
+        .footer {
+            height: 40px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .challenge-card {
+            border-left: 4px solid #005BBB;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+            background-color: rgba(240, 242, 245, 0.5);
+            padding: 1rem 1rem 1rem 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-background"></div>
+        <div class="slide-pattern"></div>
+        <div class="accent-bar"></div>
+        
+        <div class="content-section">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-1">식품제조업의 현재와 디지털화 필요성</h1>
+                <div class="w-20 h-1 bg-blue-600"></div>
+            </div>
+            
+            <div class="flex mt-6">
+                <div class="w-1/2 pr-8">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">우리가 직면한 현실</h2>
+                    
+                    <div class="challenge-card">
+                        <h3 class="font-medium text-gray-800">무작정 도입된 시스템</h3>
+                        <p class="text-sm text-gray-600">체계적인 전략 없이 도입된 시스템은 프로세스 혼선을 가중시킵니다.</p>
+                    </div>
+                    
+                    <div class="challenge-card">
+                        <h3 class="font-medium text-gray-800">제각각인 프로세스</h3>
+                        <p class="text-sm text-gray-600">부서별, 공정별 서로 다른 프로세스로 인한 일관성 결여와 비효율이 발생합니다.</p>
+                    </div>
+                    
+                    <div class="challenge-card">
+                        <h3 class="font-medium text-gray-800">표준화 영역 부족</h3>
+                        <p class="text-sm text-gray-600">명확한 표준과 작업지침 부재로 품질 변동성이 높아지고 있습니다.</p>
+                    </div>
+                    
+                    <div class="challenge-card">
+                        <h3 class="font-medium text-gray-800">거버넌스 체계 미비</h3>
+                        <p class="text-sm text-gray-600">IT와 생산 부서 간 소통 구조와 의사결정 체계가 명확하지 않습니다.</p>
+                    </div>
+                </div>
+                
+                <div class="w-1/2 pl-8 border-l border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">디지털화의 필요성</h2>
+                    
+                    <div class="mb-6">
+                        <div class="flex items-center mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="font-medium text-gray-800">시장 변화 대응력 향상</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 pl-7">
+                            빠르게 변화하는 소비자 요구와 규제에 신속하게 대응할 수 있는 민첩성이 필요합니다.
+                        </p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="flex items-center mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="font-medium text-gray-800">생산 효율성 증대</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 pl-7">
+                            공정 최적화를 통한 생산비용 절감과 불량률 감소로 수익성이 개선됩니다.
+                        </p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="flex items-center mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="font-medium text-gray-800">데이터 기반 의사결정</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 pl-7">
+                            실시간 데이터 수집과 분석을 통해 과학적이고 객관적인 의사결정이 가능해집니다.
+                        </p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="flex items-center mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3 class="font-medium text-gray-800">식품안전 및 품질 보증</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 pl-7">
+                            디지털 모니터링으로 HACCP 등 규제 준수와 품질 관리가 더욱 용이해집니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-sm font-medium text-gray-700">
+                        <span class="text-blue-800">산업 동향:</span> 식품제조업계의 스마트공장 구축률은 단 2.3%에 불과합니다. 디지털 전환은 이제 선택이 아닌 필수입니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <span>회사 로고</span>
+            <span>2/15</span>
+        </div>
+    </div>
+</body>
+</html>

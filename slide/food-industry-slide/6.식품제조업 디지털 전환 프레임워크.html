@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디지털 전환 프레임워크</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .accent-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #005BBB 0%, #007BFF 100%);
+        }
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 3rem;
+        }
+        .footer {
+            height: 40px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .framework-stage {
+            position: relative;
+            padding-left: 1.5rem;
+            padding-bottom: 1rem;
+            padding-top: 1rem;
+            border-left: 2px solid #e9ecef;
+            margin-left: 1rem;
+        }
+        .framework-stage::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 1.25rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: #007BFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+        .framework-stage:nth-child(1)::before { content: '1'; }
+        .framework-stage:nth-child(2)::before { content: '2'; }
+        .framework-stage:nth-child(3)::before { content: '3'; }
+        .framework-stage:nth-child(4)::before { content: '4'; }
+        .framework-stage:nth-child(5)::before { content: '5'; }
+        
+        .stage-content {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #007BFF;
+        }
+        
+        .pillar-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            height: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-top: 4px solid #005BBB;
+        }
+        .pillar-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="accent-bar"></div>
+        
+        <div class="content-section">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-1">식품제조업 디지털 전환 프레임워크</h1>
+                <div class="w-20 h-1 bg-blue-600"></div>
+                <p class="text-gray-600 mt-3">체계적인 디지털화를 위한 단계별 접근 방식</p>
+            </div>
+            
+            <div class="flex space-x-6 mt-4">
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-project-diagram text-blue-600 mr-2"></i>
+                        디지털 전환 5단계 프레임워크
+                    </h2>
+                    
+                    <div class="framework-stage">
+                        <div class="stage-content">
+                            <h3 class="font-medium text-gray-800 mb-1">현황 진단 및 목표 설정</h3>
+                            <p class="text-sm text-gray-600">현재 프로세스, 시스템, 데이터 현황 분석 및 디지털화 목표 설정</p>
+                        </div>
+                    </div>
+                    
+                    <div class="framework-stage">
+                        <div class="stage-content">
+                            <h3 class="font-medium text-gray-800 mb-1">프로세스 표준화 및 SOP 구축</h3>
+                            <p class="text-sm text-gray-600">핵심 생산 프로세스 표준화 및 표준작업지침서(SOP) 개발</p>
+                        </div>
+                    </div>
+                    
+                    <div class="framework-stage">
+                        <div class="stage-content">
+                            <h3 class="font-medium text-gray-800 mb-1">IT 거버넌스 체계 수립</h3>
+                            <p class="text-sm text-gray-600">의사결정 구조, 역할 정의, 성과 지표 설정을 통한 거버넌스 수립</p>
+                        </div>
+                    </div>
+                    
+                    <div class="framework-stage">
+                        <div class="stage-content">
+                            <h3 class="font-medium text-gray-800 mb-1">디지털 시스템 구축</h3>
+                            <p class="text-sm text-gray-600">표준화된 프로세스 기반의 MES, ERP, HACCP 시스템 등 구축</p>
+                        </div>
+                    </div>
+                    
+                    <div class="framework-stage">
+                        <div class="stage-content">
+                            <h3 class="font-medium text-gray-800 mb-1">지속적 개선 및 확장</h3>
+                            <p class="text-sm text-gray-600">데이터 분석, 프로세스 최적화, AI 등 고도화 기술 도입</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-600 mr-3 mt-1"></i>
+                            <p class="text-sm font-medium text-gray-700">
+                                <span class="text-blue-800">중요 포인트:</span> 성공적인 디지털 전환을 위해서는 기술 도입 이전에 <strong>프로세스 표준화와 거버넌스 체계 구축</strong>이 선행되어야 합니다. 디지털화는 결과가 아닌 과정입니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-columns text-blue-600 mr-2"></i>
+                        디지털 전환의 4대 핵심 축
+                    </h2>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="pillar-card">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-users text-blue-600 mr-2 text-xl"></i>
+                                <h3 class="font-medium text-gray-800">사람</h3>
+                            </div>
+                            <ul class="text-sm text-gray-600 space-y-1 pl-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-500 mr-1 mt-1 text-xs"></i>
+                                    <span>디지털 역량 강화 교육</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-500 mr-1 mt-1 text-xs"></i>
+                                    <span>변화 관리 프로그램</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-500 mr-1 mt-1 text-xs"></i>
+                                    <span>부서간 협업 문화 조성</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="pillar-card">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-cogs text-blue-600 mr-2 text-xl"></i>
+                                <h3 class="font-medium text-gray-800">프로세스</h3>
+                            </div>
+                            <ul class="text-sm text-gray-600 space-y-1 pl-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-500 mr-1 mt-1 text-xs"></i>
+                                    <span>표준 프로세스 정의</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-500 mr-1 mt-1 text-xs"></i>
+                                    <span>SOP 개발 및 문서화</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-500 mr-1 mt-1 text-xs"></i>
+                                    <span>지속적 개선 체계 구축</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="pillar-card">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-laptop-code text-blue-600 mr-2 text-xl"></i>
+                                <h3 class="font-medium text-gray-800">기술</h3>
+                            </div>
+                            <ul class="text-sm text-gray-600 space-y-1 pl-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-500 mr-1 mt-1 text-xs"></i>
+                                    <span>적합한 IT 인프라 구축</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-500 mr-1 mt-1 text-xs"></i>
+                                    <span>데이터 수집 및 연계 체계</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-500 mr-1 mt-1 text-xs"></i>
+                                    <span>AI와 자동화 기술 활용</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="pillar-card">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-balance-scale text-blue-600 mr-2 text-xl"></i>
+                                <h3 class="font-medium text-gray-800">거버넌스</h3>
+                            </div>
+                            <ul class="text-sm text-gray-600 space-y-1 pl-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-500 mr-1 mt-1 text-xs"></i>
+                                    <span>의사결정 체계 수립</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-500 mr-1 mt-1 text-xs"></i>
+                                    <span>성과 측정 및 평가 체계</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-blue-500 mr-1 mt-1 text-xs"></i>
+                                    <span>규제 준수 및 위험 관리</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                        <h3 class="font-medium text-gray-800 mb-2 flex items-center">
+                            <i class="fas fa-chart-line text-yellow-600 mr-2"></i>
+                            디지털 전환의 성공 척도
+                        </h3>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-white p-2 rounded shadow-sm">
+                                <span class="block text-blue-600 font-bold text-lg">23%</span>
+                                <span class="text-xs text-gray-600">생산성 향상</span>
+                            </div>
+                            <div class="bg-white p-2 rounded shadow-sm">
+                                <span class="block text-blue-600 font-bold text-lg">35%</span>
+                                <span class="text-xs text-gray-600">품질 불량률 감소</span>
+                            </div>
+                            <div class="bg-white p-2 rounded shadow-sm">
+                                <span class="block text-blue-600 font-bold text-lg">40%</span>
+                                <span class="text-xs text-gray-600">의사결정 시간 단축</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <span>회사 로고</span>
+            <span>6/15</span>
+        </div>
+    </div>
+</body>
+</html>

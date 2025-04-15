@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>식품제조업 디지털화 성공 사례</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .accent-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #005BBB 0%, #007BFF 100%);
+        }
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 3rem;
+        }
+        .footer {
+            height: 40px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .case-study-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 5px solid #005BBB;
+        }
+        .case-study-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .result-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            background-color: rgba(0, 91, 187, 0.1);
+            color: #005BBB;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="accent-bar"></div>
+        
+        <div class="content-section">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-1">식품제조업 디지털화 성공 사례</h1>
+                <div class="w-20 h-1 bg-blue-600"></div>
+                <p class="text-gray-600 mt-3">표준화와 거버넌스 기반의 실질적 성과 달성</p>
+            </div>
+            
+            <div class="flex flex-col space-y-5 mt-4">
+                <div class="case-study-card">
+                    <div class="flex items-start">
+                        <div class="w-16 h-16 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-wine-bottle text-blue-600 text-2xl"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-xl font-semibold text-gray-800">풀무원 - 디지털 클러스터 스마트공장 구축</h3>
+                                <span class="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">국내 식품기업 최초</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">
+                                자사 공장과 협력사에 디지털 클러스터를 단계적으로 구축하여 프로세스 표준화와 데이터 기반 의사결정 체계를 수립했습니다. 생산, 품질 관련 데이터를 실시간으로 수집하고 중앙 서버에서 통합 관리하는 시스템을 구현했습니다.
+                            </p>
+                            <div class="mt-3">
+                                <div class="result-badge"><i class="fas fa-arrow-up mr-1"></i> 생산성 30% 향상</div>
+                                <div class="result-badge"><i class="fas fa-arrow-down mr-1"></i> 불량률 25% 감소</div>
+                                <div class="result-badge"><i class="fas fa-bolt mr-1"></i> 의사결정 시간 45% 단축</div>
+                            </div>
+                            <div class="mt-3 text-sm">
+                                <span class="font-medium text-gray-700">핵심 성공 요인: </span>
+                                <span class="text-gray-600">제조 공정 표준화 → SOP 문서화 → 데이터 수집체계 구축 → 분석 시스템 개발의 단계적 접근</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="case-study-card">
+                    <div class="flex items-start">
+                        <div class="w-16 h-16 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-beer text-blue-600 text-2xl"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-xl font-semibold text-gray-800">지평주조 - 스마트 막걸리 제조공정 구축</h3>
+                                <span class="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">전통주 공정 혁신</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">
+                                전통적인 막걸리 제조 공정의 표준화와 SOP를 확립한 후, AI와 빅데이터 분석 기술을 접목한 스마트팩토리 시스템을 구축했습니다. 온도, 습도, 알코올 발효도 등 품질 관련 핵심 파라미터를 실시간 모니터링하고 제어하는 체계를 수립했습니다.
+                            </p>
+                            <div class="mt-3">
+                                <div class="result-badge"><i class="fas fa-arrow-up mr-1"></i> 품질 균일성 40% 개선</div>
+                                <div class="result-badge"><i class="fas fa-arrow-down mr-1"></i> 에너지 사용량 22% 절감</div>
+                                <div class="result-badge"><i class="fas fa-user-check mr-1"></i> 작업자 안전사고 발생 Zero</div>
+                            </div>
+                            <div class="mt-3 text-sm">
+                                <span class="font-medium text-gray-700">핵심 성공 요인: </span>
+                                <span class="text-gray-600">생산-IT 부서 간 협업 거버넌스 구축과 직원 디지털 역량 강화 교육의 병행</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="case-study-card">
+                    <div class="flex items-start">
+                        <div class="w-16 h-16 flex-shrink-0 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-apple-alt text-blue-600 text-2xl"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-xl font-semibold text-gray-800">씨알푸드 - 통합 ERP 기반 건강식품 품질관리</h3>
+                                <span class="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">중소기업 성공사례</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">
+                                건강식품 제조 프로세스 표준화와 HACCP 기반 SOP 구축 후, 통합 ERP 시스템을 도입하여 원재료 입고부터 출하까지 전 과정의 디지털화를 완성했습니다. 원료의 이력추적과 실시간 생산현황 모니터링으로 의사결정 효율성을 높였습니다.
+                            </p>
+                            <div class="mt-3">
+                                <div class="result-badge"><i class="fas fa-arrow-down mr-1"></i> 재고 비용 35% 절감</div>
+                                <div class="result-badge"><i class="fas fa-arrow-up mr-1"></i> 주문처리 속도 60% 향상</div>
+                                <div class="result-badge"><i class="fas fa-search mr-1"></i> 원료 추적 소요시간 80% 단축</div>
+                            </div>
+                            <div class="mt-3 text-sm">
+                                <span class="font-medium text-gray-700">핵심 성공 요인: </span>
+                                <span class="text-gray-600">전사적 IT 거버넌스 체계 수립과 현장 중심의 디지털 시스템 설계</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                <div class="flex items-start">
+                    <i class="fas fa-lightbulb text-blue-600 mr-3 mt-1 text-lg"></i>
+                    <p class="text-sm font-medium text-gray-700">
+                        <span class="text-blue-800">시사점:</span> 모든 성공 사례에서 <strong>시스템 도입 전 프로세스 표준화와 거버넌스 체계 구축</strong>이 선행되었습니다. 디지털화는 기술 도입이 아닌 <strong>체계적인 변화 관리 프로세스</strong>입니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <span>회사 로고</span>
+            <span>7/15</span>
+        </div>
+    </div>
+</body>
+</html>

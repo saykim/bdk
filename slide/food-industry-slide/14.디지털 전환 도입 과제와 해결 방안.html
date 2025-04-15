@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디지털 전환 도입 과제와 해결 방안</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .accent-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #005BBB 0%, #007BFF 100%);
+        }
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 3rem;
+        }
+        .footer {
+            height: 40px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .challenge-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #dc3545;
+            position: relative;
+        }
+        .challenge-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .solution-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #28a745;
+            position: relative;
+        }
+        .solution-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .connector {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 20px;
+            z-index: 10;
+        }
+        .resource-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            background-color: white;
+            border-radius: 8px;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .resource-item:hover {
+            transform: translateX(5px);
+            background-color: #f0f7ff;
+        }
+        .resource-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="accent-bar"></div>
+        
+        <div class="content-section">
+            <div class="mb-5">
+                <h1 class="text-3xl font-bold text-gray-800 mb-1">디지털 전환 도입 과제와 해결 방안</h1>
+                <div class="w-20 h-1 bg-blue-600"></div>
+                <p class="text-gray-600 mt-3">식품제조업 디지털화 과정에서 직면하는 주요 과제와 실용적 해결책</p>
+            </div>
+            
+            <div class="flex space-x-8">
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                        주요 도입 과제
+                    </h2>
+                    
+                    <div class="challenge-card">
+                        <div class="flex items-start">
+                            <div class="bg-red-100 p-2 rounded-full mr-3 flex-shrink-0">
+                                <i class="fas fa-user-shield text-red-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800 text-sm">현장 저항과 변화에 대한 두려움</h3>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    기존 수작업 방식에 익숙한 현장 직원들의 디지털 시스템 사용에 대한 불안감과 저항
+                                </p>
+                            </div>
+                        </div>
+                        <div class="connector">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="challenge-card">
+                        <div class="flex items-start">
+                            <div class="bg-red-100 p-2 rounded-full mr-3 flex-shrink-0">
+                                <i class="fas fa-project-diagram text-red-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800 text-sm">비표준화된 복잡한 생산 공정</h3>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    제품별, 라인별로 상이한 공정과 작업 방식으로 인한 표준화 어려움
+                                </p>
+                            </div>
+                        </div>
+                        <div class="connector">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="challenge-card">
+                        <div class="flex items-start">
+                            <div class="bg-red-100 p-2 rounded-full mr-3 flex-shrink-0">
+                                <i class="fas fa-wallet text-red-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800 text-sm">초기 투자 부담과 ROI 불확실성</h3>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    시스템 구축 비용 대비 실질적 성과에 대한 의구심과 투자 회수 기간 불확실
+                                </p>
+                            </div>
+                        </div>
+                        <div class="connector">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="challenge-card">
+                        <div class="flex items-start">
+                            <div class="bg-red-100 p-2 rounded-full mr-3 flex-shrink-0">
+                                <i class="fas fa-cogs text-red-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800 text-sm">기존 설비와의 연계성 문제</h3>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    노후화된 설비와 최신 디지털 시스템 간의 호환성 부족과 데이터 수집 한계
+                                </p>
+                            </div>
+                        </div>
+                        <div class="connector">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-lightbulb text-green-600 mr-2"></i>
+                        실용적 해결 방안
+                    </h2>
+                    
+                    <div class="solution-card">
+                        <div class="flex items-start">
+                            <div class="bg-green-100 p-2 rounded-full mr-3 flex-shrink-0">
+                                <i class="fas fa-chalkboard-teacher text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800 text-sm">현장 중심 교육 및 참여 증진</h3>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    실습 중심의 맞춤형 교육 프로그램 운영과 디지털 챔피언 육성을 통한 내부 변화 주도
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="solution-card">
+                        <div class="flex items-start">
+                            <div class="bg-green-100 p-2 rounded-full mr-3 flex-shrink-0">
+                                <i class="fas fa-layer-group text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800 text-sm">단계적 표준화 및 공정 단순화</h3>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    핵심 공정부터 단계적 표준화 추진, 불필요한 작업 제거를 통한 공정 복잡성 감소
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="solution-card">
+                        <div class="flex items-start">
+                            <div class="bg-green-100 p-2 rounded-full mr-3 flex-shrink-0">
+                                <i class="fas fa-chart-pie text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800 text-sm">Quick-Win 프로젝트 우선 실행</h3>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    초기 투자비용이 낮고 가시적 효과가 빠른 프로젝트부터 추진하여 성공 사례 창출
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="solution-card">
+                        <div class="flex items-start">
+                            <div class="bg-green-100 p-2 rounded-full mr-3 flex-shrink-0">
+                                <i class="fas fa-plug text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-800 text-sm">독립적인 데이터 수집 시스템 구축</h3>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    레거시 설비에 IoT 센서 추가 설치 및 미들웨어 솔루션을 통한 데이터 연계성 확보
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h2 class="text-xl font-semibold text-gray-700 mb-3 flex items-center">
+                    <i class="fas fa-hands-helping text-blue-600 mr-2"></i>
+                    도입 지원 리소스 및 프로그램
+                </h2>
+                
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="resource-item">
+                        <div class="resource-icon bg-blue-100 text-blue-600">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-800 text-sm">정부 스마트공장 지원 사업</h4>
+                            <p class="text-xs text-gray-600">식품기업 대상 맞춤형 지원금 및 컨설팅</p>
+                        </div>
+                    </div>
+                    
+                    <div class="resource-item">
+                        <div class="resource-icon bg-blue-100 text-blue-600">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-800 text-sm">식품기업 디지털 협의체</h4>
+                            <p class="text-xs text-gray-600">업계 공통 문제 해결 및 우수사례 공유</p>
+                        </div>
+                    </div>
+                    
+                    <div class="resource-item">
+                        <div class="resource-icon bg-blue-100 text-blue-600">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-800 text-sm">산학협력 기술 지원</h4>
+                            <p class="text-xs text-gray-600">식품공학-IT 융합 전문가 자문 프로그램</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-5 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                <div class="flex items-start">
+                    <i class="fas fa-quote-left text-blue-600 mr-3 mt-1 text-lg"></i>
+                    <div>
+                        <p class="text-sm italic text-gray-700 mb-2">
+                            "성공적인 디지털 전환은 기술 자체보다 <strong>사람과 프로세스</strong>에 더 많은 초점을 맞추는 것에서 시작됩니다."
+                        </p>
+                        <p class="text-xs text-blue-800 font-medium">— 풀무원 디지털 클러스터 프로젝트 책임자</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <span>회사 로고</span>
+            <span>14/15</span>
+        </div>
+    </div>
+</body>
+</html>

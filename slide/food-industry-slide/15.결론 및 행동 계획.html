@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결론 및 행동 계획</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .accent-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #005BBB 0%, #007BFF 100%);
+        }
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 3rem;
+        }
+        .footer {
+            height: 40px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .action-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #005BBB;
+            position: relative;
+        }
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .timeline-item {
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+        .timeline-marker {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #005BBB;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .benefit-badge {
+            display: inline-block;
+            background-color: rgba(0, 91, 187, 0.1);
+            color: #005BBB;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .gradient-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+            z-index: 10;
+            display: none; /* Hide initially, only show if needed */
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="accent-bar"></div>
+        
+        <div class="content-section">
+            <div class="mb-5">
+                <h1 class="text-3xl font-bold text-gray-800 mb-1">결론 및 행동 계획</h1>
+                <div class="w-20 h-1 bg-blue-600"></div>
+                <p class="text-gray-600 mt-3">디지털 전환의 성공을 위한 실천적 접근</p>
+            </div>
+            
+            <div class="flex space-x-6 mb-5">
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-bullseye text-blue-600 mr-2"></i>
+                        핵심 메시지 요약
+                    </h2>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-5">
+                        <div class="flex items-start">
+                            <i class="fas fa-quote-left text-blue-600 mr-3 mt-1"></i>
+                            <p class="text-sm font-medium text-gray-700">
+                                식품제조업의 디지털 혁신은 <strong>기술 도입</strong>이 아닌 <strong>체계적인 프로세스 표준화</strong>와 <strong>거버넌스 체계 구축</strong>에서 시작됩니다. 생산본부와 IT부서의 협력을 통해 함께 변화를 이끌어 나가는 여정입니다.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <h3 class="font-medium text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                            디지털 혁신의 핵심 성공 요인
+                        </h3>
+                        
+                        <div class="grid grid-cols-2 gap-y-3 gap-x-4">
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mr-2">
+                                    <span class="text-blue-600 text-xs font-bold">1</span>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    <strong>현장 중심 접근:</strong><br>
+                                    생산현장의 참여와 주도
+                                </p>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mr-2">
+                                    <span class="text-blue-600 text-xs font-bold">2</span>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    <strong>표준화 우선:</strong><br>
+                                    프로세스부터 표준화
+                                </p>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mr-2">
+                                    <span class="text-blue-600 text-xs font-bold">3</span>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    <strong>단계적 접근:</strong><br>
+                                    소규모 성공을 통한 확산
+                                </p>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mr-2">
+                                    <span class="text-blue-600 text-xs font-bold">4</span>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    <strong>거버넌스 체계:</strong><br>
+                                    명확한 의사결정 구조
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card mt-5">
+                        <h3 class="font-medium text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-gift text-purple-600 mr-2"></i>
+                            디지털 혁신의 기대 효과
+                        </h3>
+                        
+                        <div class="flex flex-wrap">
+                            <div class="benefit-badge">
+                                <i class="fas fa-arrow-up mr-1"></i> 생산성 30% 향상
+                            </div>
+                            <div class="benefit-badge">
+                                <i class="fas fa-arrow-down mr-1"></i> 불량률 35% 감소
+                            </div>
+                            <div class="benefit-badge">
+                                <i class="fas fa-tachometer-alt mr-1"></i> 의사결정 40% 가속화
+                            </div>
+                            <div class="benefit-badge">
+                                <i class="fas fa-coins mr-1"></i> 운영비용 25% 절감
+                            </div>
+                            <div class="benefit-badge">
+                                <i class="fas fa-bolt mr-1"></i> 투자수익률 320%
+                            </div>
+                            <div class="benefit-badge">
+                                <i class="fas fa-leaf mr-1"></i> 에너지 사용 20% 절감
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-tasks text-blue-600 mr-2"></i>
+                        디지털 혁신 실행 계획
+                    </h2>
+                    
+                    <div class="action-card">
+                        <h3 class="font-medium text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-calendar-alt text-red-600 mr-2"></i>
+                            90일 액션 플랜
+                        </h3>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker">1</div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800">현황 진단 및 주요 공정 분석 (1-4주)</h4>
+                                <p class="text-xs text-gray-600">
+                                    생산본부와 IT부서 합동 TF팀 구성 및 핵심 공정 진단
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker">2</div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800">핵심 공정 표준화 및 SOP 개발 (5-8주)</h4>
+                                <p class="text-xs text-gray-600">
+                                    주요 생산 공정의 표준 작업 절차 정의 및 문서화
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker">3</div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800">거버넌스 체계 설계 (9-10주)</h4>
+                                <p class="text-xs text-gray-600">
+                                    IT-생산 협의체 구성 및 의사결정 구조 확립
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker">4</div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800">파일럿 프로젝트 실행 (11-13주)</h4>
+                                <p class="text-xs text-gray-600">
+                                    특정 생산라인 대상 표준화된 프로세스 및 디지털 도구 시범 적용
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4 mt-5">
+                        <div class="w-1/2 bg-blue-50 p-4 rounded-lg">
+                            <h3 class="font-medium text-gray-800 mb-2 text-sm flex items-center">
+                                <i class="fas fa-hand-point-right text-blue-600 mr-2"></i>
+                                생산본부의 역할
+                            </h3>
+                            <ul class="text-xs text-gray-700 space-y-1 pl-5 list-disc">
+                                <li>현장 프로세스 분석 주도</li>
+                                <li>표준 작업 절차 정의 참여</li>
+                                <li>디지털 챔피언 선발 및 육성</li>
+                                <li>변화 저항 관리 및 소통</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="w-1/2 bg-green-50 p-4 rounded-lg">
+                            <h3 class="font-medium text-gray-800 mb-2 text-sm flex items-center">
+                                <i class="fas fa-hand-point-right text-green-600 mr-2"></i>
+                                IT 부서의 역할
+                            </h3>
+                            <ul class="text-xs text-gray-700 space-y-1 pl-5 list-disc">
+                                <li>기술적 지원 및 컨설팅</li>
+                                <li>디지털 도구 제안 및 구현</li>
+                                <li>데이터 표준화 가이드 제공</li>
+                                <li>거버넌스 체계 수립 지원</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-r from-blue-600 to-blue-400 rounded-lg p-5 text-white">
+                <div class="flex justify-center items-center">
+                    <i class="fas fa-arrow-circle-right text-4xl mr-5"></i>
+                    <div>
+                        <h2 class="text-2xl font-bold mb-1">함께 시작하는 디지털 여정</h2>
+                        <p class="opacity-90">
+                            식품 제조의 미래를 향한 첫걸음은 완벽한 시스템이 아닌, 
+                            <strong>함께하는 변화의 의지</strong>에서 시작됩니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gradient-overlay"></div>
+        </div>
+        
+        <div class="footer">
+            <span>회사 로고</span>
+            <span>15/15</span>
+        </div>
+    </div>
+    
+    <script>
+        // Check if content overflows and show gradient if needed
+        document.addEventListener('DOMContentLoaded', function() {
+            const contentSection = document.querySelector('.content-section');
+            const gradientOverlay = document.querySelector('.gradient-overlay');
+            
+            if (contentSection.scrollHeight > contentSection.clientHeight) {
+                gradientOverlay.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

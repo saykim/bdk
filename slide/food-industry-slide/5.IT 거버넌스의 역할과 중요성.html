@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT 거버넌스의 역할과 중요성</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .accent-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #005BBB 0%, #007BFF 100%);
+        }
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 3rem;
+        }
+        .footer {
+            height: 40px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .governance-pillar {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #005BBB;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .governance-pillar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .hex-grid {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .hex-item {
+            position: relative;
+            width: 130px;
+            height: 150px;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            background: linear-gradient(135deg, #005BBB 0%, #007BFF 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 0.5rem;
+            transition: transform 0.2s;
+        }
+        .hex-item:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="accent-bar"></div>
+        
+        <div class="content-section">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-1">IT 거버넌스의 역할과 중요성</h1>
+                <div class="w-20 h-1 bg-blue-600"></div>
+                <p class="text-gray-600 mt-3">디지털 혁신을 위한 의사결정 및 책임 체계 구축</p>
+            </div>
+            
+            <div class="flex space-x-6 mt-4">
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-sitemap text-blue-600 mr-2"></i>
+                        식품제조업 IT 거버넌스란?
+                    </h2>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 mb-5">
+                        <p class="text-sm text-gray-700">
+                            <span class="font-medium">IT 거버넌스</span>는 디지털 기술이 조직의 전략 및 목표를 지원하도록 보장하는 의사결정 및 책임 체계입니다. 프로세스, 시스템, 인력이 조화롭게 작동하도록 하는 종합적인 관리 프레임워크입니다.
+                        </p>
+                    </div>
+                    
+                    <h3 class="font-semibold text-gray-700 mb-3">IT 거버넌스의 핵심 구성요소</h3>
+                    
+                    <div class="hex-grid">
+                        <div class="hex-item">
+                            <i class="fas fa-users mb-2 text-xl"></i>
+                            <span class="text-xs font-medium">의사결정 구조</span>
+                        </div>
+                        <div class="hex-item">
+                            <i class="fas fa-chart-line mb-2 text-xl"></i>
+                            <span class="text-xs font-medium">성과 측정</span>
+                        </div>
+                        <div class="hex-item">
+                            <i class="fas fa-cogs mb-2 text-xl"></i>
+                            <span class="text-xs font-medium">프로세스 관리</span>
+                        </div>
+                        <div class="hex-item">
+                            <i class="fas fa-clipboard-check mb-2 text-xl"></i>
+                            <span class="text-xs font-medium">규정 준수</span>
+                        </div>
+                        <div class="hex-item">
+                            <i class="fas fa-lightbulb mb-2 text-xl"></i>
+                            <span class="text-xs font-medium">전략 연계</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                        <div class="flex items-start">
+                            <i class="fas fa-lightbulb text-green-600 mr-3 mt-1"></i>
+                            <p class="text-sm font-medium text-gray-700">
+                                <span class="text-green-800">중요 포인트:</span> IT 거버넌스는 단순한 IT 부서의 업무가 아닌, <strong>전사적 차원의 경영 프레임워크</strong>로 생산본부를 포함한 모든 부서의 적극적인 참여가 필요합니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-check-double text-blue-600 mr-2"></i>
+                        효과적인 IT 거버넌스의 이점
+                    </h2>
+                    
+                    <div class="governance-pillar">
+                        <div class="flex items-center mb-1">
+                            <i class="fas fa-sync-alt text-blue-600 mr-2"></i>
+                            <h3 class="font-medium text-gray-800">의사결정 효율성 향상</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 pl-7">
+                            명확한 의사결정 체계와 책임 부여로 IT 관련 의사결정 속도 향상 및 병목현상 해소
+                        </p>
+                    </div>
+                    
+                    <div class="governance-pillar">
+                        <div class="flex items-center mb-1">
+                            <i class="fas fa-handshake text-blue-600 mr-2"></i>
+                            <h3 class="font-medium text-gray-800">IT와 생산부서 간 협업 강화</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 pl-7">
+                            기술 요구사항과 현장 니즈의 균형 있는 반영으로 실제 사용되는 시스템 구현
+                        </p>
+                    </div>
+                    
+                    <div class="governance-pillar">
+                        <div class="flex items-center mb-1">
+                            <i class="fas fa-shield-alt text-blue-600 mr-2"></i>
+                            <h3 class="font-medium text-gray-800">위험 관리 및 규제 준수</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 pl-7">
+                            식품안전 규제(HACCP, FSSC 22000) 요구사항을 IT 시스템에 체계적으로 반영
+                        </p>
+                    </div>
+                    
+                    <div class="governance-pillar">
+                        <div class="flex items-center mb-1">
+                            <i class="fas fa-chart-pie text-blue-600 mr-2"></i>
+                            <h3 class="font-medium text-gray-800">IT 투자 가치 극대화</h3>
+                        </div>
+                        <p class="text-sm text-gray-600 pl-7">
+                            전략적 우선순위에 따른 IT 투자로 ROI 향상 및 자원 낭비 방지
+                        </p>
+                    </div>
+                    
+                    <div class="mt-5 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                        <h3 class="font-medium text-gray-800 mb-2 flex items-center">
+                            <i class="fas fa-link text-yellow-600 mr-2"></i>
+                            표준화, SOP, 거버넌스의 연계
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-3">
+                            프로세스 표준화와 SOP는 효과적인 IT 거버넌스의 기반이 되며, 거버넌스는 이러한 표준이 지속적으로 준수되고 개선되도록 보장합니다.
+                        </p>
+                        <div class="flex justify-center">
+                            <div class="flex items-center text-sm text-gray-700">
+                                <span class="bg-blue-100 px-3 py-1 rounded-l-full">표준화</span>
+                                <i class="fas fa-arrow-right mx-1 text-blue-500"></i>
+                                <span class="bg-blue-100 px-3 py-1">SOP</span>
+                                <i class="fas fa-arrow-right mx-1 text-blue-500"></i>
+                                <span class="bg-blue-100 px-3 py-1 rounded-r-full">거버넌스</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div class="footer">
+            <span>회사 로고</span>
+            <span>5/15</span>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>표준화와 SOP의 중요성</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .accent-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #005BBB 0%, #007BFF 100%);
+        }
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 3rem;
+        }
+        .footer {
+            height: 40px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .benefit-card {
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            background-color: #f8f9fa;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #00A651;
+        }
+        .sop-process-item {
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .sop-process-item::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: #005BBB;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+        .sop-process-item:nth-child(1)::before { content: '1'; }
+        .sop-process-item:nth-child(2)::before { content: '2'; }
+        .sop-process-item:nth-child(3)::before { content: '3'; }
+        .sop-process-item:nth-child(4)::before { content: '4'; }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="accent-bar"></div>
+        
+        <div class="content-section">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-1">표준화와 SOP의 중요성</h1>
+                <div class="w-20 h-1 bg-blue-600"></div>
+                <p class="text-gray-600 mt-3">디지털화 성공의 핵심 기반 구축</p>
+            </div>
+            
+            <div class="flex space-x-6 mt-4">
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        표준화가 가져오는 이점
+                    </h2>
+                    
+                    <div class="benefit-card">
+                        <h3 class="font-medium text-gray-800 mb-1">품질의 일관성 확보</h3>
+                        <p class="text-sm text-gray-600">표준화된 작업 방식으로 제품 품질 변동성 감소 및 고객 신뢰 향상</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <h3 class="font-medium text-gray-800 mb-1">생산성 및 효율성 증대</h3>
+                        <p class="text-sm text-gray-600">낭비요소 제거와 최적화된 프로세스를 통한 생산 효율 향상</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <h3 class="font-medium text-gray-800 mb-1">시스템 통합 용이성</h3>
+                        <p class="text-sm text-gray-600">표준화된 데이터와 프로세스로 시스템 간 연계 및 확장성 확보</p>
+                    </div>
+                    
+                    <div class="benefit-card">
+                        <h3 class="font-medium text-gray-800 mb-1">식품안전 규제 준수 강화</h3>
+                        <p class="text-sm text-gray-600">HACCP, FSSC 22000 등 표준 규제 준수를 위한 체계적 관리 가능</p>
+                    </div>
+                    
+                    <div class="mt-6 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                        <div class="flex items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="text-sm text-gray-700">
+                                <span class="font-medium text-blue-800">산업 통계:</span> 표준화된 프로세스를 도입한 식품 제조기업의 생산성은 평균 23% 향상되었으며, 품질 불량률은 35% 감소했습니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        효과적인 SOP(표준작업지침서) 구현
+                    </h2>
+                    
+                    <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
+                        <div class="sop-process-item">
+                            <h3 class="font-medium text-gray-800 mb-1">현행 프로세스 분석 및 표준 정의</h3>
+                            <p class="text-sm text-gray-600">제조 공정별 현 작업방식을 분석하고 최적의 표준 프로세스 정의</p>
+                        </div>
+                        
+                        <div class="sop-process-item">
+                            <h3 class="font-medium text-gray-800 mb-1">SOP 문서화 및 검증</h3>
+                            <p class="text-sm text-gray-600">명확하고 상세한 작업 지침 문서화 및 현장 검증을 통한 실효성 확인</p>
+                        </div>
+                        
+                        <div class="sop-process-item">
+                            <h3 class="font-medium text-gray-800 mb-1">교육 및 훈련 실시</h3>
+                            <p class="text-sm text-gray-600">모든 작업자 대상 표준화된 작업 방법 교육 및 실습 진행</p>
+                        </div>
+                        
+                        <div class="sop-process-item">
+                            <h3 class="font-medium text-gray-800 mb-1">지속적 모니터링 및 개선</h3>
+                            <p class="text-sm text-gray-600">표준 프로세스 준수 여부 모니터링 및 정기적 개선 활동 수행</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-5 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                        <h3 class="font-medium text-gray-800 mb-2">식품제조업 SOP 핵심 영역</h3>
+                        <div class="flex flex-wrap">
+                            <div class="w-1/2 flex items-center mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span class="text-sm text-gray-700">원료 입고 및 검수</span>
+                            </div>
+                            <div class="w-1/2 flex items-center mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span class="text-sm text-gray-700">전처리 및 가공</span>
+                            </div>
+                            <div class="w-1/2 flex items-center mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span class="text-sm text-gray-700">CCP 모니터링</span>
+                            </div>
+                            <div class="w-1/2 flex items-center mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span class="text-sm text-gray-700">품질 검사</span>
+                            </div>
+                            <div class="w-1/2 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span class="text-sm text-gray-700">포장 및 라벨링</span>
+                            </div>
+                            <div class="w-1/2 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span class="text-sm text-gray-700">설비 세척 및 소독</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-5 bg-green-50 p-4 rounded-lg border border-green-200">
+                <div class="flex items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <p class="text-sm font-medium text-gray-700">
+                        <span class="text-green-800">중요 포인트:</span> 표준화와 SOP는 단순한 문서화 작업이 아닌, 디지털 혁신의 <strong>필수 기반</strong>입니다. 시스템이 제대로 작동하려면 먼저 표준화된 프로세스가 구축되어야 합니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <span>회사 로고</span>
+            <span>4/15</span>
+        </div>
+    </div>
+</body>
+</html>
+

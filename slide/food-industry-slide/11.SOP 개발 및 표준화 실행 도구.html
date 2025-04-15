@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOP 개발 및 표준화 실행 도구</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .accent-bar {
+            height: 8px;
+            width: 100%;
+            background: linear-gradient(90deg, #005BBB 0%, #007BFF 100%);
+        }
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 3rem;
+        }
+        .footer {
+            height: 40px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .tool-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #005BBB;
+            position: relative;
+            overflow: hidden;
+        }
+        .tool-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .method-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: flex-start;
+            transition: transform 0.2s;
+        }
+        .method-item:hover {
+            transform: translateX(5px);
+            background-color: #f0f7ff;
+        }
+        .method-icon {
+            background-color: #e6f0ff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: #005BBB;
+            flex-shrink: 0;
+        }
+        .gradient-overlay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle at bottom right, rgba(0,91,187,0.08), transparent 70%);
+            z-index: 0;
+        }
+        .progress-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .progress-step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #005BBB;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        .progress-step-line {
+            flex-grow: 1;
+            height: 3px;
+            background-color: #e9ecef;
+            position: relative;
+        }
+        .progress-step-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: #005BBB;
+            width: var(--progress);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="accent-bar"></div>
+        
+        <div class="content-section">
+            <div class="mb-5">
+                <h1 class="text-3xl font-bold text-gray-800 mb-1">SOP 개발 및 표준화 실행 도구</h1>
+                <div class="w-20 h-1 bg-blue-600"></div>
+                <p class="text-gray-600 mt-3">표준 프로세스 구축을 위한 방법론과 실용적 도구</p>
+            </div>
+            
+            <div class="flex space-x-6">
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-tools text-blue-600 mr-2"></i>
+                        표준화 및 SOP 개발 방법론
+                    </h2>
+                    
+                    <div class="tool-card">
+                        <div class="gradient-overlay"></div>
+                        <h3 class="font-medium text-gray-800 mb-3">프로세스 매핑 도구</h3>
+                        
+                        <div class="method-item">
+                            <div class="method-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-700 text-sm">Value Stream Mapping (VSM)</h4>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    생산 흐름의 각 단계를 시각적으로 매핑하여 비효율적인 공정 식별 및 개선점 도출
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="method-item">
+                            <div class="method-icon">
+                                <i class="fas fa-sitemap"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-700 text-sm">SIPOC 다이어그램</h4>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    공급자, 투입물, 프로세스, 산출물, 고객 관점에서 프로세스 분석 및 표준화 요소 도출
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="method-item">
+                            <div class="method-icon">
+                                <i class="fas fa-random"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-700 text-sm">프로세스 플로우 차트</h4>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    작업 흐름과 의사결정 포인트를 시각화하여 표준 작업 절차 정의에 활용
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card mt-5">
+                        <div class="gradient-overlay"></div>
+                        <h3 class="font-medium text-gray-800 mb-3">데이터 수집 및 분석 도구</h3>
+                        
+                        <div class="method-item">
+                            <div class="method-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-700 text-sm">공정 분석 체크리스트</h4>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    주요 작업에 대한 표준화된 체크리스트로 현황 파악 및 개선점 식별
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="method-item">
+                            <div class="method-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-700 text-sm">통계적 공정 관리(SPC) 도구</h4>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    핵심 품질 지표에 대한 데이터 수집 및 분석으로 표준 범위 정립
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="method-item">
+                            <div class="method-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-700 text-sm">원인 분석 도구 (5Why, 어골도)</h4>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    반복적 이슈의 근본 원인 분석으로 표준화 과정에서 예방 조치 반영
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-1/2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center">
+                        <i class="fas fa-file-alt text-blue-600 mr-2"></i>
+                        SOP 문서화 및 관리 도구
+                    </h2>
+                    
+                    <div class="tool-card">
+                        <div class="gradient-overlay"></div>
+                        <h3 class="font-medium text-gray-800 mb-3">식품제조업 SOP 템플릿</h3>
+                        
+                        <div class="bg-white p-3 rounded border border-gray-200 mb-4">
+                            <h4 class="font-medium text-gray-700 text-sm mb-2">표준 SOP 문서 구성 요소</h4>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-1 text-xs"></i>
+                                    <span class="text-xs text-gray-600">목적 및 적용 범위</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-1 text-xs"></i>
+                                    <span class="text-xs text-gray-600">관련 규정 및 참조 문서</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-1 text-xs"></i>
+                                    <span class="text-xs text-gray-600">책임과 권한</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-1 text-xs"></i>
+                                    <span class="text-xs text-gray-600">안전 및 품질 관리 기준</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-1 text-xs"></i>
+                                    <span class="text-xs text-gray-600">단계별 작업 지침</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-1 text-xs"></i>
+                                    <span class="text-xs text-gray-600">이상 상황 대응 절차</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-1 text-xs"></i>
+                                    <span class="text-xs text-gray-600">기록 관리 방법</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-1 text-xs"></i>
+                                    <span class="text-xs text-gray-600">개정 이력 관리</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-3 rounded border-l-4 border-blue-400">
+                            <div class="flex items-start">
+                                <i class="fas fa-lightbulb text-blue-500 mr-2 mt-0.5"></i>
+                                <p class="text-xs text-gray-700">
+                                    <span class="font-medium">효과적인 SOP 작성 팁:</span> 현장 작업자의 눈높이에 맞춘 명확한 언어 사용, 시각적 자료(사진, 도표) 적극 활용, 단계별 체크포인트 명시로 자가 검증 가능하게 구성
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tool-card mt-5">
+                        <div class="gradient-overlay"></div>
+                        <h3 class="font-medium text-gray-800 mb-3">SOP 관리 시스템 구현 단계</h3>
+                        
+                        <div class="progress-step">
+                            <div class="progress-step-circle">1</div>
+                            <div class="text-sm text-gray-700 flex-grow">
+                                <strong>문서 관리 체계 구축</strong>
+                                <p class="text-xs text-gray-600">버전 관리, 승인 프로세스, 접근 권한 설정</p>
+                            </div>
+                            <div class="progress-step-line" style="--progress: 100%"></div>
+                        </div>
+                        
+                        <div class="progress-step">
+                            <div class="progress-step-circle">2</div>
+                            <div class="text-sm text-gray-700 flex-grow">
+                                <strong>디지털 SOP 관리 시스템 도입</strong>
+                                <p class="text-xs text-gray-600">문서 저장소, 검색 기능, 알림 시스템 구현</p>
+                            </div>
+                            <div class="progress-step-line" style="--progress: 75%"></div>
+                        </div>
+                        
+                        <div class="progress-step">
+                            <div class="progress-step-circle">3</div>
+                            <div class="text-sm text-gray-700 flex-grow">
+                                <strong>모바일 접근성 개선</strong>
+                                <p class="text-xs text-gray-600">현장에서 모바일 기기로 SOP 확인 및 기록 가능</p>
+                            </div>
+                            <div class="progress-step-line" style="--progress: 40%"></div>
+                        </div>
+                        
+                        <div class="progress-step">
+                            <div class="progress-step-circle">4</div>
+                            <div class="text-sm text-gray-700 flex-grow">
+                                <strong>MES/ERP 시스템 연계</strong>
+                                <p class="text-xs text-gray-600">작업 지침과 실시간 생산 데이터의 통합 관리</p>
+                            </div>
+                            <div class="progress-step-line" style="--progress: 15%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                <div class="flex items-start">
+                    <i class="fas fa-check-double text-blue-600 mr-3 mt-1 text-lg"></i>
+                    <p class="text-sm font-medium text-gray-700">
+                        <span class="text-blue-800">핵심 포인트:</span> SOP와 표준화는 <strong>일회성 프로젝트가 아닌 지속적인 개선 문화</strong>의 일부입니다. 현장의 피드백을 반영하여 정기적으로 검토하고 업데이트하는 메커니즘을 구축하는 것이 중요합니다. 문서화된 SOP는 현장 특성에 맞는 디지털 도구로 관리될 때 가장 효과적입니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <span>회사 로고</span>
+            <span>11/15</span>
+        </div>
+    </div>
+</body>
+</html>
